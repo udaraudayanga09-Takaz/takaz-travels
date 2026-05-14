@@ -1,7 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useMemo, useRef } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
-import { Map as MapIcon, LayoutGrid, Search, Sparkles, ArrowRight, Car, Home } from "lucide-react";
+import { Map as MapIcon, LayoutGrid, Search, Sparkles, ArrowRight, Car, Home, ShieldCheck, Headphones, BadgeDollarSign, Users, Compass, Heart, Star, Quote, Mountain, Waves, Trees, Building2 } from "lucide-react";
+import sigiriya from "@/assets/hero-srilanka.jpg";
 import { useStore } from "@/lib/store";
 import { ListingCard } from "@/components/ListingCard";
 import { MapView } from "@/components/MapView";
