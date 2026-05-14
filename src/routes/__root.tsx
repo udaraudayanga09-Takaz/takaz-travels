@@ -1,23 +1,22 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Outlet, createRootRouteWithContext, useRouter, HeadContent, Scripts } from "@tanstack/react-router";
+import { useEffect } from "react";
 import appCss from "../styles.css?url";
 import { StoreProvider } from "@/lib/store";
+import { AuthProvider } from "@/lib/auth";
 import { TopBar, MobileTabBar } from "@/components/Nav";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { title: "Takaz Travels — Sri Lanka's premium travel ecosystem" },
-      { name: "description", content: "Rent vehicles and book stays across Sri Lanka with one platform" },
-      { property: "og:title", content: "Takaz Travels — Sri Lanka's premium travel ecosystem" },
-      { property: "og:description", content: "Rent vehicles and book stays across Sri Lanka with one platform" },
+      { title: "LuxeLanka — Sri Lanka's premium travel ecosystem" },
+      { name: "description", content: "Self-drive tuk-tuks, chauffeured SUVs, and boutique villas across Sri Lanka. 24/7 on-ground support, transparent pricing, local expertise." },
+      { property: "og:title", content: "LuxeLanka — Sri Lanka's premium travel ecosystem" },
+      { property: "og:description", content: "Sync your ride and your stay across Sri Lanka. Tuk-tuks to luxury SUVs. Beach villas to misty bungalows." },
       { property: "og:type", content: "website" },
-      { name: "twitter:title", content: "Takaz Travels — Sri Lanka's premium travel ecosystem" },
-      { name: "twitter:description", content: "Rent vehicles and book stays across Sri Lanka with one platform" },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/460f761d-b7fc-48eb-ba2f-17a64e1c09d3/id-preview-6e18ba8d--62c3d249-0360-447b-8533-a282c8e62ffb.lovable.app-1778186869463.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/460f761d-b7fc-48eb-ba2f-17a64e1c09d3/id-preview-6e18ba8d--62c3d249-0360-447b-8533-a282c8e62ffb.lovable.app-1778186869463.png" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [{ rel: "stylesheet", href: appCss }],
@@ -58,15 +57,25 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+      router.invalidate();
+      queryClient.invalidateQueries();
+    });
+    return () => subscription.unsubscribe();
+  }, [router, queryClient]);
   return (
     <QueryClientProvider client={queryClient}>
-      <StoreProvider>
-        <div className="min-h-screen pb-24 md:pb-0">
-          <TopBar />
-          <Outlet />
-          <MobileTabBar />
-        </div>
-      </StoreProvider>
+      <AuthProvider>
+        <StoreProvider>
+          <div className="min-h-screen pb-24 md:pb-0">
+            <TopBar />
+            <Outlet />
+            <MobileTabBar />
+          </div>
+        </StoreProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

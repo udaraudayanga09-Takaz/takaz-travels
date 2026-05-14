@@ -10,6 +10,10 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProviderRouteImport } from './routes/provider'
+import { Route as PlanRouteImport } from './routes/plan'
+import { Route as MemoriesRouteImport } from './routes/memories'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as JoinUsRouteImport } from './routes/join-us'
 import { Route as BookingsRouteImport } from './routes/bookings'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
@@ -18,6 +22,26 @@ import { Route as ProviderNewRouteImport } from './routes/provider.new'
 const ProviderRoute = ProviderRouteImport.update({
   id: '/provider',
   path: '/provider',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlanRoute = PlanRouteImport.update({
+  id: '/plan',
+  path: '/plan',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MemoriesRoute = MemoriesRouteImport.update({
+  id: '/memories',
+  path: '/memories',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JoinUsRoute = JoinUsRouteImport.update({
+  id: '/join-us',
+  path: '/join-us',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BookingsRoute = BookingsRouteImport.update({
@@ -45,6 +69,10 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/bookings': typeof BookingsRoute
+  '/join-us': typeof JoinUsRoute
+  '/login': typeof LoginRoute
+  '/memories': typeof MemoriesRoute
+  '/plan': typeof PlanRoute
   '/provider': typeof ProviderRouteWithChildren
   '/provider/new': typeof ProviderNewRoute
 }
@@ -52,6 +80,10 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/bookings': typeof BookingsRoute
+  '/join-us': typeof JoinUsRoute
+  '/login': typeof LoginRoute
+  '/memories': typeof MemoriesRoute
+  '/plan': typeof PlanRoute
   '/provider': typeof ProviderRouteWithChildren
   '/provider/new': typeof ProviderNewRoute
 }
@@ -60,21 +92,57 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/bookings': typeof BookingsRoute
+  '/join-us': typeof JoinUsRoute
+  '/login': typeof LoginRoute
+  '/memories': typeof MemoriesRoute
+  '/plan': typeof PlanRoute
   '/provider': typeof ProviderRouteWithChildren
   '/provider/new': typeof ProviderNewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/bookings' | '/provider' | '/provider/new'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/bookings'
+    | '/join-us'
+    | '/login'
+    | '/memories'
+    | '/plan'
+    | '/provider'
+    | '/provider/new'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/bookings' | '/provider' | '/provider/new'
-  id: '__root__' | '/' | '/admin' | '/bookings' | '/provider' | '/provider/new'
+  to:
+    | '/'
+    | '/admin'
+    | '/bookings'
+    | '/join-us'
+    | '/login'
+    | '/memories'
+    | '/plan'
+    | '/provider'
+    | '/provider/new'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/bookings'
+    | '/join-us'
+    | '/login'
+    | '/memories'
+    | '/plan'
+    | '/provider'
+    | '/provider/new'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
   BookingsRoute: typeof BookingsRoute
+  JoinUsRoute: typeof JoinUsRoute
+  LoginRoute: typeof LoginRoute
+  MemoriesRoute: typeof MemoriesRoute
+  PlanRoute: typeof PlanRoute
   ProviderRoute: typeof ProviderRouteWithChildren
 }
 
@@ -85,6 +153,34 @@ declare module '@tanstack/react-router' {
       path: '/provider'
       fullPath: '/provider'
       preLoaderRoute: typeof ProviderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/plan': {
+      id: '/plan'
+      path: '/plan'
+      fullPath: '/plan'
+      preLoaderRoute: typeof PlanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/memories': {
+      id: '/memories'
+      path: '/memories'
+      fullPath: '/memories'
+      preLoaderRoute: typeof MemoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/join-us': {
+      id: '/join-us'
+      path: '/join-us'
+      fullPath: '/join-us'
+      preLoaderRoute: typeof JoinUsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/bookings': {
@@ -134,6 +230,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
   BookingsRoute: BookingsRoute,
+  JoinUsRoute: JoinUsRoute,
+  LoginRoute: LoginRoute,
+  MemoriesRoute: MemoriesRoute,
+  PlanRoute: PlanRoute,
   ProviderRoute: ProviderRouteWithChildren,
 }
 export const routeTree = rootRouteImport
