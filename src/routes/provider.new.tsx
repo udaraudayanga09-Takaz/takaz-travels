@@ -3,7 +3,7 @@ import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { UploadCloud, Image as ImageIcon, X } from "lucide-react";
 import { useStore } from "@/lib/store";
-import { CITIES } from "@/data/listings";
+import { CITIES, CITY_COORDS } from "@/data/listings";
 
 export const Route = createFileRoute("/provider/new")({
   head: () => ({ meta: [{ title: "List something new — LuxeLanka" }] }),
@@ -37,6 +37,8 @@ function NewListing() {
       host: "You",
       lat: 50 + Math.random() * 30,
       lng: 20 + Math.random() * 50,
+      geoLat: CITY_COORDS[city].lat + (Math.random() - 0.5) * 0.04,
+      geoLng: CITY_COORDS[city].lng + (Math.random() - 0.5) * 0.04,
     });
     nav({ to: "/provider" });
   };

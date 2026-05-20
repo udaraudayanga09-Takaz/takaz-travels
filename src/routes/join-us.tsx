@@ -103,11 +103,37 @@ function RegisterForm() {
   const [phone, setPhone] = useState("");
   const [serviceType, setServiceType] = useState<Service>("driver");
   const [locationLabel, setLocationLabel] = useState("");
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [geocoding, setGeocoding] = useState(false);
+  const [geoMsg, setGeoMsg] = useState<string | null>(null);
   const [docFile, setDocFile] = useState<File | null>(null);
   const [notes, setNotes] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const submit = useServerFn(submitPartnerApplication);
+
+  async function verifyLocation() {
+    const key = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string | undefined;
+    if (!key) { setGeoMsg("Maps key not configured."); return; }
+    if (!locationLabel.trim()) { setGeoMsg("Type an address first."); return; }
+    setGeocoding(true); setGeoMsg(null);
+    try {
+      const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(locationLabel + ", Sri Lanka")}&key=${key}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.status === "OK" && data.results?.[0]) {
+        const { lat, lng } = data.results[0].geometry.location;
+        setCoords({ lat, lng });
+        setLocationLabel(data.results[0].formatted_address);
+        setGeoMsg(`Pinned at ${lat.toFixed(4)}, ${lng.toFixed(4)}`);
+      } else {
+        setGeoMsg("Address not found. Try a more specific one.");
+      }
+    } catch {
+      setGeoMsg("Geocoding failed. Check your network or API key.");
+    } finally { setGeocoding(false); }
+  }
+
 
   async function createAccount(e: React.FormEvent) {
     e.preventDefault();
@@ -138,6 +164,8 @@ function RegisterForm() {
         phone: phone || undefined,
         serviceType,
         locationLabel: locationLabel || undefined,
+        locationLat: coords?.lat ?? null,
+        locationLng: coords?.lng ?? null,
         documentUrl,
         notes: notes || undefined,
         userId: user?.id ?? null,
@@ -186,7 +214,15 @@ function RegisterForm() {
         </div>
       </div>
       <Field icon={Phone}><input value={phone} onChange={e => setPhone(e.target.value)} placeholder="Phone (with country code)" className="w-full bg-transparent text-sm outline-none" /></Field>
-      <Field icon={MapPin}><input value={locationLabel} onChange={e => setLocationLabel(e.target.value)} placeholder="Base location (e.g. Galle)" className="w-full bg-transparent text-sm outline-none" /></Field>
+      <div className="space-y-1.5">
+        <div className="flex items-stretch gap-2">
+          <Field icon={MapPin}><input value={locationLabel} onChange={e => { setLocationLabel(e.target.value); setCoords(null); }} placeholder="Address (e.g. 12 Beach Road, Unawatuna)" className="w-full bg-transparent text-sm outline-none" /></Field>
+          <button type="button" onClick={verifyLocation} disabled={geocoding} className="shrink-0 rounded-xl bg-accent/20 text-accent px-3 text-xs font-medium hover:bg-accent/30 transition disabled:opacity-50">
+            {geocoding ? "Verifying…" : coords ? "✓ Pinned" : "Verify on Google Maps"}
+          </button>
+        </div>
+        {geoMsg && <div className={`text-[11px] ${coords ? "text-primary" : "text-muted-foreground"}`}>{geoMsg}</div>}
+      </div>
       <label className="flex items-center gap-2 rounded-xl glass px-3 py-2.5 cursor-pointer hover:border-primary/40 transition">
         <Upload className="h-4 w-4 text-muted-foreground" />
         <span className="text-sm flex-1 truncate">{docFile?.name ?? "Upload license / business doc (optional)"}</span>
