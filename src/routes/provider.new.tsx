@@ -37,6 +37,8 @@ function NewListing() {
       host: "You",
       lat: 50 + Math.random() * 30,
       lng: 20 + Math.random() * 50,
+      geoLat: CITY_COORDS[city].lat + (Math.random() - 0.5) * 0.04,
+      geoLng: CITY_COORDS[city].lng + (Math.random() - 0.5) * 0.04,
     });
     nav({ to: "/provider" });
   };
