@@ -164,6 +164,8 @@ function RegisterForm() {
         phone: phone || undefined,
         serviceType,
         locationLabel: locationLabel || undefined,
+        locationLat: coords?.lat ?? null,
+        locationLng: coords?.lng ?? null,
         documentUrl,
         notes: notes || undefined,
         userId: user?.id ?? null,
