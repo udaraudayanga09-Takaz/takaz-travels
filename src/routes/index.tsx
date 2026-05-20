@@ -5,7 +5,7 @@ import { Map as MapIcon, LayoutGrid, Search, Sparkles, ArrowRight, Car, Home, Sh
 import sigiriya from "@/assets/hero-srilanka.jpg";
 import { useStore } from "@/lib/store";
 import { ListingCard } from "@/components/ListingCard";
-import { MapView } from "@/components/MapView";
+import { GoogleMapView } from "@/components/GoogleMapView";
 import { ListingDrawer } from "@/components/ListingDrawer";
 import { CITIES } from "@/data/listings";
 import type { Listing } from "@/data/listings";
