@@ -119,7 +119,7 @@ function ExplorePage() {
           <AnimatePresence mode="wait">
             {view === "map" ? (
               <motion.div key="map" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }}>
-                <MapView listings={filtered} onSelect={setSelected} selectedId={selected?.id} />
+                <GoogleMapView listings={filtered} onSelect={setSelected} selectedId={selected?.id} />
                 <div className="mt-4 flex gap-3 overflow-x-auto no-scrollbar pb-2">
                   {filtered.map(l => (
                     <button key={l.id} onClick={() => setSelected(l)} className="group flex shrink-0 w-64 items-center gap-3 rounded-2xl glass p-3 text-left transition hover:scale-[1.02]">
