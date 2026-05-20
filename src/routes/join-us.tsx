@@ -103,11 +103,37 @@ function RegisterForm() {
   const [phone, setPhone] = useState("");
   const [serviceType, setServiceType] = useState<Service>("driver");
   const [locationLabel, setLocationLabel] = useState("");
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [geocoding, setGeocoding] = useState(false);
+  const [geoMsg, setGeoMsg] = useState<string | null>(null);
   const [docFile, setDocFile] = useState<File | null>(null);
   const [notes, setNotes] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const submit = useServerFn(submitPartnerApplication);
+
+  async function verifyLocation() {
+    const key = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string | undefined;
+    if (!key) { setGeoMsg("Maps key not configured."); return; }
+    if (!locationLabel.trim()) { setGeoMsg("Type an address first."); return; }
+    setGeocoding(true); setGeoMsg(null);
+    try {
+      const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(locationLabel + ", Sri Lanka")}&key=${key}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.status === "OK" && data.results?.[0]) {
+        const { lat, lng } = data.results[0].geometry.location;
+        setCoords({ lat, lng });
+        setLocationLabel(data.results[0].formatted_address);
+        setGeoMsg(`Pinned at ${lat.toFixed(4)}, ${lng.toFixed(4)}`);
+      } else {
+        setGeoMsg("Address not found. Try a more specific one.");
+      }
+    } catch {
+      setGeoMsg("Geocoding failed. Check your network or API key.");
+    } finally { setGeocoding(false); }
+  }
+
 
   async function createAccount(e: React.FormEvent) {
     e.preventDefault();
