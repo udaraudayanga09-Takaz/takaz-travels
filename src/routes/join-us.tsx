@@ -214,7 +214,15 @@ function RegisterForm() {
         </div>
       </div>
       <Field icon={Phone}><input value={phone} onChange={e => setPhone(e.target.value)} placeholder="Phone (with country code)" className="w-full bg-transparent text-sm outline-none" /></Field>
-      <Field icon={MapPin}><input value={locationLabel} onChange={e => setLocationLabel(e.target.value)} placeholder="Base location (e.g. Galle)" className="w-full bg-transparent text-sm outline-none" /></Field>
+      <div className="space-y-1.5">
+        <div className="flex items-stretch gap-2">
+          <Field icon={MapPin}><input value={locationLabel} onChange={e => { setLocationLabel(e.target.value); setCoords(null); }} placeholder="Address (e.g. 12 Beach Road, Unawatuna)" className="w-full bg-transparent text-sm outline-none" /></Field>
+          <button type="button" onClick={verifyLocation} disabled={geocoding} className="shrink-0 rounded-xl bg-accent/20 text-accent px-3 text-xs font-medium hover:bg-accent/30 transition disabled:opacity-50">
+            {geocoding ? "Verifying…" : coords ? "✓ Pinned" : "Verify on Google Maps"}
+          </button>
+        </div>
+        {geoMsg && <div className={`text-[11px] ${coords ? "text-primary" : "text-muted-foreground"}`}>{geoMsg}</div>}
+      </div>
       <label className="flex items-center gap-2 rounded-xl glass px-3 py-2.5 cursor-pointer hover:border-primary/40 transition">
         <Upload className="h-4 w-4 text-muted-foreground" />
         <span className="text-sm flex-1 truncate">{docFile?.name ?? "Upload license / business doc (optional)"}</span>
