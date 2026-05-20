@@ -3,7 +3,7 @@ import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { UploadCloud, Image as ImageIcon, X } from "lucide-react";
 import { useStore } from "@/lib/store";
-import { CITIES } from "@/data/listings";
+import { CITIES, CITY_COORDS } from "@/data/listings";
 
 export const Route = createFileRoute("/provider/new")({
   head: () => ({ meta: [{ title: "List something new — LuxeLanka" }] }),
