@@ -147,7 +147,10 @@ function ExplorePage() {
         </div>
       </section>
 
-      {/* WHY LUXELANKA — TRUST */}
+      {/* POPULAR PLACES — TripAdvisor ranked */}
+      <PopularPlaces />
+
+      {/* WHY TAKAZ — TRUST */}
       <section className="mx-auto max-w-7xl px-5 py-20">
         <div className="text-center max-w-2xl mx-auto">
           <span className="inline-flex items-center gap-2 rounded-full glass px-3 py-1.5 text-xs"><ShieldCheck className="h-3.5 w-3.5 text-accent" /> Why Takaz</span>
