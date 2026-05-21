@@ -34,7 +34,7 @@ function LoginPage() {
       });
       setBusy(false);
       if (error) return setError(error.message);
-      setInfo("Check your inbox to confirm your email.");
+      nav({ to: "/verify-email", search: { email } });
     }
   }
 

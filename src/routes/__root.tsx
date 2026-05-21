@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import appCss from "../styles.css?url";
 import { StoreProvider } from "@/lib/store";
 import { AuthProvider } from "@/lib/auth";
+import { ThemeProvider } from "@/lib/theme";
 import { TopBar, MobileTabBar } from "@/components/Nav";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -71,15 +72,17 @@ function RootComponent() {
   }, [router, queryClient]);
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <StoreProvider>
-          <div className="min-h-screen pb-24 md:pb-0">
-            <TopBar />
-            <Outlet />
-            <MobileTabBar />
-          </div>
-        </StoreProvider>
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <StoreProvider>
+            <div className="min-h-screen pb-24 md:pb-0">
+              <TopBar />
+              <Outlet />
+              <MobileTabBar />
+            </div>
+          </StoreProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

@@ -12,7 +12,7 @@ export type Listing = {
   type: ListingType;
   title: string;
   category: string;
-  city: "Colombo" | "Kandy" | "Galle" | "Ella";
+  city: string;
   lat: number; // 0-100 normalized for our SVG map
   lng: number;
   geoLat: number; // real-world latitude
@@ -26,7 +26,7 @@ export type Listing = {
   description: string;
 };
 
-export const CITY_COORDS: Record<Listing["city"], { lat: number; lng: number }> = {
+export const CITY_COORDS: Record<string, { lat: number; lng: number }> = {
   Colombo: { lat: 6.9271, lng: 79.8612 },
   Kandy:   { lat: 7.2906, lng: 80.6337 },
   Galle:   { lat: 6.0535, lng: 80.2210 },

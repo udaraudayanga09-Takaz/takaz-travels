@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as ProviderRouteImport } from './routes/provider'
 import { Route as PlanRouteImport } from './routes/plan'
 import { Route as MemoriesRouteImport } from './routes/memories'
@@ -19,6 +20,11 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProviderNewRouteImport } from './routes/provider.new'
 
+const VerifyEmailRoute = VerifyEmailRouteImport.update({
+  id: '/verify-email',
+  path: '/verify-email',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProviderRoute = ProviderRouteImport.update({
   id: '/provider',
   path: '/provider',
@@ -74,6 +80,7 @@ export interface FileRoutesByFullPath {
   '/memories': typeof MemoriesRoute
   '/plan': typeof PlanRoute
   '/provider': typeof ProviderRouteWithChildren
+  '/verify-email': typeof VerifyEmailRoute
   '/provider/new': typeof ProviderNewRoute
 }
 export interface FileRoutesByTo {
@@ -85,6 +92,7 @@ export interface FileRoutesByTo {
   '/memories': typeof MemoriesRoute
   '/plan': typeof PlanRoute
   '/provider': typeof ProviderRouteWithChildren
+  '/verify-email': typeof VerifyEmailRoute
   '/provider/new': typeof ProviderNewRoute
 }
 export interface FileRoutesById {
@@ -97,6 +105,7 @@ export interface FileRoutesById {
   '/memories': typeof MemoriesRoute
   '/plan': typeof PlanRoute
   '/provider': typeof ProviderRouteWithChildren
+  '/verify-email': typeof VerifyEmailRoute
   '/provider/new': typeof ProviderNewRoute
 }
 export interface FileRouteTypes {
@@ -110,6 +119,7 @@ export interface FileRouteTypes {
     | '/memories'
     | '/plan'
     | '/provider'
+    | '/verify-email'
     | '/provider/new'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -121,6 +131,7 @@ export interface FileRouteTypes {
     | '/memories'
     | '/plan'
     | '/provider'
+    | '/verify-email'
     | '/provider/new'
   id:
     | '__root__'
@@ -132,6 +143,7 @@ export interface FileRouteTypes {
     | '/memories'
     | '/plan'
     | '/provider'
+    | '/verify-email'
     | '/provider/new'
   fileRoutesById: FileRoutesById
 }
@@ -144,10 +156,18 @@ export interface RootRouteChildren {
   MemoriesRoute: typeof MemoriesRoute
   PlanRoute: typeof PlanRoute
   ProviderRoute: typeof ProviderRouteWithChildren
+  VerifyEmailRoute: typeof VerifyEmailRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/verify-email': {
+      id: '/verify-email'
+      path: '/verify-email'
+      fullPath: '/verify-email'
+      preLoaderRoute: typeof VerifyEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/provider': {
       id: '/provider'
       path: '/provider'
@@ -235,6 +255,7 @@ const rootRouteChildren: RootRouteChildren = {
   MemoriesRoute: MemoriesRoute,
   PlanRoute: PlanRoute,
   ProviderRoute: ProviderRouteWithChildren,
+  VerifyEmailRoute: VerifyEmailRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
