@@ -36,8 +36,8 @@ const seedBookings = (): Booking[] => {
   const future = new Date(); future.setDate(future.getDate() + 10);
   const futureStart = new Date(); futureStart.setDate(futureStart.getDate() + 7);
   return [
-    { id: "b1", listingId: "v1", guestName: "Demo Tourist", guestEmail: "demo@luxe.lk", startDate: pastStart.toISOString(), endDate: past.toISOString(), days: 4, total: 100, status: "completed" },
-    { id: "b2", listingId: "s3", guestName: "Demo Tourist", guestEmail: "demo@luxe.lk", startDate: futureStart.toISOString(), endDate: future.toISOString(), days: 3, total: 495, status: "confirmed" },
+    { id: "b1", listingId: "v1", guestName: "Demo Tourist", guestEmail: "demo@takaz.lk", startDate: pastStart.toISOString(), endDate: past.toISOString(), days: 4, total: 100, status: "completed" },
+    { id: "b2", listingId: "s3", guestName: "Demo Tourist", guestEmail: "demo@takaz.lk", startDate: futureStart.toISOString(), endDate: future.toISOString(), days: 3, total: 495, status: "confirmed" },
   ];
 };
 

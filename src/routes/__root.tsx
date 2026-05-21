@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import appCss from "../styles.css?url";
 import { StoreProvider } from "@/lib/store";
 import { AuthProvider } from "@/lib/auth";
+import { ThemeProvider } from "@/lib/theme";
 import { TopBar, MobileTabBar } from "@/components/Nav";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -12,13 +13,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { title: "LuxeLanka — Sri Lanka's premium travel ecosystem" },
+      { title: "Takaz — Sri Lanka's premium travel ecosystem" },
       { name: "description", content: "Self-drive tuk-tuks, chauffeured SUVs, and boutique villas across Sri Lanka. 24/7 on-ground support, transparent pricing, local expertise." },
-      { property: "og:title", content: "LuxeLanka — Sri Lanka's premium travel ecosystem" },
+      { property: "og:title", content: "Takaz — Sri Lanka's premium travel ecosystem" },
       { property: "og:description", content: "Self-drive tuk-tuks, chauffeured SUVs, and boutique villas across Sri Lanka. 24/7 on-ground support, transparent pricing, local expertise." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "LuxeLanka — Sri Lanka's premium travel ecosystem" },
+      { name: "twitter:title", content: "Takaz — Sri Lanka's premium travel ecosystem" },
       { name: "twitter:description", content: "Self-drive tuk-tuks, chauffeured SUVs, and boutique villas across Sri Lanka. 24/7 on-ground support, transparent pricing, local expertise." },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/87cbb7f7-e536-4983-b118-12b2513ec6ac/id-preview-cc341b6f--62c3d249-0360-447b-8533-a282c8e62ffb.lovable.app-1779304913462.png" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/87cbb7f7-e536-4983-b118-12b2513ec6ac/id-preview-cc341b6f--62c3d249-0360-447b-8533-a282c8e62ffb.lovable.app-1779304913462.png" },
@@ -71,15 +72,17 @@ function RootComponent() {
   }, [router, queryClient]);
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <StoreProvider>
-          <div className="min-h-screen pb-24 md:pb-0">
-            <TopBar />
-            <Outlet />
-            <MobileTabBar />
-          </div>
-        </StoreProvider>
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <StoreProvider>
+            <div className="min-h-screen pb-24 md:pb-0">
+              <TopBar />
+              <Outlet />
+              <MobileTabBar />
+            </div>
+          </StoreProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

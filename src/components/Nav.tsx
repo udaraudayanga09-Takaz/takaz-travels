@@ -1,6 +1,8 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Map, Compass, Sparkles, Heart, Handshake } from "lucide-react";
+import { Map, Compass, Heart, Handshake } from "lucide-react";
 import { motion } from "framer-motion";
+import { Logo } from "@/components/Logo";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const NAV = [
   { to: "/", label: "Explore", icon: Map },
@@ -30,14 +32,9 @@ export function MobileTabBar() {
 export function TopBar() {
   const path = useRouterState({ select: s => s.location.pathname });
   return (
-    <header className="sticky top-0 z-30 border-b border-border/40 bg-background/60 backdrop-blur-xl">
+    <header className="sticky top-0 z-30 border-b border-border/40 bg-background/70 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-3">
-        <Link to="/" className="flex items-center gap-2 font-semibold tracking-tight">
-          <div className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-br from-primary to-[oklch(0.65_0.18_200)] text-primary-foreground">
-            <Sparkles className="h-4 w-4" />
-          </div>
-          <span>LuxeLanka</span>
-        </Link>
+        <Logo />
         <nav className="hidden items-center gap-1 md:flex">
           {NAV.map(it => {
             const active = path === it.to;
@@ -49,7 +46,10 @@ export function TopBar() {
             );
           })}
         </nav>
-        <Link to="/login" className="rounded-full glass px-4 py-2 text-xs font-medium hover:bg-secondary/40 transition">Sign in</Link>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <Link to="/login" className="rounded-full glass px-4 py-2 text-xs font-medium hover:bg-secondary/40 transition">Sign in</Link>
+        </div>
       </div>
     </header>
   );

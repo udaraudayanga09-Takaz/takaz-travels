@@ -5,7 +5,7 @@ import { Calendar, Star, MapPin, CheckCircle2, Clock } from "lucide-react";
 import { useStore, isReviewable, type Booking } from "@/lib/store";
 
 export const Route = createFileRoute("/bookings")({
-  head: () => ({ meta: [{ title: "My trips — LuxeLanka" }, { name: "description", content: "Track and review your Sri Lanka bookings." }] }),
+  head: () => ({ meta: [{ title: "My trips — Takaz" }, { name: "description", content: "Track and review your Sri Lanka bookings." }] }),
   component: BookingsPage,
 });
 
