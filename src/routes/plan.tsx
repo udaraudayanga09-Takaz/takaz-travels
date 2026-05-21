@@ -11,9 +11,9 @@ import { useServerFn } from "@tanstack/react-start";
 export const Route = createFileRoute("/plan")({
   head: () => ({
     meta: [
-      { title: "Plan your Sri Lanka trip — LuxeLanka" },
+      { title: "Plan your Sri Lanka trip — Takaz" },
       { name: "description", content: "Build a custom multi-region Sri Lanka itinerary. Hover the interactive map to discover destinations, then send us your plan." },
-      { property: "og:title", content: "Plan your Sri Lanka trip — LuxeLanka" },
+      { property: "og:title", content: "Plan your Sri Lanka trip — Takaz" },
       { property: "og:description", content: "Interactive map, region-by-region picks, and a custom itinerary built around you." },
     ],
   }),

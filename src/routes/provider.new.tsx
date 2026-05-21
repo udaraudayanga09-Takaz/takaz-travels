@@ -6,7 +6,7 @@ import { useStore } from "@/lib/store";
 import { CITIES, CITY_COORDS } from "@/data/listings";
 
 export const Route = createFileRoute("/provider/new")({
-  head: () => ({ meta: [{ title: "List something new — LuxeLanka" }] }),
+  head: () => ({ meta: [{ title: "List something new — Takaz" }] }),
   component: NewListing,
 });
 

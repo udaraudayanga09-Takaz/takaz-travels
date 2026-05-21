@@ -74,6 +74,8 @@ export type Database = {
           location_lng: number | null
           notes: string | null
           phone: string | null
+          published: boolean
+          reject_reason: string | null
           service_type: string
           status: string
           updated_at: string
@@ -90,6 +92,8 @@ export type Database = {
           location_lng?: number | null
           notes?: string | null
           phone?: string | null
+          published?: boolean
+          reject_reason?: string | null
           service_type: string
           status?: string
           updated_at?: string
@@ -106,6 +110,8 @@ export type Database = {
           location_lng?: number | null
           notes?: string | null
           phone?: string | null
+          published?: boolean
+          reject_reason?: string | null
           service_type?: string
           status?: string
           updated_at?: string

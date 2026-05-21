@@ -21,7 +21,7 @@ export function ListingDrawer({ listing, onClose }: { listing: Listing | null; o
     addBooking({
       listingId: listing.id,
       guestName: name || "Demo Tourist",
-      guestEmail: email || "demo@luxe.lk",
+      guestEmail: email || "demo@takaz.lk",
       startDate: start.toISOString(),
       endDate: end.toISOString(),
       days,

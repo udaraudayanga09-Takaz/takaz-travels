@@ -5,7 +5,7 @@ import { Mail, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/login")({
-  head: () => ({ meta: [{ title: "Sign in — LuxeLanka" }] }),
+  head: () => ({ meta: [{ title: "Sign in — Takaz" }] }),
   component: LoginPage,
 });
 
@@ -41,7 +41,7 @@ function LoginPage() {
   return (
     <div className="grid min-h-[calc(100vh-80px)] place-items-center px-5 py-12">
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md rounded-3xl glass-strong p-8">
-        <div className="flex items-center gap-2 text-sm text-accent mb-2"><Sparkles className="h-4 w-4" /> Welcome to LuxeLanka</div>
+        <div className="flex items-center gap-2 text-sm text-accent mb-2"><Sparkles className="h-4 w-4" /> Welcome to Takaz</div>
         <h1 className="text-3xl font-semibold">{mode === "signin" ? "Sign in" : "Create account"}</h1>
         <p className="mt-2 text-sm text-muted-foreground">Track bookings, save trips, manage your partner profile.</p>
 

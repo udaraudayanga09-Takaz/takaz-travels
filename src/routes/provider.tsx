@@ -4,7 +4,7 @@ import { Plus, TrendingUp, Calendar, DollarSign, Star, Shield } from "lucide-rea
 import { useStore } from "@/lib/store";
 
 export const Route = createFileRoute("/provider")({
-  head: () => ({ meta: [{ title: "Host dashboard — LuxeLanka" }, { name: "description", content: "Manage your listings and bookings." }] }),
+  head: () => ({ meta: [{ title: "Host dashboard — Takaz" }, { name: "description", content: "Manage your listings and bookings." }] }),
   component: ProviderDashboard,
 });
 

@@ -10,9 +10,9 @@ import { submitPartnerApplication } from "@/lib/luxe.functions";
 export const Route = createFileRoute("/join-us")({
   head: () => ({
     meta: [
-      { title: "Become a Partner — LuxeLanka" },
-      { name: "description", content: "List your villa, vehicle, or chauffeur service on LuxeLanka. Reach travellers from around the world with zero upfront cost." },
-      { property: "og:title", content: "Become a Partner — LuxeLanka" },
+      { title: "Become a Partner — Takaz" },
+      { name: "description", content: "List your villa, vehicle, or chauffeur service on Takaz. Reach travellers from around the world with zero upfront cost." },
+      { property: "og:title", content: "Become a Partner — Takaz" },
       { property: "og:description", content: "Drivers, AirBnB owners, and vehicle hosts — join Sri Lanka's premium travel marketplace." },
     ],
   }),
@@ -30,7 +30,7 @@ function JoinUsPage() {
         <span className="inline-flex items-center gap-2 rounded-full glass px-3 py-1.5 text-xs">
           <Handshake className="h-3.5 w-3.5 text-accent" /> Partner Hub
         </span>
-        <h1 className="mt-4 text-4xl md:text-6xl font-semibold tracking-tight">Grow with <span className="text-gradient">LuxeLanka</span></h1>
+        <h1 className="mt-4 text-4xl md:text-6xl font-semibold tracking-tight">Grow with <span className="text-gradient">Takaz</span></h1>
         <p className="mt-3 text-muted-foreground">Drivers, villa owners and vehicle hosts — list once, reach travellers from 50+ countries. Zero listing fee, transparent commission, fast payouts.</p>
       </motion.div>
 

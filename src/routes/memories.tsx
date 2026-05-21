@@ -16,9 +16,9 @@ const VLOGS = [
 export const Route = createFileRoute("/memories")({
   head: () => ({
     meta: [
-      { title: "Memories & Moments — LuxeLanka" },
-      { name: "description", content: "Real stories from travellers who explored Sri Lanka with LuxeLanka, plus the best Sri Lanka travel films on YouTube." },
-      { property: "og:title", content: "Memories & Moments — LuxeLanka" },
+      { title: "Memories & Moments — Takaz" },
+      { name: "description", content: "Real stories from travellers who explored Sri Lanka with Takaz, plus the best Sri Lanka travel films on YouTube." },
+      { property: "og:title", content: "Memories & Moments — Takaz" },
       { property: "og:description", content: "Traveller stories and cinematic films of Sri Lanka." },
     ],
   }),

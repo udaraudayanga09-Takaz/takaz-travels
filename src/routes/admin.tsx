@@ -4,7 +4,7 @@ import { Shield, CheckCircle2, Users, TrendingUp, MapPin, Building2 } from "luci
 import { useStore } from "@/lib/store";
 
 export const Route = createFileRoute("/admin")({
-  head: () => ({ meta: [{ title: "Admin — LuxeLanka" }] }),
+  head: () => ({ meta: [{ title: "Admin — Takaz" }] }),
   component: AdminPage,
 });
 

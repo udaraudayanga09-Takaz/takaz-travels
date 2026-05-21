@@ -14,7 +14,7 @@ import hero from "@/assets/hero-srilanka.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Explore Sri Lanka — LuxeLanka" },
+      { title: "Explore Sri Lanka — Takaz" },
       { name: "description", content: "Discover vehicles and stays across Colombo, Kandy, Galle and Ella." },
     ],
   }),
@@ -145,7 +145,7 @@ function ExplorePage() {
       {/* WHY LUXELANKA — TRUST */}
       <section className="mx-auto max-w-7xl px-5 py-20">
         <div className="text-center max-w-2xl mx-auto">
-          <span className="inline-flex items-center gap-2 rounded-full glass px-3 py-1.5 text-xs"><ShieldCheck className="h-3.5 w-3.5 text-accent" /> Why LuxeLanka</span>
+          <span className="inline-flex items-center gap-2 rounded-full glass px-3 py-1.5 text-xs"><ShieldCheck className="h-3.5 w-3.5 text-accent" /> Why Takaz</span>
           <h2 className="mt-4 text-3xl md:text-5xl font-semibold tracking-tight">Sri Lanka, the way locals do it.</h2>
           <p className="mt-3 text-muted-foreground">Born in Colombo. Built for travellers. We're the on-the-ground team that keeps your trip moving — not a faceless OTA.</p>
         </div>
@@ -182,7 +182,7 @@ function ExplorePage() {
             },
             {
               icon: Home, h: "Boutique villas & private stays",
-              p: "From cliffside infinity-pool villas in Unawatuna to misty tea bungalows above Ella, every stay on LuxeLanka is hand-visited by our team. We curate independently-owned boutique hotels, restored colonial mansions, jungle eco-lodges, and beachfront villas — never generic chains. All listings include verified photos, transparent total pricing, and free cancellation up to 14 days before check-in."
+              p: "From cliffside infinity-pool villas in Unawatuna to misty tea bungalows above Ella, every stay on Takaz is hand-visited by our team. We curate independently-owned boutique hotels, restored colonial mansions, jungle eco-lodges, and beachfront villas — never generic chains. All listings include verified photos, transparent total pricing, and free cancellation up to 14 days before check-in."
             },
             {
               icon: Users, h: "Chauffeurs & personal drivers",
