@@ -2,7 +2,7 @@
 @source "../src";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant light (&:is(.light *));
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
@@ -51,43 +51,76 @@
 }
 @keyframes float { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-8px) } }
 
+/* DARK (default) — black canvas, glowing emerald accent */
 :root {
   --radius: 1rem;
-  --background: oklch(0.16 0.02 220);
+  --background: oklch(0.08 0 0);
   --foreground: oklch(0.98 0.005 100);
-  --card: oklch(0.21 0.025 220);
+  --card: oklch(0.12 0.01 165);
   --card-foreground: oklch(0.98 0.005 100);
-  --popover: oklch(0.21 0.025 220);
+  --popover: oklch(0.12 0.01 165);
   --popover-foreground: oklch(0.98 0.005 100);
-  --primary: oklch(0.74 0.16 165);
-  --primary-foreground: oklch(0.16 0.02 220);
-  --secondary: oklch(0.27 0.03 220);
+  --primary: oklch(0.78 0.20 160);
+  --primary-foreground: oklch(0.08 0 0);
+  --secondary: oklch(0.18 0.02 165);
   --secondary-foreground: oklch(0.98 0.005 100);
-  --muted: oklch(0.24 0.025 220);
-  --muted-foreground: oklch(0.68 0.02 220);
-  --accent: oklch(0.82 0.14 85);
-  --accent-foreground: oklch(0.16 0.02 220);
+  --muted: oklch(0.16 0.015 165);
+  --muted-foreground: oklch(0.7 0.03 165);
+  --accent: oklch(0.86 0.18 145);
+  --accent-foreground: oklch(0.08 0 0);
   --destructive: oklch(0.65 0.22 25);
   --destructive-foreground: oklch(0.98 0.005 100);
-  --border: oklch(1 0 0 / 10%);
+  --border: oklch(0.78 0.20 160 / 18%);
   --input: oklch(1 0 0 / 12%);
-  --ring: oklch(0.74 0.16 165);
+  --ring: oklch(0.78 0.20 160);
   --gold: oklch(0.82 0.14 85);
-  --emerald: oklch(0.74 0.16 165);
+  --emerald: oklch(0.78 0.20 160);
   --ocean: oklch(0.55 0.14 220);
 
-  --gradient-hero: linear-gradient(135deg, oklch(0.16 0.02 220 / 0.85) 0%, oklch(0.16 0.02 220 / 0.4) 50%, oklch(0.16 0.02 220 / 0.95) 100%);
-  --gradient-emerald: linear-gradient(135deg, var(--emerald), oklch(0.65 0.18 200));
+  --gradient-hero: linear-gradient(135deg, oklch(0.08 0 0 / 0.9) 0%, oklch(0.08 0 0 / 0.35) 50%, oklch(0.08 0 0 / 0.95) 100%);
+  --gradient-emerald: linear-gradient(135deg, var(--emerald), oklch(0.88 0.20 145));
   --gradient-gold: linear-gradient(135deg, var(--gold), oklch(0.72 0.16 50));
-  --shadow-glow: 0 20px 60px -20px color-mix(in oklab, var(--emerald) 40%, transparent);
-  --shadow-card: 0 10px 40px -10px oklch(0 0 0 / 0.5);
-  --glass-bg: oklch(1 0 0 / 0.06);
-  --glass-border: oklch(1 0 0 / 0.12);
+  --shadow-glow: 0 20px 60px -20px color-mix(in oklab, var(--emerald) 55%, transparent);
+  --shadow-card: 0 10px 40px -10px oklch(0 0 0 / 0.65);
+  --glass-bg: oklch(0.78 0.20 160 / 0.06);
+  --glass-border: oklch(0.78 0.20 160 / 0.18);
+  --glass-strong-bg: oklch(0.1 0.01 165 / 0.78);
+}
+
+/* LIGHT — premium ivory canvas, deep emerald accent */
+.light {
+  --background: oklch(0.985 0.005 145);
+  --foreground: oklch(0.16 0.02 165);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.16 0.02 165);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.16 0.02 165);
+  --primary: oklch(0.55 0.16 160);
+  --primary-foreground: oklch(0.99 0.005 145);
+  --secondary: oklch(0.94 0.02 145);
+  --secondary-foreground: oklch(0.16 0.02 165);
+  --muted: oklch(0.95 0.015 145);
+  --muted-foreground: oklch(0.45 0.03 165);
+  --accent: oklch(0.62 0.18 150);
+  --accent-foreground: oklch(0.99 0.005 145);
+  --destructive: oklch(0.6 0.22 25);
+  --destructive-foreground: oklch(0.99 0.005 145);
+  --border: oklch(0.55 0.16 160 / 18%);
+  --input: oklch(0.16 0.02 165 / 10%);
+  --ring: oklch(0.55 0.16 160);
+  --emerald: oklch(0.55 0.16 160);
+
+  --gradient-hero: linear-gradient(135deg, oklch(0.985 0.005 145 / 0.5) 0%, transparent 50%, oklch(0.985 0.005 145 / 0.95) 100%);
+  --shadow-glow: 0 20px 60px -20px color-mix(in oklab, var(--emerald) 35%, transparent);
+  --shadow-card: 0 10px 40px -15px oklch(0.16 0.02 165 / 0.18);
+  --glass-bg: oklch(1 0 0 / 0.65);
+  --glass-border: oklch(0.55 0.16 160 / 0.18);
+  --glass-strong-bg: oklch(1 0 0 / 0.85);
 }
 
 @layer base {
   * { border-color: var(--color-border); }
-  html, body { background-color: var(--color-background); color: var(--color-foreground); -webkit-font-smoothing: antialiased; }
+  html, body { background-color: var(--color-background); color: var(--color-foreground); -webkit-font-smoothing: antialiased; transition: background-color 0.4s ease, color 0.4s ease; }
   body { font-family: ui-sans-serif, system-ui, -apple-system, "SF Pro Display", "Inter", sans-serif; }
 }
 
@@ -98,7 +131,7 @@
   border: 1px solid var(--glass-border);
 }
 @utility glass-strong {
-  background: oklch(0.18 0.02 220 / 0.7);
+  background: var(--glass-strong-bg);
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
   border: 1px solid var(--glass-border);
