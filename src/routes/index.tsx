@@ -7,8 +7,9 @@ import { useStore } from "@/lib/store";
 import { ListingCard } from "@/components/ListingCard";
 import { GoogleMapView } from "@/components/GoogleMapView";
 import { ListingDrawer } from "@/components/ListingDrawer";
-import { CITIES } from "@/data/listings";
 import type { Listing } from "@/data/listings";
+import { CitySelect } from "@/components/CitySelect";
+import { PopularPlaces } from "@/components/PopularPlaces";
 import hero from "@/assets/hero-srilanka.jpg";
 
 export const Route = createFileRoute("/")({
@@ -22,12 +23,12 @@ export const Route = createFileRoute("/")({
 });
 
 type View = "map" | "grid";
-type Filter = "all" | "vehicle" | "stay";
+type Filter = "stay" | "vehicle";
 
 function ExplorePage() {
   const { listings } = useStore();
   const [view, setView] = useState<View>("map");
-  const [filter, setFilter] = useState<Filter>("all");
+  const [filter, setFilter] = useState<Filter>("stay");
   const [city, setCity] = useState<string>("all");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<Listing | null>(null);
@@ -39,7 +40,7 @@ function ExplorePage() {
   const scale = useTransform(scrollYProgress, [0, 1], [1, 1.15]);
 
   const filtered = useMemo(() => listings.filter(l => {
-    if (filter !== "all" && l.type !== filter) return false;
+    if (l.type !== filter) return false;
     if (city !== "all" && l.city !== city) return false;
     if (query && !`${l.title} ${l.city} ${l.category}`.toLowerCase().includes(query.toLowerCase())) return false;
     return true;
@@ -93,25 +94,29 @@ function ExplorePage() {
           </div>
         </div>
 
+        {/* Category tabs */}
+        <div className="mt-8 flex justify-center">
+          <div className="inline-flex rounded-full glass p-1">
+            {([["stay","AirBNB Stays",Home],["vehicle","Vehicles & Rentals",Car]] as [Filter,string,typeof Car][]).map(([v,l,Icon]) => (
+              <button
+                key={v}
+                onClick={() => setFilter(v)}
+                className={`relative flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition ${filter === v ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+              >
+                {filter === v && <motion.span layoutId="cat-pill" className="absolute inset-0 rounded-full bg-primary shadow-[var(--shadow-glow)]" transition={{ type: "spring", damping: 24, stiffness: 260 }} />}
+                <span className="relative flex items-center gap-2"><Icon className="h-4 w-4" /> {l}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Filters */}
         <div className="mt-6 flex flex-col gap-3 md:flex-row md:items-center">
           <div className="flex items-center gap-2 rounded-full glass px-4 py-2 flex-1 max-w-md">
             <Search className="h-4 w-4 text-muted-foreground" />
             <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search villas, tuk-tuks, cities…" className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground" />
           </div>
-          <div className="flex flex-wrap gap-2">
-            {([["all","All"],["vehicle","Vehicles"],["stay","Stays"]] as [Filter,string][]).map(([v,l]) => (
-              <button key={v} onClick={() => setFilter(v)} className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-medium transition ${filter === v ? "bg-primary text-primary-foreground" : "glass text-muted-foreground hover:text-foreground"}`}>
-                {v === "vehicle" && <Car className="h-3.5 w-3.5" />}
-                {v === "stay" && <Home className="h-3.5 w-3.5" />}
-                {l}
-              </button>
-            ))}
-            <select value={city} onChange={e => setCity(e.target.value)} className="rounded-full glass px-4 py-2 text-xs font-medium outline-none">
-              <option value="all">All cities</option>
-              {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
-            </select>
-          </div>
+          <CitySelect value={city} onChange={setCity} className="md:w-64" />
         </div>
 
         {/* View */}
