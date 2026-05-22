@@ -1,8 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { Map as MapIcon, LayoutGrid, Search, Sparkles, ArrowRight, Car, Home, ShieldCheck, Headphones, BadgeDollarSign, Users, Compass, Heart, Star, Quote, Mountain, Waves, Trees, Building2 } from "lucide-react";
-import sigiriya from "@/assets/hero-srilanka.jpg";
 import { useStore } from "@/lib/store";
 import { ListingCard } from "@/components/ListingCard";
 import { GoogleMapView } from "@/components/GoogleMapView";
@@ -10,9 +9,16 @@ import { ListingDrawer } from "@/components/ListingDrawer";
 import type { Listing } from "@/data/listings";
 import { CitySelect } from "@/components/CitySelect";
 import { PopularPlaces } from "@/components/PopularPlaces";
+import { PLACES } from "@/data/places";
 import hero from "@/assets/hero-srilanka.jpg";
 
+type IndexSearch = { filter?: "stay" | "vehicle"; city?: string };
+
 export const Route = createFileRoute("/")({
+  validateSearch: (search: Record<string, unknown>): IndexSearch => ({
+    filter: search.filter === "vehicle" || search.filter === "stay" ? search.filter : undefined,
+    city: typeof search.city === "string" ? search.city : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Explore Sri Lanka — Takaz" },
@@ -21,6 +27,7 @@ export const Route = createFileRoute("/")({
   }),
   component: ExplorePage,
 });
+
 
 type View = "map" | "grid";
 type Filter = "stay" | "vehicle";
