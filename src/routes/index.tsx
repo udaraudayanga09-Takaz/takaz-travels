@@ -34,11 +34,23 @@ type Filter = "stay" | "vehicle";
 
 function ExplorePage() {
   const { listings } = useStore();
+  const search = Route.useSearch();
   const [view, setView] = useState<View>("map");
-  const [filter, setFilter] = useState<Filter>("stay");
-  const [city, setCity] = useState<string>("all");
-  const [query, setQuery] = useState("");
+  const [filter, setFilter] = useState<Filter>(search.filter ?? "stay");
+  const [city, setCity] = useState<string>(search.city ?? "all");
+  const [query, setQuery] = useState(search.city ?? "");
   const [selected, setSelected] = useState<Listing | null>(null);
+
+  // React to incoming search params (e.g. arriving from a place page or "View stays")
+  useEffect(() => {
+    if (search.filter) setFilter(search.filter);
+    if (search.city) {
+      setCity(search.city);
+      setQuery(search.city);
+      setView("grid");
+    }
+  }, [search.filter, search.city]);
+
 
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
