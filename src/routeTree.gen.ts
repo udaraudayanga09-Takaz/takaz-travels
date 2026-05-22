@@ -19,6 +19,7 @@ import { Route as BookingsRouteImport } from './routes/bookings'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProviderNewRouteImport } from './routes/provider.new'
+import { Route as PlacesSlugRouteImport } from './routes/places.$slug'
 
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
   id: '/verify-email',
@@ -70,6 +71,11 @@ const ProviderNewRoute = ProviderNewRouteImport.update({
   path: '/new',
   getParentRoute: () => ProviderRoute,
 } as any)
+const PlacesSlugRoute = PlacesSlugRouteImport.update({
+  id: '/places/$slug',
+  path: '/places/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -81,6 +87,7 @@ export interface FileRoutesByFullPath {
   '/plan': typeof PlanRoute
   '/provider': typeof ProviderRouteWithChildren
   '/verify-email': typeof VerifyEmailRoute
+  '/places/$slug': typeof PlacesSlugRoute
   '/provider/new': typeof ProviderNewRoute
 }
 export interface FileRoutesByTo {
@@ -93,6 +100,7 @@ export interface FileRoutesByTo {
   '/plan': typeof PlanRoute
   '/provider': typeof ProviderRouteWithChildren
   '/verify-email': typeof VerifyEmailRoute
+  '/places/$slug': typeof PlacesSlugRoute
   '/provider/new': typeof ProviderNewRoute
 }
 export interface FileRoutesById {
@@ -106,6 +114,7 @@ export interface FileRoutesById {
   '/plan': typeof PlanRoute
   '/provider': typeof ProviderRouteWithChildren
   '/verify-email': typeof VerifyEmailRoute
+  '/places/$slug': typeof PlacesSlugRoute
   '/provider/new': typeof ProviderNewRoute
 }
 export interface FileRouteTypes {
@@ -120,6 +129,7 @@ export interface FileRouteTypes {
     | '/plan'
     | '/provider'
     | '/verify-email'
+    | '/places/$slug'
     | '/provider/new'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -132,6 +142,7 @@ export interface FileRouteTypes {
     | '/plan'
     | '/provider'
     | '/verify-email'
+    | '/places/$slug'
     | '/provider/new'
   id:
     | '__root__'
@@ -144,6 +155,7 @@ export interface FileRouteTypes {
     | '/plan'
     | '/provider'
     | '/verify-email'
+    | '/places/$slug'
     | '/provider/new'
   fileRoutesById: FileRoutesById
 }
@@ -157,6 +169,7 @@ export interface RootRouteChildren {
   PlanRoute: typeof PlanRoute
   ProviderRoute: typeof ProviderRouteWithChildren
   VerifyEmailRoute: typeof VerifyEmailRoute
+  PlacesSlugRoute: typeof PlacesSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -231,6 +244,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProviderNewRouteImport
       parentRoute: typeof ProviderRoute
     }
+    '/places/$slug': {
+      id: '/places/$slug'
+      path: '/places/$slug'
+      fullPath: '/places/$slug'
+      preLoaderRoute: typeof PlacesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -256,7 +276,18 @@ const rootRouteChildren: RootRouteChildren = {
   PlanRoute: PlanRoute,
   ProviderRoute: ProviderRouteWithChildren,
   VerifyEmailRoute: VerifyEmailRoute,
+  PlacesSlugRoute: PlacesSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
