@@ -43,7 +43,8 @@ function loadJSON<T>(key: string): T[] {
 }
 
 function PlacePage() {
-  const { place } = Route.useLoaderData();
+  const { place } = Route.useLoaderData() as { place: Place };
+
 
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [memories, setMemories] = useState<Memory[]>([]);
