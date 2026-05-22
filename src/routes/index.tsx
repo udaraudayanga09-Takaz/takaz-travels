@@ -1,8 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { Map as MapIcon, LayoutGrid, Search, Sparkles, ArrowRight, Car, Home, ShieldCheck, Headphones, BadgeDollarSign, Users, Compass, Heart, Star, Quote, Mountain, Waves, Trees, Building2 } from "lucide-react";
-import sigiriya from "@/assets/hero-srilanka.jpg";
 import { useStore } from "@/lib/store";
 import { ListingCard } from "@/components/ListingCard";
 import { GoogleMapView } from "@/components/GoogleMapView";
@@ -10,9 +9,16 @@ import { ListingDrawer } from "@/components/ListingDrawer";
 import type { Listing } from "@/data/listings";
 import { CitySelect } from "@/components/CitySelect";
 import { PopularPlaces } from "@/components/PopularPlaces";
+import { PLACES } from "@/data/places";
 import hero from "@/assets/hero-srilanka.jpg";
 
+type IndexSearch = { filter?: "stay" | "vehicle"; city?: string };
+
 export const Route = createFileRoute("/")({
+  validateSearch: (search: Record<string, unknown>): IndexSearch => ({
+    filter: search.filter === "vehicle" || search.filter === "stay" ? search.filter : undefined,
+    city: typeof search.city === "string" ? search.city : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Explore Sri Lanka — Takaz" },
@@ -22,16 +28,29 @@ export const Route = createFileRoute("/")({
   component: ExplorePage,
 });
 
+
 type View = "map" | "grid";
 type Filter = "stay" | "vehicle";
 
 function ExplorePage() {
   const { listings } = useStore();
+  const search = Route.useSearch();
   const [view, setView] = useState<View>("map");
-  const [filter, setFilter] = useState<Filter>("stay");
-  const [city, setCity] = useState<string>("all");
-  const [query, setQuery] = useState("");
+  const [filter, setFilter] = useState<Filter>(search.filter ?? "stay");
+  const [city, setCity] = useState<string>(search.city ?? "all");
+  const [query, setQuery] = useState(search.city ?? "");
   const [selected, setSelected] = useState<Listing | null>(null);
+
+  // React to incoming search params (e.g. arriving from a place page or "View stays")
+  useEffect(() => {
+    if (search.filter) setFilter(search.filter);
+    if (search.city) {
+      setCity(search.city);
+      setQuery(search.city);
+      setView("grid");
+    }
+  }, [search.filter, search.city]);
+
 
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
@@ -220,29 +239,36 @@ function ExplorePage() {
 
         <div className="mt-10 grid gap-5 md:grid-cols-2">
           {[
-            { icon: Mountain, name: "Sigiriya — The Lion Rock", img: sigiriya, best: "January – March", note: "5th-century palace fortress rising 200m from the jungle floor. UNESCO heritage. Climb at sunrise to beat the heat and the crowds; pair with the Pidurangala viewpoint just across the plain.", tags: ["UNESCO", "Sunrise hike", "Wildlife"] },
-            { icon: Trees, name: "Ella — Cloud-forest hill country", img: sigiriya, best: "January – March", note: "Misty mountain village famous for the Nine Arches Bridge, the Little Adam's Peak hike, and endless blue-green tea plantations. Take the Kandy → Ella train — one of the most scenic rides on Earth.", tags: ["Tea country", "Train journey", "Hiking"] },
-            { icon: Waves, name: "Galle — 17th-century Dutch fort", img: sigiriya, best: "November – April", note: "A walled coastal town of cobbled lanes, boutique cafés, art galleries and stilt fishermen. The southern beaches (Unawatuna, Mirissa, Weligama) are a 30-minute tuk-tuk away — perfect for surfing and whale-watching.", tags: ["Beaches", "Surfing", "History"] },
-            { icon: Building2, name: "Kandy — Sacred hill capital", img: sigiriya, best: "January – April & July – September", note: "Home to the Temple of the Tooth Relic and gateway to the central highlands. Catch the Esala Perahera if you're lucky enough to visit in August — one of Asia's grandest cultural processions.", tags: ["Temples", "Culture", "Botanical gardens"] },
+            { icon: Mountain, slug: "sigiriya", name: "Sigiriya — The Lion Rock", img: PLACES.sigiriya.hero, best: "January – March", note: "5th-century palace fortress rising 200m from the jungle floor. UNESCO heritage. Climb at sunrise to beat the heat and the crowds; pair with the Pidurangala viewpoint just across the plain.", tags: ["UNESCO", "Sunrise hike", "Wildlife"] },
+            { icon: Trees, slug: "ella", name: "Ella — Cloud-forest hill country", img: PLACES.ella.hero, best: "January – March", note: "Misty mountain village famous for the Nine Arches Bridge, the Little Adam's Peak hike, and endless blue-green tea plantations. Take the Kandy → Ella train — one of the most scenic rides on Earth.", tags: ["Tea country", "Train journey", "Hiking"] },
+            { icon: Waves, slug: "galle", name: "Galle — 17th-century Dutch fort", img: PLACES.galle.hero, best: "November – April", note: "A walled coastal town of cobbled lanes, boutique cafés, art galleries and stilt fishermen. The southern beaches (Unawatuna, Mirissa, Weligama) are a 30-minute tuk-tuk away — perfect for surfing and whale-watching.", tags: ["Beaches", "Surfing", "History"] },
+            { icon: Building2, slug: "kandy", name: "Kandy — Sacred hill capital", img: PLACES.kandy.hero, best: "January – April & July – September", note: "Home to the Temple of the Tooth Relic and gateway to the central highlands. Catch the Esala Perahera if you're lucky enough to visit in August — one of Asia's grandest cultural processions.", tags: ["Temples", "Culture", "Botanical gardens"] },
           ].map((d, i) => (
+
             <motion.article key={d.name} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }} className="group overflow-hidden rounded-3xl glass">
-              <div className="relative aspect-[16/9] overflow-hidden">
-                <img src={d.img} alt={d.name} className="h-full w-full object-cover transition duration-700 group-hover:scale-105" />
-                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
-                <div className="absolute bottom-4 left-4 right-4 flex items-center gap-2">
-                  <div className="grid h-9 w-9 place-items-center rounded-lg glass-strong text-primary"><d.icon className="h-4 w-4" /></div>
-                  <h3 className="text-xl font-semibold">{d.name}</h3>
+              <Link to="/places/$slug" params={{ slug: d.slug }} className="block">
+                <div className="relative aspect-[16/9] overflow-hidden">
+                  <img src={d.img} alt={d.name} loading="lazy" className="h-full w-full object-cover transition duration-700 group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
+                  <div className="absolute bottom-4 left-4 right-4 flex items-center gap-2">
+                    <div className="grid h-9 w-9 place-items-center rounded-lg glass-strong text-primary"><d.icon className="h-4 w-4" /></div>
+                    <h3 className="text-xl font-semibold">{d.name}</h3>
+                  </div>
                 </div>
-              </div>
-              <div className="p-5">
-                <div className="text-xs uppercase tracking-widest text-accent">Best time to visit</div>
-                <div className="text-sm font-medium">{d.best}</div>
-                <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{d.note}</p>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {d.tags.map(t => <span key={t} className="rounded-full bg-secondary/40 px-2.5 py-1 text-[10px] uppercase tracking-wide">{t}</span>)}
+                <div className="p-5">
+                  <div className="text-xs uppercase tracking-widest text-accent">Best time to visit</div>
+                  <div className="text-sm font-medium">{d.best}</div>
+                  <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{d.note}</p>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {d.tags.map(t => <span key={t} className="rounded-full bg-secondary/40 px-2.5 py-1 text-[10px] uppercase tracking-wide">{t}</span>)}
+                  </div>
+                  <div className="mt-4 inline-flex items-center gap-1.5 text-xs font-medium text-primary">
+                    Explore {d.name.split(" — ")[0]} <ArrowRight className="h-3 w-3" />
+                  </div>
                 </div>
-              </div>
+              </Link>
             </motion.article>
+
           ))}
         </div>
       </section>
