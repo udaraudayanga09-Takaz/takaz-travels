@@ -2,7 +2,8 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { motion } from "framer-motion";
 import { MapPin, Calendar, ArrowLeft, ArrowRight, Sparkles, Upload, Image as ImageIcon, PenLine, Heart, Trash2 } from "lucide-react";
-import { PLACES } from "@/data/places";
+import { PLACES, type Place } from "@/data/places";
+
 
 type Blog = { id: string; author: string; title: string; body: string; created_at: number };
 type Memory = { id: string; author: string; caption: string; data_url: string; created_at: number };
