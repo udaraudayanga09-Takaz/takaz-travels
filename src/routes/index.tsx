@@ -246,23 +246,29 @@ function ExplorePage() {
           ].map((d, i) => (
 
             <motion.article key={d.name} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }} className="group overflow-hidden rounded-3xl glass">
-              <div className="relative aspect-[16/9] overflow-hidden">
-                <img src={d.img} alt={d.name} className="h-full w-full object-cover transition duration-700 group-hover:scale-105" />
-                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
-                <div className="absolute bottom-4 left-4 right-4 flex items-center gap-2">
-                  <div className="grid h-9 w-9 place-items-center rounded-lg glass-strong text-primary"><d.icon className="h-4 w-4" /></div>
-                  <h3 className="text-xl font-semibold">{d.name}</h3>
+              <Link to="/places/$slug" params={{ slug: d.slug }} className="block">
+                <div className="relative aspect-[16/9] overflow-hidden">
+                  <img src={d.img} alt={d.name} loading="lazy" className="h-full w-full object-cover transition duration-700 group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
+                  <div className="absolute bottom-4 left-4 right-4 flex items-center gap-2">
+                    <div className="grid h-9 w-9 place-items-center rounded-lg glass-strong text-primary"><d.icon className="h-4 w-4" /></div>
+                    <h3 className="text-xl font-semibold">{d.name}</h3>
+                  </div>
                 </div>
-              </div>
-              <div className="p-5">
-                <div className="text-xs uppercase tracking-widest text-accent">Best time to visit</div>
-                <div className="text-sm font-medium">{d.best}</div>
-                <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{d.note}</p>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {d.tags.map(t => <span key={t} className="rounded-full bg-secondary/40 px-2.5 py-1 text-[10px] uppercase tracking-wide">{t}</span>)}
+                <div className="p-5">
+                  <div className="text-xs uppercase tracking-widest text-accent">Best time to visit</div>
+                  <div className="text-sm font-medium">{d.best}</div>
+                  <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{d.note}</p>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {d.tags.map(t => <span key={t} className="rounded-full bg-secondary/40 px-2.5 py-1 text-[10px] uppercase tracking-wide">{t}</span>)}
+                  </div>
+                  <div className="mt-4 inline-flex items-center gap-1.5 text-xs font-medium text-primary">
+                    Explore {d.name.split(" — ")[0]} <ArrowRight className="h-3 w-3" />
+                  </div>
                 </div>
-              </div>
+              </Link>
             </motion.article>
+
           ))}
         </div>
       </section>
