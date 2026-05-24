@@ -176,6 +176,54 @@ export type Database = {
         }
         Relationships: []
       }
+      travel_blogs: {
+        Row: {
+          author_name: string
+          body: string
+          cover_url: string | null
+          created_at: string
+          id: string
+          instagram_url: string | null
+          place_slug: string | null
+          title: string
+          twitter_url: string | null
+          updated_at: string
+          user_id: string
+          website_url: string | null
+          youtube_url: string | null
+        }
+        Insert: {
+          author_name: string
+          body: string
+          cover_url?: string | null
+          created_at?: string
+          id?: string
+          instagram_url?: string | null
+          place_slug?: string | null
+          title: string
+          twitter_url?: string | null
+          updated_at?: string
+          user_id: string
+          website_url?: string | null
+          youtube_url?: string | null
+        }
+        Update: {
+          author_name?: string
+          body?: string
+          cover_url?: string | null
+          created_at?: string
+          id?: string
+          instagram_url?: string | null
+          place_slug?: string | null
+          title?: string
+          twitter_url?: string | null
+          updated_at?: string
+          user_id?: string
+          website_url?: string | null
+          youtube_url?: string | null
+        }
+        Relationships: []
+      }
       trip_plans: {
         Row: {
           contact_email: string
