@@ -18,6 +18,7 @@ import { Route as JoinUsRouteImport } from './routes/join-us'
 import { Route as BookingsRouteImport } from './routes/bookings'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PlacesIndexRouteImport } from './routes/places.index'
 import { Route as ProviderNewRouteImport } from './routes/provider.new'
 import { Route as PlacesSlugRouteImport } from './routes/places.$slug'
 
@@ -66,6 +67,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PlacesIndexRoute = PlacesIndexRouteImport.update({
+  id: '/places/',
+  path: '/places/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProviderNewRoute = ProviderNewRouteImport.update({
   id: '/new',
   path: '/new',
@@ -89,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/verify-email': typeof VerifyEmailRoute
   '/places/$slug': typeof PlacesSlugRoute
   '/provider/new': typeof ProviderNewRoute
+  '/places/': typeof PlacesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -102,6 +109,7 @@ export interface FileRoutesByTo {
   '/verify-email': typeof VerifyEmailRoute
   '/places/$slug': typeof PlacesSlugRoute
   '/provider/new': typeof ProviderNewRoute
+  '/places': typeof PlacesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -116,6 +124,7 @@ export interface FileRoutesById {
   '/verify-email': typeof VerifyEmailRoute
   '/places/$slug': typeof PlacesSlugRoute
   '/provider/new': typeof ProviderNewRoute
+  '/places/': typeof PlacesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -131,6 +140,7 @@ export interface FileRouteTypes {
     | '/verify-email'
     | '/places/$slug'
     | '/provider/new'
+    | '/places/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -144,6 +154,7 @@ export interface FileRouteTypes {
     | '/verify-email'
     | '/places/$slug'
     | '/provider/new'
+    | '/places'
   id:
     | '__root__'
     | '/'
@@ -157,6 +168,7 @@ export interface FileRouteTypes {
     | '/verify-email'
     | '/places/$slug'
     | '/provider/new'
+    | '/places/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -170,6 +182,7 @@ export interface RootRouteChildren {
   ProviderRoute: typeof ProviderRouteWithChildren
   VerifyEmailRoute: typeof VerifyEmailRoute
   PlacesSlugRoute: typeof PlacesSlugRoute
+  PlacesIndexRoute: typeof PlacesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -237,6 +250,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/places/': {
+      id: '/places/'
+      path: '/places'
+      fullPath: '/places/'
+      preLoaderRoute: typeof PlacesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/provider/new': {
       id: '/provider/new'
       path: '/new'
@@ -277,6 +297,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProviderRoute: ProviderRouteWithChildren,
   VerifyEmailRoute: VerifyEmailRoute,
   PlacesSlugRoute: PlacesSlugRoute,
+  PlacesIndexRoute: PlacesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

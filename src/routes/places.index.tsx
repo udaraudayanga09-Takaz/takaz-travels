@@ -1,0 +1,95 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { motion } from "framer-motion";
+import { MapPin, ArrowRight, Sparkles, Calendar } from "lucide-react";
+import { PLACE_LIST } from "@/data/places";
+
+export const Route = createFileRoute("/places/")({
+  head: () => ({
+    meta: [
+      { title: "All places to visit in Sri Lanka — Takaz" },
+      { name: "description", content: "Every destination in our Sri Lanka guide — coast, hill country, cultural triangle and hidden gems. Pick one to explore stays, rides and traveller blogs." },
+      { property: "og:title", content: "All places to visit in Sri Lanka — Takaz" },
+      { property: "og:description", content: "Browse every Sri Lankan destination Takaz covers with traveller summaries and stays." },
+    ],
+  }),
+  component: AllPlaces,
+});
+
+function AllPlaces() {
+  return (
+    <div className="mx-auto max-w-7xl px-5 py-16 md:py-24">
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="max-w-2xl"
+      >
+        <span className="inline-flex items-center gap-2 rounded-full glass px-3 py-1.5 text-xs">
+          <Sparkles className="h-3.5 w-3.5 text-accent" /> Destinations directory
+        </span>
+        <h1 className="mt-3 text-4xl md:text-6xl font-semibold tracking-tight text-foreground">
+          Every place we love in <span className="text-gradient">Sri Lanka</span>
+        </h1>
+        <p className="mt-4 text-muted-foreground text-base md:text-lg">
+          Coast, cloud-forest, ancient wonder and quiet hideaway — tap any destination to see things to do, where to stay and stories from other travellers.
+        </p>
+      </motion.div>
+
+      <div className="mt-12 grid gap-5 md:gap-6">
+        {PLACE_LIST.map((p, i) => (
+          <motion.article
+            key={p.slug}
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ delay: i * 0.04, duration: 0.5 }}
+            className="group grid gap-5 md:grid-cols-[280px_1fr] md:gap-7 rounded-3xl glass p-4 md:p-5 hover:border-primary/40 transition"
+          >
+            <Link to="/places/$slug" params={{ slug: p.slug }} className="relative block aspect-[4/3] md:aspect-square overflow-hidden rounded-2xl">
+              <img
+                src={p.hero}
+                alt={p.caption}
+                loading="lazy"
+                className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+              <span className="absolute bottom-3 left-3 rounded-full bg-black/70 backdrop-blur px-2.5 py-1 text-[10px] uppercase tracking-widest text-white">
+                #{i + 1}
+              </span>
+            </Link>
+
+            <div className="flex flex-col justify-center">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <MapPin className="h-3.5 w-3.5 text-accent" /> {p.region}
+              </div>
+              <h2 className="mt-2 text-2xl md:text-3xl font-semibold tracking-tight text-foreground">{p.name}</h2>
+              <p className="mt-2 text-sm md:text-base text-muted-foreground leading-relaxed">{p.summary}</p>
+
+              <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
+                <Calendar className="h-3.5 w-3.5" /> Best time: <span className="text-foreground">{p.bestTime}</span>
+              </div>
+
+              <div className="mt-5 flex flex-wrap items-center gap-2">
+                <Link
+                  to="/places/$slug"
+                  params={{ slug: p.slug }}
+                  className="group/btn inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition hover:scale-[1.02]"
+                >
+                  Explore {p.name}
+                  <ArrowRight className="h-4 w-4 transition group-hover/btn:translate-x-0.5" />
+                </Link>
+                <Link
+                  to="/"
+                  search={{ filter: "stay", city: p.searchCity }}
+                  hash="explore"
+                  className="inline-flex items-center gap-2 rounded-full glass px-5 py-2.5 text-sm font-medium text-foreground"
+                >
+                  View stays
+                </Link>
+              </div>
+            </div>
+          </motion.article>
+        ))}
+      </div>
+    </div>
+  );
+}
