@@ -78,6 +78,7 @@ function RootComponent() {
             <div className="min-h-screen pb-24 md:pb-0">
               <TopBar />
               <Outlet />
+              <SiteFooter />
               <MobileTabBar />
               {/* WhatsApp floating button */}
   
