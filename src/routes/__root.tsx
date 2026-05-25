@@ -5,7 +5,7 @@ import appCss from "../styles.css?url";
 import { StoreProvider } from "@/lib/store";
 import { AuthProvider } from "@/lib/auth";
 import { ThemeProvider } from "@/lib/theme";
-import { TopBar, MobileTabBar } from "@/components/Nav";
+import { TopBar, MobileTabBar, SiteFooter } from "@/components/Nav";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
