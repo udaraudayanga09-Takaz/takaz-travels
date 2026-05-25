@@ -76,11 +76,11 @@ function RootComponent() {
         <AuthProvider>
           <StoreProvider>
             <div className="min-h-screen pb-24 md:pb-0">
-              <TopBar />
-              <Outlet />
-              <SiteFooter />
-              <MobileTabBar />
-              {/* WhatsApp floating button */}
+  <TopBar />
+  <Outlet />
+  <SiteFooter />
+  <MobileTabBar />
+  {/* WhatsApp floating button */}
   
     href="https://wa.me/94712724435"
     target="_blank"
