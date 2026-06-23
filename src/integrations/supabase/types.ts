@@ -62,6 +62,39 @@ export type Database = {
         }
         Relationships: []
       }
+      map_pins: {
+        Row: {
+          blurb: string | null
+          created_at: string
+          cx: number
+          cy: number
+          id: string
+          image_url: string | null
+          name: string
+          slug: string
+        }
+        Insert: {
+          blurb?: string | null
+          created_at?: string
+          cx: number
+          cy: number
+          id?: string
+          image_url?: string | null
+          name: string
+          slug: string
+        }
+        Update: {
+          blurb?: string | null
+          created_at?: string
+          cx?: number
+          cy?: number
+          id?: string
+          image_url?: string | null
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
       partner_applications: {
         Row: {
           created_at: string
@@ -116,6 +149,27 @@ export type Database = {
           status?: string
           updated_at?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      place_likes: {
+        Row: {
+          created_at: string
+          id: string
+          place_slug: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          place_slug: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          place_slug?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -260,6 +314,57 @@ export type Database = {
           regions?: Json
           start_date?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      user_places: {
+        Row: {
+          body: string | null
+          cover_url: string | null
+          created_at: string
+          created_by: string
+          cx: number | null
+          cy: number | null
+          id: string
+          likes_count: number
+          name: string
+          region: string | null
+          slug: string
+          status: string
+          summary: string | null
+          updated_at: string
+        }
+        Insert: {
+          body?: string | null
+          cover_url?: string | null
+          created_at?: string
+          created_by: string
+          cx?: number | null
+          cy?: number | null
+          id?: string
+          likes_count?: number
+          name: string
+          region?: string | null
+          slug: string
+          status?: string
+          summary?: string | null
+          updated_at?: string
+        }
+        Update: {
+          body?: string | null
+          cover_url?: string | null
+          created_at?: string
+          created_by?: string
+          cx?: number | null
+          cy?: number | null
+          id?: string
+          likes_count?: number
+          name?: string
+          region?: string | null
+          slug?: string
+          status?: string
+          summary?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
