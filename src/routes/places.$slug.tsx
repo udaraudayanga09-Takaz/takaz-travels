@@ -1,8 +1,11 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { motion } from "framer-motion";
-import { MapPin, Calendar, ArrowLeft, ArrowRight, Sparkles, Upload, Image as ImageIcon, PenLine, Heart, Trash2 } from "lucide-react";
+import { MapPin, Calendar, ArrowLeft, ArrowRight, Sparkles, Upload, Image as ImageIcon, PenLine, Heart, Trash2, Plus } from "lucide-react";
 import { PLACES, type Place } from "@/data/places";
+import { REGIONS } from "@/components/SriLankaMap";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth";
 
 
 type Blog = { id: string; author: string; title: string; body: string; created_at: number };
@@ -44,15 +47,64 @@ function loadJSON<T>(key: string): T[] {
 
 function PlacePage() {
   const { place } = Route.useLoaderData() as { place: Place };
-
+  const { user } = useAuth();
 
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [memories, setMemories] = useState<Memory[]>([]);
+
+  // Likes
+  const [likes, setLikes] = useState(0);
+  const [liked, setLiked] = useState(false);
+
+  // Nearby community places (top 3 closest approved)
+  const [nearbyCommunity, setNearbyCommunity] = useState<Array<{ id: string; slug: string; name: string; cover_url: string | null; region: string | null; likes_count: number; cx: number | null; cy: number | null }>>([]);
 
   useEffect(() => {
     setBlogs(loadJSON<Blog>(BLOG_KEY(place.slug)));
     setMemories(loadJSON<Memory>(MEM_KEY(place.slug)));
   }, [place.slug]);
+
+  // Load like count + my like state + community places near this one
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      const { count } = await supabase.from("place_likes").select("id", { count: "exact", head: true }).eq("place_slug", place.slug);
+      if (active) setLikes(count ?? 0);
+      if (user) {
+        const { data } = await supabase.from("place_likes").select("id").eq("place_slug", place.slug).eq("user_id", user.id).maybeSingle();
+        if (active) setLiked(!!data);
+      } else {
+        setLiked(false);
+      }
+      const region = REGIONS.find(r => r.id === place.slug);
+      const { data: comm } = await supabase.from("user_places").select("id, slug, name, cover_url, region, likes_count, cx, cy").eq("status", "approved").order("likes_count", { ascending: false }).limit(30);
+      if (active && region && comm) {
+        const ranked = comm
+          .map((p: any) => {
+            const dx = (Number(p.cx) || 50) - region.cx;
+            const dy = (Number(p.cy) || 50) - region.cy;
+            return { p, d: Math.sqrt(dx * dx + dy * dy) };
+          })
+          .sort((a, b) => a.d - b.d)
+          .slice(0, 4)
+          .map(x => x.p);
+        setNearbyCommunity(ranked);
+      }
+    })();
+    return () => { active = false; };
+  }, [place.slug, user?.id]);
+
+  async function toggleLike() {
+    if (!user) { window.location.href = "/login"; return; }
+    const has = liked;
+    setLiked(!has);
+    setLikes(l => l + (has ? -1 : 1));
+    if (has) {
+      await supabase.from("place_likes").delete().eq("user_id", user.id).eq("place_slug", place.slug);
+    } else {
+      await supabase.from("place_likes").insert({ user_id: user.id, place_slug: place.slug });
+    }
+  }
 
   // Blog form
   const [bAuthor, setBAuthor] = useState("");
@@ -153,6 +205,13 @@ function PlacePage() {
           >
             Find a ride
           </Link>
+          <button
+            onClick={toggleLike}
+            className={`inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-medium transition hover:scale-[1.02] ${liked ? "bg-rose-500 text-white" : "glass"}`}
+            aria-label={liked ? "Unlike" : "Like this place"}
+          >
+            <Heart className={`h-4 w-4 ${liked ? "fill-current" : ""}`} /> {likes} {likes === 1 ? "like" : "likes"}
+          </button>
         </div>
       </section>
 
@@ -262,6 +321,41 @@ function PlacePage() {
           ))}
         </div>
       </section>
+
+      {/* NEARBY & POPULAR COMMUNITY */}
+      {nearbyCommunity.length > 0 && (
+        <section className="mx-auto max-w-7xl px-5 pb-20">
+          <div className="flex items-end justify-between gap-4 flex-wrap">
+            <div>
+              <span className="inline-flex items-center gap-2 rounded-full glass px-3 py-1.5 text-xs">
+                <MapPin className="h-3.5 w-3.5 text-accent" /> Nearby & popular
+              </span>
+              <h2 className="mt-3 text-2xl md:text-3xl font-semibold tracking-tight">Community picks near {place.name}</h2>
+            </div>
+            <Link to="/places/submit" className="inline-flex items-center gap-1.5 rounded-full glass px-4 py-2 text-xs font-medium hover:bg-secondary/40 transition">
+              <Plus className="h-3.5 w-3.5" /> Add a place
+            </Link>
+          </div>
+          <div className="mt-6 grid gap-4 grid-cols-2 md:grid-cols-4">
+            {nearbyCommunity.map(p => (
+              <div key={p.id} className="group relative overflow-hidden rounded-2xl glass">
+                <div className="aspect-[4/5] overflow-hidden bg-secondary/40">
+                  {p.cover_url
+                    ? <img src={p.cover_url} alt={p.name} className="h-full w-full object-cover transition duration-700 group-hover:scale-110" />
+                    : <div className="grid h-full place-items-center text-muted-foreground"><MapPin className="h-6 w-6" /></div>}
+                </div>
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-3 text-white">
+                  <div className="text-sm font-semibold">{p.name}</div>
+                  {p.region && <div className="text-[10px] opacity-80">{p.region}</div>}
+                </div>
+                <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-black/50 px-2 py-0.5 text-[10px] text-white">
+                  <Heart className="h-3 w-3 fill-rose-400 text-rose-400" /> {p.likes_count}
+                </span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* OTHER PLACES */}
       <section className="mx-auto max-w-7xl px-5 pb-24">

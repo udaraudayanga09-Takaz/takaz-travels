@@ -1,47 +1,62 @@
-# Takaz Platform Overhaul Plan
+## Goal
 
-A large, multi-area upgrade. I'll execute it in 6 phases matching your blueprint.
+Add a community "submit a place" flow with likes, show user memories under each place, link to nearby/popular places, swap the trip planner map background to the uploaded satellite image of Sri Lanka with precisely positioned pins, and let admins add new pinned locations from the admin page.
 
-## 1. Rebrand → "Takaz" + Theme Toggle
-- Copy uploaded `TT_LOGO.png` to `src/assets/takaz-logo.png`.
-- Global find/replace of "LuxeLanka" and "Takaz Travels" → "Takaz" across routes, Nav, footer, meta tags, `__root.tsx` head, README-style strings.
-- Replace text/SVG logos in `Nav.tsx`, admin shell, partner pages, footer with the green logo on a black chip (logo's native bg).
-- Add light theme tokens in `src/styles.css` (currently only dark). Wrap with `:root` (dark default) + `.light` overrides keeping the glowing-green accent palette.
-- Build `ThemeToggle.tsx` (sun/moon icon, framer-motion crossfade). Place top-right of `TopBar`. Persist choice in `localStorage`, toggle `.light` class on `<html>`.
+## 1. Database (single migration)
 
-## 2. `/verify-email` Route
-- New route `src/routes/verify-email.tsx`: glassmorphic card, animated SVG envelope-with-glow, 6-digit OTP input (shadcn `InputOTP`), 60s countdown "Resend link" button.
-- Wired to Supabase `auth.verifyOtp` and `auth.resend`. Linked from signup success.
+New tables:
 
-## 3. Home Page Architecture
-- Tabbed marketplace grid: `[AirBNB Stays] | [Vehicles & Rentals]` using shadcn `Tabs`, filtering `LISTINGS` by `type`.
-- New `CitySelect.tsx`: scrollable shadcn `Select` with all 130+ Sri Lankan cities sorted A→Z (dedupe duplicates from your list like "Balapitiya", "Seeduwa"). Replaces current 4-city chip filter on home + listings filter.
-- Update `Listing.city` type from union to `string`.
+- `user_places` — community submissions
+  - `id uuid pk`, `created_by uuid` (auth.users), `name text`, `slug text unique`, `region text`, `summary text`, `body text`, `cover_url text`, `lat numeric`, `lng numeric`, `cx numeric`, `cy numeric` (map %), `status text default 'pending'` (`pending`/`approved`/`rejected`), `likes_count int default 0`, `created_at`, `updated_at`
+- `place_likes` — one row per user per place
+  - `id`, `place_slug text` (covers both built-in and user_places), `user_id uuid`, unique(`place_slug`, `user_id`), `created_at`
+- `map_pins` — admin-managed pins shown on the Sri Lanka map
+  - `id`, `name`, `slug`, `cx numeric`, `cy numeric`, `blurb text`, `image_url text`, `created_at`
 
-## 4. TripAdvisor Ranked Rows
-- New `PopularPlaces.tsx`: 2 Airbnb-style horizontal sliders ("Top Stays in Sri Lanka", "Hidden Gems") inserted below Google Map on home.
-- Each card has a "Ranked by TripAdvisor" badge.
-- Stubbed `fetchTripAdvisorRankings()` function with commented-out fetch to TripAdvisor Content API + cron note. Ranking falls back to a static curated list seeded from booking volume.
+RLS:
+- `user_places`: anyone can `SELECT` where `status='approved'`; creator can SELECT own; authenticated can INSERT own; admins can UPDATE/DELETE.
+- `place_likes`: authenticated can INSERT/DELETE own; anyone can SELECT counts.
+- `map_pins`: anyone SELECT; only admins INSERT/UPDATE/DELETE.
 
-## 5. Admin Verification Queue
-- Extend `/admin` (rename internally to "Verification Queue") with split-pane layout: list left, full-detail inspector right.
-- Inspector shows ALL `partner_applications` fields: legal name, email/phone, NIC document (image preview from `partner-documents` bucket via signed URL), service type, coordinates with mini static map, notes, timestamps.
-- Approve → updates `status='approved'` + pushes listing live (sets a `published=true` flag — needs migration to add the column to `partner_applications`).
-- Reject → updates `status='rejected'` + records reason; notification dispatch stubbed (Supabase row → frontend toast on partner dashboard).
+Trigger: maintain `user_places.likes_count` from `place_likes` insert/delete.
 
-## 6. Planner Terrain Map
-- Replace abstract SVG canvas in `SriLankaMap.tsx` with a real terrain map: generate a high-res topographic illustration of Sri Lanka via image gen, place as background image, keep existing reactive pin coordinates layered on top.
+Storage bucket: reuse `blog-covers` for cover images.
 
-## Technical Details
-- **DB migration**: add `published boolean default false` and `reject_reason text` to `partner_applications`.
-- **Styles**: introduce `.light` variant tokens, theme-aware glass utilities.
-- **Type changes**: `Listing.city: string` (loosen); update all usages.
-- **No new packages required** (uses existing shadcn, framer-motion).
-- **Auth**: email verification uses existing Supabase auth — no auto-confirm change needed.
+## 2. New routes
 
-## Out of scope / assumptions
-- TripAdvisor API requires partner credentials — left as a documented stub with sample data. Ask if you'd like me to wire a real key now.
-- Notification dispatch on reject = in-app only (no email). Confirm if you want SendGrid/Resend.
-- Light-mode color refinement may need a follow-up pass once you see it live.
+- `/places/submit` — authenticated form: name, region, summary, body, cover upload, click-on-map to set `cx/cy`. POSTs to `user_places` (status=pending).
+- `/places/community` — public list of approved community places sorted by `likes_count desc`, with like button.
+- Extend `/places/$slug` to:
+  - Show "Travellers' memories" section: blogs from `travel_blogs` where `place_slug = slug`.
+  - Show "Nearby & popular" section: 3 closest built-in places (by cx/cy distance) + top-liked community places.
+  - Add like button (writes to `place_likes`).
 
-Approve and I'll ship phases 1→6 in order.
+## 3. Admin
+
+In `/admin`, add a "Map pins" tab:
+- List existing `map_pins` + built-in `REGIONS`.
+- Form to add a pin: name, slug, blurb, image upload, click on the same Sri Lanka map to set `cx/cy`.
+- Approve/reject queue for `user_places`.
+
+## 4. Sri Lanka map upgrade
+
+- Save the uploaded satellite image to `src/assets/sri-lanka-satellite.jpg`.
+- Update `SriLankaMap.tsx`:
+  - Swap background to the new image.
+  - Recalibrate existing `REGIONS` `cx/cy` to match real coordinates on the new image (Colombo ~24/68, Kandy ~38/55, Galle ~30/86, Ella ~46/68, Sigiriya ~40/40, Jaffna ~32/8, plus new pins from `map_pins` fetched live).
+  - On hover: scale-up the pin, zoom the map slightly toward the hovered point (CSS transform-origin), show enlarged popup with the place's image + name + blurb.
+  - On click: navigate to `/places/$slug`.
+
+## 5. Wire-up
+
+- `PopularPlaces` cards already deep-link — add a small "♥ count" badge from `place_likes`.
+- Home + plan page consume same `SriLankaMap` so the new background + admin pins appear everywhere.
+
+## Technical notes
+
+- Likes use optimistic UI; unauth users get redirected to `/login`.
+- Distance calculation uses simple Euclidean on `cx/cy` percentages — good enough for "nearby".
+- All new tables get `auth.uid()`-based RLS; admin checks use existing `has_role(auth.uid(),'admin')`.
+- The new map image is large; downscale to ~1200px wide JPG to keep load fast.
+
+Approve to proceed?

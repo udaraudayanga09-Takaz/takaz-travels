@@ -81,7 +81,7 @@ function RootComponent() {
   <SiteFooter />
   <MobileTabBar />
   {/* WhatsApp floating button */}
-  
+  <a
     href="https://wa.me/94712724435"
     target="_blank"
     rel="noopener noreferrer"

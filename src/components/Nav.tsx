@@ -65,7 +65,7 @@ export function SiteFooter() {
           <span className="text-xs mt-1">SLTDA Licensed · #SLTDA-2841</span>
         </div>
         <div className="flex flex-col items-center gap-2">
-          
+          <a
             href="https://wa.me/94712724435"
             target="_blank"
             rel="noopener noreferrer"
@@ -76,7 +76,7 @@ export function SiteFooter() {
             </svg>
             +94 71 272 4435
           </a>
-          
+          <a
             href="mailto:takaz20034@gmail.com"
             className="flex items-center gap-2 hover:text-foreground transition"
           >

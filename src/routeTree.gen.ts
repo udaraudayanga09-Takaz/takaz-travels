@@ -20,6 +20,8 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PlacesIndexRouteImport } from './routes/places.index'
 import { Route as ProviderNewRouteImport } from './routes/provider.new'
+import { Route as PlacesSubmitRouteImport } from './routes/places.submit'
+import { Route as PlacesCommunityRouteImport } from './routes/places.community'
 import { Route as PlacesSlugRouteImport } from './routes/places.$slug'
 
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
@@ -77,6 +79,16 @@ const ProviderNewRoute = ProviderNewRouteImport.update({
   path: '/new',
   getParentRoute: () => ProviderRoute,
 } as any)
+const PlacesSubmitRoute = PlacesSubmitRouteImport.update({
+  id: '/places/submit',
+  path: '/places/submit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlacesCommunityRoute = PlacesCommunityRouteImport.update({
+  id: '/places/community',
+  path: '/places/community',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PlacesSlugRoute = PlacesSlugRouteImport.update({
   id: '/places/$slug',
   path: '/places/$slug',
@@ -94,6 +106,8 @@ export interface FileRoutesByFullPath {
   '/provider': typeof ProviderRouteWithChildren
   '/verify-email': typeof VerifyEmailRoute
   '/places/$slug': typeof PlacesSlugRoute
+  '/places/community': typeof PlacesCommunityRoute
+  '/places/submit': typeof PlacesSubmitRoute
   '/provider/new': typeof ProviderNewRoute
   '/places/': typeof PlacesIndexRoute
 }
@@ -108,6 +122,8 @@ export interface FileRoutesByTo {
   '/provider': typeof ProviderRouteWithChildren
   '/verify-email': typeof VerifyEmailRoute
   '/places/$slug': typeof PlacesSlugRoute
+  '/places/community': typeof PlacesCommunityRoute
+  '/places/submit': typeof PlacesSubmitRoute
   '/provider/new': typeof ProviderNewRoute
   '/places': typeof PlacesIndexRoute
 }
@@ -123,6 +139,8 @@ export interface FileRoutesById {
   '/provider': typeof ProviderRouteWithChildren
   '/verify-email': typeof VerifyEmailRoute
   '/places/$slug': typeof PlacesSlugRoute
+  '/places/community': typeof PlacesCommunityRoute
+  '/places/submit': typeof PlacesSubmitRoute
   '/provider/new': typeof ProviderNewRoute
   '/places/': typeof PlacesIndexRoute
 }
@@ -139,6 +157,8 @@ export interface FileRouteTypes {
     | '/provider'
     | '/verify-email'
     | '/places/$slug'
+    | '/places/community'
+    | '/places/submit'
     | '/provider/new'
     | '/places/'
   fileRoutesByTo: FileRoutesByTo
@@ -153,6 +173,8 @@ export interface FileRouteTypes {
     | '/provider'
     | '/verify-email'
     | '/places/$slug'
+    | '/places/community'
+    | '/places/submit'
     | '/provider/new'
     | '/places'
   id:
@@ -167,6 +189,8 @@ export interface FileRouteTypes {
     | '/provider'
     | '/verify-email'
     | '/places/$slug'
+    | '/places/community'
+    | '/places/submit'
     | '/provider/new'
     | '/places/'
   fileRoutesById: FileRoutesById
@@ -182,6 +206,8 @@ export interface RootRouteChildren {
   ProviderRoute: typeof ProviderRouteWithChildren
   VerifyEmailRoute: typeof VerifyEmailRoute
   PlacesSlugRoute: typeof PlacesSlugRoute
+  PlacesCommunityRoute: typeof PlacesCommunityRoute
+  PlacesSubmitRoute: typeof PlacesSubmitRoute
   PlacesIndexRoute: typeof PlacesIndexRoute
 }
 
@@ -264,6 +290,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProviderNewRouteImport
       parentRoute: typeof ProviderRoute
     }
+    '/places/submit': {
+      id: '/places/submit'
+      path: '/places/submit'
+      fullPath: '/places/submit'
+      preLoaderRoute: typeof PlacesSubmitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/places/community': {
+      id: '/places/community'
+      path: '/places/community'
+      fullPath: '/places/community'
+      preLoaderRoute: typeof PlacesCommunityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/places/$slug': {
       id: '/places/$slug'
       path: '/places/$slug'
@@ -297,18 +337,10 @@ const rootRouteChildren: RootRouteChildren = {
   ProviderRoute: ProviderRouteWithChildren,
   VerifyEmailRoute: VerifyEmailRoute,
   PlacesSlugRoute: PlacesSlugRoute,
+  PlacesCommunityRoute: PlacesCommunityRoute,
+  PlacesSubmitRoute: PlacesSubmitRoute,
   PlacesIndexRoute: PlacesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
