@@ -5,7 +5,7 @@ import { Map as MapIcon, LayoutGrid, Search, Sparkles, ArrowRight, Car, Home, Sh
 import { useStore } from "@/lib/store";
 import { ListingCard } from "@/components/ListingCard";
 import { GoogleMapView } from "@/components/GoogleMapView";
-import { ListingDrawer } from "@/components/ListingDrawer";
+import { BookingModal } from "@/components/BookingModal";
 import type { Listing } from "@/data/listings";
 import { CitySelect } from "@/components/CitySelect";
 import { PopularPlaces } from "@/components/PopularPlaces";
@@ -288,7 +288,7 @@ function ExplorePage() {
         </div>
       </section>
 
-      <ListingDrawer listing={selected} onClose={() => setSelected(null)} />
+      <BookingModal listing={selected} onClose={() => setSelected(null)} />
     </div>
   );
 }

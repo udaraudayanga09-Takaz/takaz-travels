@@ -179,21 +179,33 @@ export type Database = {
           created_at: string
           full_name: string | null
           id: string
+          idp_url: string | null
+          licence_verified: boolean
+          passport_url: string | null
           updated_at: string
+          verified_tourist: boolean
         }
         Insert: {
           avatar_url?: string | null
           created_at?: string
           full_name?: string | null
           id: string
+          idp_url?: string | null
+          licence_verified?: boolean
+          passport_url?: string | null
           updated_at?: string
+          verified_tourist?: boolean
         }
         Update: {
           avatar_url?: string | null
           created_at?: string
           full_name?: string | null
           id?: string
+          idp_url?: string | null
+          licence_verified?: boolean
+          passport_url?: string | null
           updated_at?: string
+          verified_tourist?: boolean
         }
         Relationships: []
       }
