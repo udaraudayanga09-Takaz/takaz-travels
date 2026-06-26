@@ -288,7 +288,7 @@ function ExplorePage() {
         </div>
       </section>
 
-      <ListingDrawer listing={selected} onClose={() => setSelected(null)} />
+      <BookingModal listing={selected} onClose={() => setSelected(null)} />
     </div>
   );
 }
