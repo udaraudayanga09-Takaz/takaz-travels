@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VerifyEmailRouteImport } from './routes/verify-email'
+import { Route as VerifyRouteImport } from './routes/verify'
 import { Route as ProviderRouteImport } from './routes/provider'
 import { Route as PlanRouteImport } from './routes/plan'
 import { Route as MemoriesRouteImport } from './routes/memories'
@@ -27,6 +28,11 @@ import { Route as PlacesSlugRouteImport } from './routes/places.$slug'
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
   id: '/verify-email',
   path: '/verify-email',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerifyRoute = VerifyRouteImport.update({
+  id: '/verify',
+  path: '/verify',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProviderRoute = ProviderRouteImport.update({
@@ -104,6 +110,7 @@ export interface FileRoutesByFullPath {
   '/memories': typeof MemoriesRoute
   '/plan': typeof PlanRoute
   '/provider': typeof ProviderRouteWithChildren
+  '/verify': typeof VerifyRoute
   '/verify-email': typeof VerifyEmailRoute
   '/places/$slug': typeof PlacesSlugRoute
   '/places/community': typeof PlacesCommunityRoute
@@ -120,6 +127,7 @@ export interface FileRoutesByTo {
   '/memories': typeof MemoriesRoute
   '/plan': typeof PlanRoute
   '/provider': typeof ProviderRouteWithChildren
+  '/verify': typeof VerifyRoute
   '/verify-email': typeof VerifyEmailRoute
   '/places/$slug': typeof PlacesSlugRoute
   '/places/community': typeof PlacesCommunityRoute
@@ -137,6 +145,7 @@ export interface FileRoutesById {
   '/memories': typeof MemoriesRoute
   '/plan': typeof PlanRoute
   '/provider': typeof ProviderRouteWithChildren
+  '/verify': typeof VerifyRoute
   '/verify-email': typeof VerifyEmailRoute
   '/places/$slug': typeof PlacesSlugRoute
   '/places/community': typeof PlacesCommunityRoute
@@ -155,6 +164,7 @@ export interface FileRouteTypes {
     | '/memories'
     | '/plan'
     | '/provider'
+    | '/verify'
     | '/verify-email'
     | '/places/$slug'
     | '/places/community'
@@ -171,6 +181,7 @@ export interface FileRouteTypes {
     | '/memories'
     | '/plan'
     | '/provider'
+    | '/verify'
     | '/verify-email'
     | '/places/$slug'
     | '/places/community'
@@ -187,6 +198,7 @@ export interface FileRouteTypes {
     | '/memories'
     | '/plan'
     | '/provider'
+    | '/verify'
     | '/verify-email'
     | '/places/$slug'
     | '/places/community'
@@ -204,6 +216,7 @@ export interface RootRouteChildren {
   MemoriesRoute: typeof MemoriesRoute
   PlanRoute: typeof PlanRoute
   ProviderRoute: typeof ProviderRouteWithChildren
+  VerifyRoute: typeof VerifyRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
   PlacesSlugRoute: typeof PlacesSlugRoute
   PlacesCommunityRoute: typeof PlacesCommunityRoute
@@ -218,6 +231,13 @@ declare module '@tanstack/react-router' {
       path: '/verify-email'
       fullPath: '/verify-email'
       preLoaderRoute: typeof VerifyEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verify': {
+      id: '/verify'
+      path: '/verify'
+      fullPath: '/verify'
+      preLoaderRoute: typeof VerifyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/provider': {
@@ -335,6 +355,7 @@ const rootRouteChildren: RootRouteChildren = {
   MemoriesRoute: MemoriesRoute,
   PlanRoute: PlanRoute,
   ProviderRoute: ProviderRouteWithChildren,
+  VerifyRoute: VerifyRoute,
   VerifyEmailRoute: VerifyEmailRoute,
   PlacesSlugRoute: PlacesSlugRoute,
   PlacesCommunityRoute: PlacesCommunityRoute,
