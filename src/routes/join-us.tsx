@@ -97,7 +97,7 @@ function LoginForm() {
 
 function RegisterForm() {
   const { user } = useAuth();
-  const [step, setStep] = useState<"account" | "details" | "done">(user ? "details" : "account");
+  const [step, setStep] = useState<"account" | "details" | "done" | "wizard">(user ? "details" : "account");
   const [email, setEmail] = useState(user?.email ?? "");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -177,12 +177,19 @@ function RegisterForm() {
     } finally { setBusy(false); }
   }
 
+  if (step === "wizard") {
+    return <ListingWizard />;
+  }
+
   if (step === "done") {
     return (
-      <div className="grid place-items-center text-center py-10">
+      <div className="grid place-items-center text-center py-10 space-y-4">
         <CheckCircle2 className="h-12 w-12 text-primary" />
-        <h3 className="mt-3 text-xl font-semibold">Application received</h3>
-        <p className="mt-2 text-sm text-muted-foreground max-w-sm">Our team reviews new partners within 48 hours. We'll email <strong>{email}</strong> when you're approved.</p>
+        <h3 className="text-xl font-semibold">Application received</h3>
+        <p className="text-sm text-muted-foreground max-w-sm">Our team reviews new partners within 48 hours. We'll email <strong>{email}</strong> when you're approved.</p>
+        <button onClick={() => setStep("wizard")} className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground">
+          <ListPlus className="h-4 w-4" /> List your first service
+        </button>
       </div>
     );
   }
