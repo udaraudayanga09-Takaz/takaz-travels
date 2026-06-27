@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
+import { ReviewsSection } from "@/components/ReviewsSection";
 
 const SERVICE_FEE_RATE = 0.12;
 
@@ -216,6 +217,8 @@ export function BookingModal({ listing, onClose }: { listing: Listing | null; on
                       <p className="text-center text-xs text-muted-foreground">You won't be charged yet. The host has 24 hours to confirm.</p>
                     </>
                   )}
+
+                  <ReviewsSection listingId={listing.id} />
                 </div>
               </>
             )}
