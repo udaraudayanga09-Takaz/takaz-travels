@@ -1,8 +1,11 @@
 import { motion } from "framer-motion";
 import { Star, MapPin, Shield } from "lucide-react";
 import type { Listing } from "@/data/listings";
+import { statFor, useListingStats } from "@/lib/useListingStats";
 
 export function ListingCard({ listing, onClick, index = 0 }: { listing: Listing; onClick: () => void; index?: number }) {
+  const stats = useListingStats();
+  const s = statFor(stats, listing.id, listing.rating, listing.reviews);
   return (
     <motion.button
       onClick={onClick}
@@ -38,7 +41,7 @@ export function ListingCard({ listing, onClick, index = 0 }: { listing: Listing;
           <h3 className="font-semibold leading-tight">{listing.title}</h3>
           <span className="flex shrink-0 items-center gap-1 text-xs">
             <Star className="h-3.5 w-3.5 fill-accent text-accent" />
-            {listing.rating || "New"}
+            {s.count > 0 ? <>{s.avg.toFixed(1)} <span className="text-muted-foreground">({s.count})</span></> : "New"}
           </span>
         </div>
         <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
