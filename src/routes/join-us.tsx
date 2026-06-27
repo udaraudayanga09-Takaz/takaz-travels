@@ -1,11 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Handshake, Car, Home as HomeIcon, UserCheck, Mail, Phone, MapPin, Upload, Sparkles, CheckCircle2 } from "lucide-react";
+import { Handshake, Car, Home as HomeIcon, UserCheck, Mail, Phone, MapPin, Upload, Sparkles, CheckCircle2, ListPlus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { useServerFn } from "@tanstack/react-start";
 import { submitPartnerApplication } from "@/lib/luxe.functions";
+import { ListingWizard } from "@/components/ListingWizard";
 
 export const Route = createFileRoute("/join-us")({
   head: () => ({
