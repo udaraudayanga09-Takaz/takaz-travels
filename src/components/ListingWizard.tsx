@@ -95,7 +95,7 @@ export function ListingWizard({ onDone }: { onDone?: () => void }) {
           location_label: location || null,
           daily_rate: typeof rate === "number" ? rate : 0,
           photos: photoUrls,
-          details,
+          details: details as any,
           status: "pending_review",
         })
         .select("id")
