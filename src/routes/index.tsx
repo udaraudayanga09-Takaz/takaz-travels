@@ -6,6 +6,7 @@ import { useStore } from "@/lib/store";
 import { ListingCard } from "@/components/ListingCard";
 import { GoogleMapView } from "@/components/GoogleMapView";
 import { BookingModal } from "@/components/BookingModal";
+import { useListingStats, statFor } from "@/lib/useListingStats";
 import type { Listing } from "@/data/listings";
 import { CitySelect } from "@/components/CitySelect";
 import { PopularPlaces } from "@/components/PopularPlaces";
@@ -58,12 +59,16 @@ function ExplorePage() {
   const opacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
   const scale = useTransform(scrollYProgress, [0, 1], [1, 1.15]);
 
-  const filtered = useMemo(() => listings.filter(l => {
-    if (l.type !== filter) return false;
-    if (city !== "all" && l.city !== city) return false;
-    if (query && !`${l.title} ${l.city} ${l.category}`.toLowerCase().includes(query.toLowerCase())) return false;
-    return true;
-  }), [listings, filter, city, query]);
+  const stats = useListingStats();
+  const filtered = useMemo(() => {
+    const out = listings.filter(l => {
+      if (l.type !== filter) return false;
+      if (city !== "all" && l.city !== city) return false;
+      if (query && !`${l.title} ${l.city} ${l.category}`.toLowerCase().includes(query.toLowerCase())) return false;
+      return true;
+    });
+    return out.sort((a, b) => statFor(stats, b.id, b.rating, b.reviews).avg - statFor(stats, a.id, a.rating, a.reviews).avg);
+  }, [listings, filter, city, query, stats]);
 
   return (
     <div>
