@@ -62,6 +62,33 @@ export type Database = {
         }
         Relationships: []
       }
+      listing_reviews: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          listing_id: string
+          rating: number
+          reviewer_id: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          listing_id: string
+          rating: number
+          reviewer_id: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          listing_id?: string
+          rating?: number
+          reviewer_id?: string
+        }
+        Relationships: []
+      }
       map_pins: {
         Row: {
           blurb: string | null
@@ -206,6 +233,93 @@ export type Database = {
           passport_url?: string | null
           updated_at?: string
           verified_tourist?: boolean
+        }
+        Relationships: []
+      }
+      provider_bank_accounts: {
+        Row: {
+          account_holder_enc: string
+          account_last4: string | null
+          account_number_enc: string
+          bank_name_enc: string
+          created_at: string
+          id: string
+          owner_id: string
+          updated_at: string
+        }
+        Insert: {
+          account_holder_enc: string
+          account_last4?: string | null
+          account_number_enc: string
+          bank_name_enc: string
+          created_at?: string
+          id?: string
+          owner_id: string
+          updated_at?: string
+        }
+        Update: {
+          account_holder_enc?: string
+          account_last4?: string | null
+          account_number_enc?: string
+          bank_name_enc?: string
+          created_at?: string
+          id?: string
+          owner_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      provider_listings: {
+        Row: {
+          avg_rating: number
+          city: string | null
+          created_at: string
+          daily_rate: number
+          description: string | null
+          details: Json
+          id: string
+          kind: string
+          location_label: string | null
+          owner_id: string
+          photos: string[]
+          review_count: number
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          avg_rating?: number
+          city?: string | null
+          created_at?: string
+          daily_rate?: number
+          description?: string | null
+          details?: Json
+          id?: string
+          kind: string
+          location_label?: string | null
+          owner_id: string
+          photos?: string[]
+          review_count?: number
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          avg_rating?: number
+          city?: string | null
+          created_at?: string
+          daily_rate?: number
+          description?: string | null
+          details?: Json
+          id?: string
+          kind?: string
+          location_label?: string | null
+          owner_id?: string
+          photos?: string[]
+          review_count?: number
+          status?: string
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -412,6 +526,15 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      upsert_bank_account: {
+        Args: {
+          _account_holder: string
+          _account_number: string
+          _bank_name: string
+          _key: string
+        }
+        Returns: string
       }
     }
     Enums: {
