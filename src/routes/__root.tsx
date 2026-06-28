@@ -80,15 +80,19 @@ function RootComponent() {
   <Outlet />
   <SiteFooter />
   <MobileTabBar />
-  {/* WhatsApp floating button */}
+  {/* WhatsApp floating button — liquid glass */}
   <a
     href="https://wa.me/94712724435"
     target="_blank"
     rel="noopener noreferrer"
-    className="fixed bottom-28 right-5 md:bottom-8 md:right-6 z-50 flex items-center justify-center w-14 h-14 rounded-full shadow-lg bg-[#25D366] hover:bg-[#1ebe57] transition-colors"
+    className="fixed bottom-28 right-5 md:bottom-8 md:right-6 z-50 flex items-center justify-center w-14 h-14 rounded-full border border-white/20 bg-[#25D366]/15 backdrop-blur-xl shadow-[0_8px_32px_-8px_rgba(37,211,102,0.45)] transition-all duration-300 hover:scale-110 hover:bg-[#25D366]/25 hover:shadow-[0_12px_40px_-6px_rgba(37,211,102,0.6)] group"
     aria-label="Chat with us on WhatsApp"
   >
-    <svg viewBox="0 0 32 32" className="w-7 h-7 fill-white" xmlns="http://www.w3.org/2000/svg">
+    {/* glossy liquid highlight */}
+    <span className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-br from-white/30 via-white/5 to-transparent" />
+    {/* bottom refraction sheen */}
+    <span className="pointer-events-none absolute -bottom-1 left-1/2 h-3 w-10 -translate-x-1/2 rounded-full bg-[#25D366]/20 blur-md" />
+    <svg viewBox="0 0 32 32" className="relative z-10 w-7 h-7 fill-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.25)]" xmlns="http://www.w3.org/2000/svg">
       <path d="M16 .5C7.44.5.5 7.44.5 16c0 2.75.72 5.37 2.07 7.67L.5 31.5l8.07-2.04A15.45 15.45 0 0016 31.5C24.56 31.5 31.5 24.56 31.5 16S24.56.5 16 .5zm0 28.3a13.2 13.2 0 01-6.73-1.84l-.48-.29-4.79 1.21 1.25-4.66-.31-.5A13.24 13.24 0 1116 28.8zm7.27-9.88c-.4-.2-2.35-1.16-2.72-1.29-.36-.13-.63-.2-.89.2s-1.02 1.29-1.25 1.56c-.23.26-.46.3-.86.1-.4-.2-1.68-.62-3.2-1.98-1.18-1.05-1.98-2.35-2.21-2.75-.23-.4-.02-.61.17-.81.18-.18.4-.46.6-.69.2-.23.26-.4.4-.66.13-.26.06-.5-.03-.69-.1-.2-.9-2.16-1.23-2.96-.32-.78-.65-.67-.89-.68h-.76c-.26 0-.69.1-1.05.5-.36.4-1.38 1.35-1.38 3.29s1.41 3.82 1.61 4.08c.2.27 2.78 4.25 6.74 5.96.94.4 1.68.65 2.25.83.95.3 1.81.26 2.49.16.76-.11 2.35-.96 2.68-1.89.33-.93.33-1.72.23-1.89-.1-.17-.36-.26-.76-.46z"/>
     </svg>
   </a>
