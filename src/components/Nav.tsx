@@ -1,8 +1,10 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Map, Compass, Heart, Handshake } from "lucide-react";
+import { Map, Compass, Heart, Handshake, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { useAuth } from "@/lib/auth";
+import { useUnreadCount } from "@/lib/messages";
 
 const NAV = [
   { to: "/", label: "Explore", icon: Map },
@@ -11,8 +13,19 @@ const NAV = [
   { to: "/join-us", label: "Partners", icon: Handshake },
 ] as const;
 
+function UnreadBadge({ count, className = "" }: { count: number; className?: string }) {
+  if (count <= 0) return null;
+  return (
+    <span className={`min-w-[18px] h-[18px] inline-flex items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground ${className}`}>
+      {count > 99 ? "99+" : count}
+    </span>
+  );
+}
+
 export function MobileTabBar() {
   const path = useRouterState({ select: s => s.location.pathname });
+  const { user } = useAuth();
+  const unread = useUnreadCount();
   return (
     <nav className="fixed bottom-4 left-1/2 z-30 -translate-x-1/2 md:hidden">
       <div className="flex items-center gap-1 rounded-full glass-strong px-2 py-2 shadow-2xl">
@@ -24,6 +37,19 @@ export function MobileTabBar() {
             </Link>
           );
         })}
+        {user && (
+          <Link
+            to="/messages"
+            className={`relative flex items-center gap-1.5 rounded-full px-3 py-2 text-[11px] font-medium transition ${path === "/messages" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
+          >
+            <MessageCircle className="h-4 w-4" />
+            {unread > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] rounded-full bg-primary px-1 text-[9px] font-bold text-primary-foreground inline-flex items-center justify-center border border-background">
+                {unread > 9 ? "9+" : unread}
+              </span>
+            )}
+          </Link>
+        )}
       </div>
     </nav>
   );
@@ -31,6 +57,8 @@ export function MobileTabBar() {
 
 export function TopBar() {
   const path = useRouterState({ select: s => s.location.pathname });
+  const { user } = useAuth();
+  const unread = useUnreadCount();
   return (
     <header className="sticky top-0 z-30 border-b border-border/40 bg-background/70 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-3">
@@ -47,6 +75,12 @@ export function TopBar() {
           })}
         </nav>
         <div className="flex items-center gap-2">
+          {user && (
+            <Link to="/messages" className="relative rounded-full glass p-2 hover:bg-secondary/40 transition" aria-label="Messages">
+              <MessageCircle className="h-4 w-4" />
+              <UnreadBadge count={unread} className="absolute -top-1 -right-1 border border-background" />
+            </Link>
+          )}
           <ThemeToggle />
           <Link to="/login" className="rounded-full glass px-4 py-2 text-xs font-medium hover:bg-secondary/40 transition">Sign in</Link>
         </div>

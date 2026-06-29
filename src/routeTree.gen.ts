@@ -13,6 +13,7 @@ import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as VerifyRouteImport } from './routes/verify'
 import { Route as ProviderRouteImport } from './routes/provider'
 import { Route as PlanRouteImport } from './routes/plan'
+import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as MemoriesRouteImport } from './routes/memories'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as JoinUsRouteImport } from './routes/join-us'
@@ -43,6 +44,11 @@ const ProviderRoute = ProviderRouteImport.update({
 const PlanRoute = PlanRouteImport.update({
   id: '/plan',
   path: '/plan',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MessagesRoute = MessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MemoriesRoute = MemoriesRouteImport.update({
@@ -108,6 +114,7 @@ export interface FileRoutesByFullPath {
   '/join-us': typeof JoinUsRoute
   '/login': typeof LoginRoute
   '/memories': typeof MemoriesRoute
+  '/messages': typeof MessagesRoute
   '/plan': typeof PlanRoute
   '/provider': typeof ProviderRouteWithChildren
   '/verify': typeof VerifyRoute
@@ -125,6 +132,7 @@ export interface FileRoutesByTo {
   '/join-us': typeof JoinUsRoute
   '/login': typeof LoginRoute
   '/memories': typeof MemoriesRoute
+  '/messages': typeof MessagesRoute
   '/plan': typeof PlanRoute
   '/provider': typeof ProviderRouteWithChildren
   '/verify': typeof VerifyRoute
@@ -143,6 +151,7 @@ export interface FileRoutesById {
   '/join-us': typeof JoinUsRoute
   '/login': typeof LoginRoute
   '/memories': typeof MemoriesRoute
+  '/messages': typeof MessagesRoute
   '/plan': typeof PlanRoute
   '/provider': typeof ProviderRouteWithChildren
   '/verify': typeof VerifyRoute
@@ -162,6 +171,7 @@ export interface FileRouteTypes {
     | '/join-us'
     | '/login'
     | '/memories'
+    | '/messages'
     | '/plan'
     | '/provider'
     | '/verify'
@@ -179,6 +189,7 @@ export interface FileRouteTypes {
     | '/join-us'
     | '/login'
     | '/memories'
+    | '/messages'
     | '/plan'
     | '/provider'
     | '/verify'
@@ -196,6 +207,7 @@ export interface FileRouteTypes {
     | '/join-us'
     | '/login'
     | '/memories'
+    | '/messages'
     | '/plan'
     | '/provider'
     | '/verify'
@@ -214,6 +226,7 @@ export interface RootRouteChildren {
   JoinUsRoute: typeof JoinUsRoute
   LoginRoute: typeof LoginRoute
   MemoriesRoute: typeof MemoriesRoute
+  MessagesRoute: typeof MessagesRoute
   PlanRoute: typeof PlanRoute
   ProviderRoute: typeof ProviderRouteWithChildren
   VerifyRoute: typeof VerifyRoute
@@ -252,6 +265,13 @@ declare module '@tanstack/react-router' {
       path: '/plan'
       fullPath: '/plan'
       preLoaderRoute: typeof PlanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/messages': {
+      id: '/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof MessagesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/memories': {
@@ -353,6 +373,7 @@ const rootRouteChildren: RootRouteChildren = {
   JoinUsRoute: JoinUsRoute,
   LoginRoute: LoginRoute,
   MemoriesRoute: MemoriesRoute,
+  MessagesRoute: MessagesRoute,
   PlanRoute: PlanRoute,
   ProviderRoute: ProviderRouteWithChildren,
   VerifyRoute: VerifyRoute,
