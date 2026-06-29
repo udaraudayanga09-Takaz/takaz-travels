@@ -21,6 +21,7 @@ const SERVICE_FEE_RATE = 0.12;
 
 export function BookingModal({ listing, onClose }: { listing: Listing | null; onClose: () => void }) {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [range, setRange] = useState<DateRange | undefined>(() => {
     const start = new Date();
     const end = new Date(); end.setDate(end.getDate() + 3);
@@ -30,6 +31,9 @@ export function BookingModal({ listing, onClose }: { listing: Listing | null; on
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [licenceVerified, setLicenceVerified] = useState<boolean | null>(null);
+  const [messageOpen, setMessageOpen] = useState(false);
+  const [messageBody, setMessageBody] = useState("");
+  const [sendingMessage, setSendingMessage] = useState(false);
 
   const isSelfDriveVehicle = listing?.type === "vehicle";
 
