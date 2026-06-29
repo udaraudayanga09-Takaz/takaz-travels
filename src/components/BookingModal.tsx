@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
-import { X, Star, MapPin, Shield, Minus, Plus, CheckCircle2, CalendarIcon, AlertTriangle, LogIn } from "lucide-react";
+import { X, Star, MapPin, Shield, Minus, Plus, CheckCircle2, CalendarIcon, AlertTriangle, LogIn, MessageCircle, Send } from "lucide-react";
 import { format, differenceInCalendarDays } from "date-fns";
 import { toast } from "sonner";
 import type { DateRange } from "react-day-picker";
@@ -10,10 +10,12 @@ import type { Listing } from "@/data/listings";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { ReviewsSection } from "@/components/ReviewsSection";
+import { getListingOwnerId, sendMessage } from "@/lib/messages";
 
 const SERVICE_FEE_RATE = 0.12;
 
