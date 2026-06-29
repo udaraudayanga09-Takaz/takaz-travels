@@ -168,6 +168,38 @@ export function BookingModal({ listing, onClose }: { listing: Listing | null; on
                   </div>
                   <p className="text-sm leading-relaxed text-muted-foreground">{listing.description}</p>
 
+                  <div className="rounded-2xl glass p-4 space-y-3">
+                    <button
+                      onClick={() => (user ? setMessageOpen(v => !v) : navigate({ to: "/login" }))}
+                      className="flex w-full items-center justify-between gap-3 text-left"
+                    >
+                      <span className="flex items-center gap-2 text-sm font-medium">
+                        <MessageCircle className="h-4 w-4 text-primary" /> Message {listing.host}
+                      </span>
+                      <span className="text-xs text-muted-foreground">{messageOpen ? "Close" : "Ask a question"}</span>
+                    </button>
+                    {messageOpen && user && (
+                      <div className="space-y-2">
+                        <Textarea
+                          value={messageBody}
+                          onChange={(e) => setMessageBody(e.target.value)}
+                          placeholder={`Hi ${listing.host}, I'm interested in ${listing.title}…`}
+                          rows={3}
+                          maxLength={2000}
+                        />
+                        <button
+                          onClick={handleMessageHost}
+                          disabled={sendingMessage || messageBody.trim().length === 0}
+                          className="flex w-full items-center justify-center gap-2 rounded-full bg-primary py-2.5 text-sm font-medium text-primary-foreground disabled:opacity-50"
+                        >
+                          <Send className="h-4 w-4" /> {sendingMessage ? "Sending…" : "Send message"}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+
+
                   {!user ? (
                     <div className="rounded-2xl glass p-5 text-center space-y-3">
                       <LogIn className="mx-auto h-6 w-6 text-primary" />
