@@ -86,6 +86,29 @@ export function BookingModal({ listing, onClose }: { listing: Listing | null; on
     }
   }
 
+  async function handleMessageHost() {
+    if (!listing) return;
+    if (!user) { navigate({ to: "/login" }); return; }
+    setSendingMessage(true);
+    try {
+      const ownerId = await getListingOwnerId(listing.id);
+      if (!ownerId) {
+        toast.error("This demo listing's host isn't on Takaz yet.");
+        return;
+      }
+      if (ownerId === user.id) { toast.error("That's your own listing."); return; }
+      await sendMessage({ receiverId: ownerId, listingId: listing.id, body: messageBody });
+      toast.success("Message sent to host");
+      setMessageBody("");
+      setMessageOpen(false);
+      navigate({ to: "/messages" });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to send");
+    } finally {
+      setSendingMessage(false);
+    }
+  }
+
   return (
     <AnimatePresence>
       {listing && (
