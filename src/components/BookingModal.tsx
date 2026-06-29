@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
-import { X, Star, MapPin, Shield, Minus, Plus, CheckCircle2, CalendarIcon, AlertTriangle, LogIn } from "lucide-react";
+import { X, Star, MapPin, Shield, Minus, Plus, CheckCircle2, CalendarIcon, AlertTriangle, LogIn, MessageCircle, Send } from "lucide-react";
 import { format, differenceInCalendarDays } from "date-fns";
 import { toast } from "sonner";
 import type { DateRange } from "react-day-picker";
@@ -10,15 +10,18 @@ import type { Listing } from "@/data/listings";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { ReviewsSection } from "@/components/ReviewsSection";
+import { getListingOwnerId, sendMessage } from "@/lib/messages";
 
 const SERVICE_FEE_RATE = 0.12;
 
 export function BookingModal({ listing, onClose }: { listing: Listing | null; onClose: () => void }) {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [range, setRange] = useState<DateRange | undefined>(() => {
     const start = new Date();
     const end = new Date(); end.setDate(end.getDate() + 3);
@@ -28,6 +31,9 @@ export function BookingModal({ listing, onClose }: { listing: Listing | null; on
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [licenceVerified, setLicenceVerified] = useState<boolean | null>(null);
+  const [messageOpen, setMessageOpen] = useState(false);
+  const [messageBody, setMessageBody] = useState("");
+  const [sendingMessage, setSendingMessage] = useState(false);
 
   const isSelfDriveVehicle = listing?.type === "vehicle";
 
@@ -77,6 +83,29 @@ export function BookingModal({ listing, onClose }: { listing: Listing | null; on
       toast.error(e instanceof Error ? e.message : "Booking failed");
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function handleMessageHost() {
+    if (!listing) return;
+    if (!user) { navigate({ to: "/login" }); return; }
+    setSendingMessage(true);
+    try {
+      const ownerId = await getListingOwnerId(listing.id);
+      if (!ownerId) {
+        toast.error("This demo listing's host isn't on Takaz yet.");
+        return;
+      }
+      if (ownerId === user.id) { toast.error("That's your own listing."); return; }
+      await sendMessage({ receiverId: ownerId, listingId: listing.id, body: messageBody });
+      toast.success("Message sent to host");
+      setMessageBody("");
+      setMessageOpen(false);
+      navigate({ to: "/messages" });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to send");
+    } finally {
+      setSendingMessage(false);
     }
   }
 
@@ -138,6 +167,38 @@ export function BookingModal({ listing, onClose }: { listing: Listing | null; on
                     <span className="flex items-center gap-1"><Star className="h-4 w-4 fill-accent text-accent" /> {listing.rating} ({listing.reviews})</span>
                   </div>
                   <p className="text-sm leading-relaxed text-muted-foreground">{listing.description}</p>
+
+                  <div className="rounded-2xl glass p-4 space-y-3">
+                    <button
+                      onClick={() => (user ? setMessageOpen(v => !v) : navigate({ to: "/login" }))}
+                      className="flex w-full items-center justify-between gap-3 text-left"
+                    >
+                      <span className="flex items-center gap-2 text-sm font-medium">
+                        <MessageCircle className="h-4 w-4 text-primary" /> Message {listing.host}
+                      </span>
+                      <span className="text-xs text-muted-foreground">{messageOpen ? "Close" : "Ask a question"}</span>
+                    </button>
+                    {messageOpen && user && (
+                      <div className="space-y-2">
+                        <Textarea
+                          value={messageBody}
+                          onChange={(e) => setMessageBody(e.target.value)}
+                          placeholder={`Hi ${listing.host}, I'm interested in ${listing.title}…`}
+                          rows={3}
+                          maxLength={2000}
+                        />
+                        <button
+                          onClick={handleMessageHost}
+                          disabled={sendingMessage || messageBody.trim().length === 0}
+                          className="flex w-full items-center justify-center gap-2 rounded-full bg-primary py-2.5 text-sm font-medium text-primary-foreground disabled:opacity-50"
+                        >
+                          <Send className="h-4 w-4" /> {sendingMessage ? "Sending…" : "Send message"}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+
 
                   {!user ? (
                     <div className="rounded-2xl glass p-5 text-center space-y-3">
