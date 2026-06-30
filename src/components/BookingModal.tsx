@@ -242,7 +242,9 @@ export function BookingModal({ listing, onClose }: { listing: Listing | null; on
                               selected={range}
                               onSelect={setRange}
                               numberOfMonths={1}
-                              disabled={{ before: new Date() }}
+                              disabled={[{ before: new Date() }, ...unavailable]}
+                              modifiers={{ unavailable }}
+                              modifiersClassNames={{ unavailable: "line-through opacity-40" }}
                               className={cn("p-3 pointer-events-auto")}
                             />
                           </PopoverContent>
