@@ -276,14 +276,19 @@ export function BookingModal({ listing, onClose }: { listing: Listing | null; on
                         </div>
                       </div>
 
+                      {rangeConflict && (
+                        <div className="rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-2.5 text-xs text-destructive">
+                          Your selected range overlaps unavailable dates. Pick a different range.
+                        </div>
+                      )}
                       <button
                         onClick={submit}
-                        disabled={submitting || nights < 1}
+                        disabled={submitting || nights < 1 || rangeConflict}
                         className="w-full rounded-full bg-gradient-to-r from-primary to-[oklch(0.65_0.18_200)] py-3.5 font-medium text-primary-foreground shadow-[var(--shadow-glow)] hover:opacity-95 transition disabled:opacity-50"
                       >
                         {submitting ? "Sending request…" : `Request to book · $${total.toFixed(2)}`}
                       </button>
-                      <p className="text-center text-xs text-muted-foreground">You won't be charged yet. The host has 24 hours to confirm.</p>
+                      <p className="text-center text-xs text-muted-foreground">You won't be charged yet. The host has 24 hours to confirm. Greyed-out dates are already booked or blocked by the host.</p>
                     </>
                   )}
 
