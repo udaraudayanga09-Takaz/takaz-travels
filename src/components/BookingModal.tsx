@@ -62,9 +62,12 @@ export function BookingModal({ listing, onClose }: { listing: Listing | null; on
 
   const blockedBecauseLicence = isSelfDriveVehicle && licenceVerified === false;
 
+  const rangeConflict = !!(range?.from && range?.to && rangeHasUnavailable(range.from, range.to, unavailable));
+
   async function submit() {
     if (!listing || !user || !range?.from || !range?.to) return;
     if (blockedBecauseLicence) return;
+    if (rangeConflict) { toast.error("Some dates in your range are unavailable"); return; }
     setSubmitting(true);
     try {
       const { error } = await supabase.from("bookings").insert({
