@@ -35,6 +35,7 @@ export function BookingModal({ listing, onClose }: { listing: Listing | null; on
   const [messageOpen, setMessageOpen] = useState(false);
   const [messageBody, setMessageBody] = useState("");
   const [sendingMessage, setSendingMessage] = useState(false);
+  const [unavailable, setUnavailable] = useState<Date[]>([]);
 
   const isSelfDriveVehicle = listing?.type === "vehicle";
 
