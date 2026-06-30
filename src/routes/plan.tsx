@@ -17,6 +17,9 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/plan")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    regions: typeof search.regions === "string" ? search.regions : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Plan your Sri Lanka trip — Takaz" },
@@ -27,6 +30,7 @@ export const Route = createFileRoute("/plan")({
   }),
   component: PlanPage,
 });
+
 
 const SERVICE_FEE_RATE = 0.12;
 
