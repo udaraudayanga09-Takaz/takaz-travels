@@ -65,10 +65,11 @@ function PlanPage() {
   // selection — initialize from ?regions=ella,galle
   const [picked, setPicked] = useState<string[]>(() => {
     if (!regionsParam) return [];
-    const ids = regionsParam.split(",").map(s => s.trim()).filter(Boolean);
+    const ids = regionsParam.split(",").map((s: string) => s.trim()).filter(Boolean);
     const valid = new Set(REGIONS.map(r => r.id));
-    return ids.filter(id => valid.has(id));
+    return ids.filter((id: string) => valid.has(id));
   });
+
 
   const [range, setRange] = useState<DateRange | undefined>(() => {
     const start = new Date(); start.setDate(start.getDate() + 7);
