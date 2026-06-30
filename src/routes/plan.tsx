@@ -17,6 +17,9 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/plan")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    regions: typeof search.regions === "string" ? search.regions : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Plan your Sri Lanka trip — Takaz" },
@@ -27,6 +30,7 @@ export const Route = createFileRoute("/plan")({
   }),
   component: PlanPage,
 });
+
 
 const SERVICE_FEE_RATE = 0.12;
 
@@ -54,11 +58,19 @@ function isDb(l: AnyListing): l is DbListing {
 function PlanPage() {
   const { user } = useAuth();
   const { listings: mockListings } = useStore();
+  const { regions: regionsParam } = Route.useSearch();
   const [hovered, setHovered] = useState<string | null>(null);
   const [activeRegion, setActiveRegion] = useState<string | null>(null);
 
-  // selection
-  const [picked, setPicked] = useState<string[]>([]); // region ids
+  // selection — initialize from ?regions=ella,galle
+  const [picked, setPicked] = useState<string[]>(() => {
+    if (!regionsParam) return [];
+    const ids = regionsParam.split(",").map((s: string) => s.trim()).filter(Boolean);
+    const valid = new Set(REGIONS.map(r => r.id));
+    return ids.filter((id: string) => valid.has(id));
+  });
+
+
   const [range, setRange] = useState<DateRange | undefined>(() => {
     const start = new Date(); start.setDate(start.getDate() + 7);
     const end = new Date(); end.setDate(end.getDate() + 10);

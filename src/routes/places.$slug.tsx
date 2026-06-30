@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { motion } from "framer-motion";
-import { MapPin, Calendar, ArrowLeft, ArrowRight, Sparkles, Upload, Image as ImageIcon, PenLine, Heart, Trash2, Plus } from "lucide-react";
+import { MapPin, Calendar, ArrowLeft, ArrowRight, Sparkles, Upload, Image as ImageIcon, PenLine, Heart, Trash2, Plus, Bed, Car, Star, Route as RouteIcon } from "lucide-react";
 import { PLACES, type Place } from "@/data/places";
 import { REGIONS } from "@/components/SriLankaMap";
 import { supabase } from "@/integrations/supabase/client";
@@ -58,6 +58,25 @@ function PlacePage() {
 
   // Nearby community places (top 3 closest approved)
   const [nearbyCommunity, setNearbyCommunity] = useState<Array<{ id: string; slug: string; name: string; cover_url: string | null; region: string | null; likes_count: number; cx: number | null; cy: number | null }>>([]);
+
+  type TopListing = { id: string; title: string; city: string; daily_rate: number; photos: string[] | null; avg_rating: number | null; review_count: number | null };
+  const [topStays, setTopStays] = useState<TopListing[]>([]);
+  const [topVehicles, setTopVehicles] = useState<TopListing[]>([]);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      const [staysRes, vehRes] = await Promise.all([
+        supabase.from("provider_listings").select("id, title, city, daily_rate, photos, avg_rating, review_count").eq("status","approved").eq("kind","stay").ilike("city", `%${place.searchCity}%`).order("avg_rating", { ascending: false }).limit(3),
+        supabase.from("provider_listings").select("id, title, city, daily_rate, photos, avg_rating, review_count").eq("status","approved").eq("kind","vehicle").ilike("city", `%${place.searchCity}%`).order("avg_rating", { ascending: false }).limit(3),
+      ]);
+      if (!active) return;
+      setTopStays((staysRes.data ?? []) as TopListing[]);
+      setTopVehicles((vehRes.data ?? []) as TopListing[]);
+    })();
+    return () => { active = false; };
+  }, [place.searchCity]);
+
 
   useEffect(() => {
     setBlogs(loadJSON<Blog>(BLOG_KEY(place.slug)));
@@ -214,6 +233,102 @@ function PlacePage() {
           </button>
         </div>
       </section>
+
+      {/* TOP STAYS & VEHICLES */}
+      {(topStays.length > 0 || topVehicles.length > 0) && (
+        <section className="mx-auto max-w-7xl px-5 pb-16">
+          {topStays.length > 0 && (
+            <div className="mb-12">
+              <div className="flex items-end justify-between gap-4 flex-wrap">
+                <div>
+                  <span className="inline-flex items-center gap-2 rounded-full glass px-3 py-1.5 text-xs">
+                    <Bed className="h-3.5 w-3.5 text-accent" /> Top-rated stays
+                  </span>
+                  <h2 className="mt-3 text-2xl md:text-4xl font-semibold tracking-tight">Where to stay in {place.name}</h2>
+                </div>
+                <Link to="/" search={{ filter: "stay", city: place.searchCity }} hash="explore" className="inline-flex items-center gap-1.5 rounded-full glass px-4 py-2 text-xs font-medium hover:bg-secondary/40 transition">
+                  View all stays <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+              <div className="mt-6 grid gap-4 md:grid-cols-3">
+                {topStays.map((l, i) => (
+                  <motion.article key={l.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }} className="group overflow-hidden rounded-2xl glass hover:border-primary/40 transition">
+                    <div className="aspect-[4/3] overflow-hidden bg-secondary/40">
+                      {l.photos?.[0]
+                        ? <img src={l.photos[0]} alt={l.title} className="h-full w-full object-cover transition duration-700 group-hover:scale-110" loading="lazy" />
+                        : <div className="grid h-full place-items-center text-muted-foreground"><Bed className="h-6 w-6" /></div>}
+                    </div>
+                    <div className="p-4">
+                      <h3 className="text-base font-semibold line-clamp-1">{l.title}</h3>
+                      <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+                        <MapPin className="h-3 w-3" /> {l.city}
+                        {!!l.avg_rating && <span className="inline-flex items-center gap-1 ml-auto"><Star className="h-3 w-3 fill-accent text-accent" /> {Number(l.avg_rating).toFixed(1)} ({l.review_count ?? 0})</span>}
+                      </div>
+                      <div className="mt-3 text-sm"><span className="text-lg font-semibold">${Number(l.daily_rate).toFixed(0)}</span> <span className="text-muted-foreground">/ night</span></div>
+                    </div>
+                  </motion.article>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {topVehicles.length > 0 && (
+            <div>
+              <div className="flex items-end justify-between gap-4 flex-wrap">
+                <div>
+                  <span className="inline-flex items-center gap-2 rounded-full glass px-3 py-1.5 text-xs">
+                    <Car className="h-3.5 w-3.5 text-accent" /> Available vehicles
+                  </span>
+                  <h2 className="mt-3 text-2xl md:text-4xl font-semibold tracking-tight">Get around {place.name}</h2>
+                </div>
+                <Link to="/" search={{ filter: "vehicle", city: place.searchCity }} hash="explore" className="inline-flex items-center gap-1.5 rounded-full glass px-4 py-2 text-xs font-medium hover:bg-secondary/40 transition">
+                  View all vehicles <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+              <div className="mt-6 grid gap-4 md:grid-cols-3">
+                {topVehicles.map((l, i) => (
+                  <motion.article key={l.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }} className="group overflow-hidden rounded-2xl glass hover:border-primary/40 transition">
+                    <div className="aspect-[4/3] overflow-hidden bg-secondary/40">
+                      {l.photos?.[0]
+                        ? <img src={l.photos[0]} alt={l.title} className="h-full w-full object-cover transition duration-700 group-hover:scale-110" loading="lazy" />
+                        : <div className="grid h-full place-items-center text-muted-foreground"><Car className="h-6 w-6" /></div>}
+                    </div>
+                    <div className="p-4">
+                      <h3 className="text-base font-semibold line-clamp-1">{l.title}</h3>
+                      <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+                        <MapPin className="h-3 w-3" /> {l.city}
+                        {!!l.avg_rating && <span className="inline-flex items-center gap-1 ml-auto"><Star className="h-3 w-3 fill-accent text-accent" /> {Number(l.avg_rating).toFixed(1)} ({l.review_count ?? 0})</span>}
+                      </div>
+                      <div className="mt-3 text-sm"><span className="text-lg font-semibold">${Number(l.daily_rate).toFixed(0)}</span> <span className="text-muted-foreground">/ day</span></div>
+                    </div>
+                  </motion.article>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Plan my trip CTA */}
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mt-14 overflow-hidden rounded-3xl glass-strong relative">
+            <div className="absolute inset-0 opacity-30 pointer-events-none">
+              <img src={place.hero} alt="" className="h-full w-full object-cover" />
+            </div>
+            <div className="relative p-8 md:p-12 flex flex-col md:flex-row md:items-center gap-6 justify-between">
+              <div>
+                <span className="inline-flex items-center gap-2 rounded-full bg-primary/15 text-primary px-3 py-1.5 text-xs font-medium">
+                  <Sparkles className="h-3.5 w-3.5" /> Trip planner
+                </span>
+                <h3 className="mt-3 text-2xl md:text-3xl font-semibold tracking-tight">Build a full {place.name} trip in minutes</h3>
+                <p className="mt-2 max-w-xl text-sm md:text-base text-muted-foreground">Pick dates, add a stay and a vehicle for the region, and book it all in one checkout.</p>
+              </div>
+              <Link to="/plan" search={{ regions: place.slug }} className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow-[var(--shadow-glow)] transition hover:scale-[1.02] shrink-0">
+                <RouteIcon className="h-4 w-4" /> Plan my trip here <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </motion.div>
+        </section>
+      )}
+
+
 
       {/* PLACES TO VISIT */}
       <section className="mx-auto max-w-7xl px-5 pb-20">
