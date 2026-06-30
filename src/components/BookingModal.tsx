@@ -40,8 +40,9 @@ export function BookingModal({ listing, onClose }: { listing: Listing | null; on
   const isSelfDriveVehicle = listing?.type === "vehicle";
 
   useEffect(() => {
-    if (!listing) { setSuccess(false); return; }
+    if (!listing) { setSuccess(false); setUnavailable([]); return; }
     setSuccess(false);
+    fetchUnavailableDates(listing.id).then(setUnavailable).catch(() => setUnavailable([]));
     if (user && isSelfDriveVehicle) {
       supabase.from("profiles").select("licence_verified").eq("id", user.id).maybeSingle()
         .then(({ data }) => setLicenceVerified(Boolean(data?.licence_verified)));
