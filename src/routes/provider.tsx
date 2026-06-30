@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Plus, TrendingUp, Calendar, DollarSign, Star, Shield } from "lucide-react";
 import { useStore } from "@/lib/store";
+import { AvailabilityManager } from "@/components/AvailabilityManager";
 
 export const Route = createFileRoute("/provider")({
   head: () => ({ meta: [{ title: "Host dashboard — Takaz" }, { name: "description", content: "Manage your listings and bookings." }] }),
@@ -74,6 +75,10 @@ function ProviderDashboard() {
             ))}
           </tbody>
         </table>
+      </div>
+
+      <div className="mt-10">
+        <AvailabilityManager />
       </div>
     </div>
   );

@@ -62,6 +62,30 @@ export type Database = {
         }
         Relationships: []
       }
+      listing_blocked_dates: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          listing_id: string
+          owner_id: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          id?: string
+          listing_id: string
+          owner_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          listing_id?: string
+          owner_id?: string
+        }
+        Relationships: []
+      }
       listing_reviews: {
         Row: {
           comment: string | null
@@ -550,6 +574,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_unavailable_dates: {
+        Args: { _listing_id: string }
+        Returns: string[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

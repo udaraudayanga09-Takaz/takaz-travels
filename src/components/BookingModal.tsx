@@ -16,6 +16,7 @@ import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { ReviewsSection } from "@/components/ReviewsSection";
 import { getListingOwnerId, sendMessage } from "@/lib/messages";
+import { fetchUnavailableDates, rangeHasUnavailable } from "@/lib/availability";
 
 const SERVICE_FEE_RATE = 0.12;
 
@@ -34,12 +35,14 @@ export function BookingModal({ listing, onClose }: { listing: Listing | null; on
   const [messageOpen, setMessageOpen] = useState(false);
   const [messageBody, setMessageBody] = useState("");
   const [sendingMessage, setSendingMessage] = useState(false);
+  const [unavailable, setUnavailable] = useState<Date[]>([]);
 
   const isSelfDriveVehicle = listing?.type === "vehicle";
 
   useEffect(() => {
-    if (!listing) { setSuccess(false); return; }
+    if (!listing) { setSuccess(false); setUnavailable([]); return; }
     setSuccess(false);
+    fetchUnavailableDates(listing.id).then(setUnavailable).catch(() => setUnavailable([]));
     if (user && isSelfDriveVehicle) {
       supabase.from("profiles").select("licence_verified").eq("id", user.id).maybeSingle()
         .then(({ data }) => setLicenceVerified(Boolean(data?.licence_verified)));
@@ -59,9 +62,12 @@ export function BookingModal({ listing, onClose }: { listing: Listing | null; on
 
   const blockedBecauseLicence = isSelfDriveVehicle && licenceVerified === false;
 
+  const rangeConflict = !!(range?.from && range?.to && rangeHasUnavailable(range.from, range.to, unavailable));
+
   async function submit() {
     if (!listing || !user || !range?.from || !range?.to) return;
     if (blockedBecauseLicence) return;
+    if (rangeConflict) { toast.error("Some dates in your range are unavailable"); return; }
     setSubmitting(true);
     try {
       const { error } = await supabase.from("bookings").insert({
@@ -236,7 +242,9 @@ export function BookingModal({ listing, onClose }: { listing: Listing | null; on
                               selected={range}
                               onSelect={setRange}
                               numberOfMonths={1}
-                              disabled={{ before: new Date() }}
+                              disabled={[{ before: new Date() }, ...unavailable]}
+                              modifiers={{ unavailable }}
+                              modifiersClassNames={{ unavailable: "line-through opacity-40" }}
                               className={cn("p-3 pointer-events-auto")}
                             />
                           </PopoverContent>
@@ -268,14 +276,19 @@ export function BookingModal({ listing, onClose }: { listing: Listing | null; on
                         </div>
                       </div>
 
+                      {rangeConflict && (
+                        <div className="rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-2.5 text-xs text-destructive">
+                          Your selected range overlaps unavailable dates. Pick a different range.
+                        </div>
+                      )}
                       <button
                         onClick={submit}
-                        disabled={submitting || nights < 1}
+                        disabled={submitting || nights < 1 || rangeConflict}
                         className="w-full rounded-full bg-gradient-to-r from-primary to-[oklch(0.65_0.18_200)] py-3.5 font-medium text-primary-foreground shadow-[var(--shadow-glow)] hover:opacity-95 transition disabled:opacity-50"
                       >
                         {submitting ? "Sending request…" : `Request to book · $${total.toFixed(2)}`}
                       </button>
-                      <p className="text-center text-xs text-muted-foreground">You won't be charged yet. The host has 24 hours to confirm.</p>
+                      <p className="text-center text-xs text-muted-foreground">You won't be charged yet. The host has 24 hours to confirm. Greyed-out dates are already booked or blocked by the host.</p>
                     </>
                   )}
 
