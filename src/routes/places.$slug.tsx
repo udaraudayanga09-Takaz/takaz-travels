@@ -59,6 +59,25 @@ function PlacePage() {
   // Nearby community places (top 3 closest approved)
   const [nearbyCommunity, setNearbyCommunity] = useState<Array<{ id: string; slug: string; name: string; cover_url: string | null; region: string | null; likes_count: number; cx: number | null; cy: number | null }>>([]);
 
+  type TopListing = { id: string; title: string; city: string; daily_rate: number; photos: string[] | null; avg_rating: number | null; review_count: number | null };
+  const [topStays, setTopStays] = useState<TopListing[]>([]);
+  const [topVehicles, setTopVehicles] = useState<TopListing[]>([]);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      const [staysRes, vehRes] = await Promise.all([
+        supabase.from("provider_listings").select("id, title, city, daily_rate, photos, avg_rating, review_count").eq("status","approved").eq("kind","stay").ilike("city", `%${place.searchCity}%`).order("avg_rating", { ascending: false }).limit(3),
+        supabase.from("provider_listings").select("id, title, city, daily_rate, photos, avg_rating, review_count").eq("status","approved").eq("kind","vehicle").ilike("city", `%${place.searchCity}%`).order("avg_rating", { ascending: false }).limit(3),
+      ]);
+      if (!active) return;
+      setTopStays((staysRes.data ?? []) as TopListing[]);
+      setTopVehicles((vehRes.data ?? []) as TopListing[]);
+    })();
+    return () => { active = false; };
+  }, [place.searchCity]);
+
+
   useEffect(() => {
     setBlogs(loadJSON<Blog>(BLOG_KEY(place.slug)));
     setMemories(loadJSON<Memory>(MEM_KEY(place.slug)));
