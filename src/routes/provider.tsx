@@ -76,6 +76,10 @@ function ProviderDashboard() {
           </tbody>
         </table>
       </div>
+
+      <div className="mt-10">
+        <AvailabilityManager />
+      </div>
     </div>
   );
 }
