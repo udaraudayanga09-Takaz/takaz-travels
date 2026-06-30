@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { motion } from "framer-motion";
-import { MapPin, Calendar, ArrowLeft, ArrowRight, Sparkles, Upload, Image as ImageIcon, PenLine, Heart, Trash2, Plus } from "lucide-react";
+import { MapPin, Calendar, ArrowLeft, ArrowRight, Sparkles, Upload, Image as ImageIcon, PenLine, Heart, Trash2, Plus, Bed, Car, Star, Route as RouteIcon } from "lucide-react";
 import { PLACES, type Place } from "@/data/places";
 import { REGIONS } from "@/components/SriLankaMap";
 import { supabase } from "@/integrations/supabase/client";
