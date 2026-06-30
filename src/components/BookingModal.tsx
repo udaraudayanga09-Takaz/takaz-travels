@@ -16,6 +16,7 @@ import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { ReviewsSection } from "@/components/ReviewsSection";
 import { getListingOwnerId, sendMessage } from "@/lib/messages";
+import { fetchUnavailableDates, rangeHasUnavailable } from "@/lib/availability";
 
 const SERVICE_FEE_RATE = 0.12;
 
