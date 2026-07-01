@@ -80,6 +80,8 @@ function PlanPage() {
   const [dbListings, setDbListings] = useState<DbListing[]>([]);
   const [loading, setLoading] = useState(false);
   const [tab, setTab] = useState<"stay" | "vehicle">("stay");
+  const [notes, setNotes] = useState<Record<string, string>>({});
+  const [editingStop, setEditingStop] = useState<string | null>(null);
 
   // basket
   const [stay, setStay] = useState<AnyListing | null>(null);
