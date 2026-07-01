@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { useRef, useEffect } from "react";
 import { Star, TrendingUp, ChevronRight } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { PLACES } from "@/data/places";
@@ -24,30 +23,6 @@ const HIDDEN_GEMS: Card[] = [
   { id: "meemure",   name: "Meemure",     image: PLACES.meemure.hero,   tripRank: 18, bookings: 71,  category: "Hidden village",     slug: "meemure",   city: "Meemure" },
 ];
 
-function useHorizontalWheel() {
-  const ref = useRef<HTMLDivElement | null>(null);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const onWheel = (e: WheelEvent) => {
-      // Ignore pure horizontal trackpad gestures — let native handle them.
-      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
-      // Only hijack when there's actually room to scroll horizontally.
-      const maxScroll = el.scrollWidth - el.clientWidth;
-      if (maxScroll <= 0) return;
-      const atStart = el.scrollLeft <= 0 && e.deltaY < 0;
-      const atEnd = el.scrollLeft >= maxScroll && e.deltaY > 0;
-      if (atStart || atEnd) return; // let page scroll take over at the edges
-      e.preventDefault();
-      e.stopPropagation();
-      el.scrollLeft += e.deltaY;
-    };
-    el.addEventListener("wheel", onWheel, { passive: false });
-    return () => el.removeEventListener("wheel", onWheel);
-  }, []);
-  return ref;
-}
-
 function Row({ title, subtitle, items }: { title: string; subtitle: string; items: Card[] }) {
   return (
     <div className="mt-12">
@@ -62,10 +37,7 @@ function Row({ title, subtitle, items }: { title: string; subtitle: string; item
           See all <ChevronRight className="h-3 w-3" />
         </Link>
       </div>
-      <div
-        ref={useHorizontalWheel()}
-        className="mt-5 flex gap-4 overflow-x-auto overflow-y-hidden no-scrollbar pb-3 -mx-5 px-5 snap-x snap-mandatory"
-      >
+      <div className="mt-5 flex gap-4 overflow-x-auto no-scrollbar pb-3 -mx-5 px-5 snap-x snap-mandatory">
         {items.map((p, i) => (
           <motion.article
             key={p.id}
