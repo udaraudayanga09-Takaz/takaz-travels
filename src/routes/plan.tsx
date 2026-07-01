@@ -118,6 +118,24 @@ function PlanPage() {
   const togglePicked = (id: string) =>
     setPicked(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]);
 
+  const removeStop = (id: string) => {
+    setPicked(p => p.filter(x => x !== id));
+    if (activeRegion === id) setActiveRegion(null);
+    if (editingStop === id) setEditingStop(null);
+  };
+
+  const moveStop = (id: string, dir: -1 | 1) => {
+    setPicked(p => {
+      const i = p.indexOf(id);
+      const j = i + dir;
+      if (i < 0 || j < 0 || j >= p.length) return p;
+      const next = [...p];
+      [next[i], next[j]] = [next[j], next[i]];
+      return next;
+    });
+  };
+
+
   async function findAvailability() {
     if (picked.length === 0 || !range?.from || !range?.to) {
       toast.error("Pick at least one region and your trip dates.");
