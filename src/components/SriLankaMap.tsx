@@ -77,7 +77,7 @@ export function SriLankaMap({ selected, onHover, onSelect, counts, hovered, clas
           src={satellite}
           alt="Satellite map of Sri Lanka"
           className="h-full w-full object-cover origin-center"
-          animate={{
+          animate={disableHoverZoom ? { scale: 1, x: "0%", y: "0%" } : {
             scale: hoveredPin ? 1.18 : 1,
             x: hoveredPin ? `${(50 - hoveredPin.cx) * 0.6}%` : "0%",
             y: hoveredPin ? `${(50 - hoveredPin.cy) * 0.6}%` : "0%",
@@ -90,7 +90,7 @@ export function SriLankaMap({ selected, onHover, onSelect, counts, hovered, clas
       {/* Pins layer (also animates with the map) */}
       <motion.div
         className="absolute inset-0"
-        animate={{
+        animate={disableHoverZoom ? { scale: 1, x: "0%", y: "0%" } : {
           scale: hoveredPin ? 1.18 : 1,
           x: hoveredPin ? `${(50 - hoveredPin.cx) * 0.6}%` : "0%",
           y: hoveredPin ? `${(50 - hoveredPin.cy) * 0.6}%` : "0%",
@@ -117,11 +117,16 @@ export function SriLankaMap({ selected, onHover, onSelect, counts, hovered, clas
                 {(isHover || isSelected) && (
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary/70" />
                 )}
-                <motion.span
-                  animate={{ scale: isHover ? 1.6 : 1 }}
+                <span
+                  style={{
+                    transformOrigin: "center",
+                    transform: isHover ? "scale(1.15)" : "scale(1)",
+                    transition: "transform 150ms ease",
+                  }}
                   className={`relative inline-flex h-3.5 w-3.5 rounded-full border-2 border-background shadow-[0_0_12px_var(--emerald)] ${isSelected ? "bg-accent" : "bg-primary"}`}
                 />
               </span>
+
               <span className="pointer-events-none mt-1 block text-[9px] uppercase tracking-widest text-white whitespace-nowrap font-semibold drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
                 {r.name}
               </span>
