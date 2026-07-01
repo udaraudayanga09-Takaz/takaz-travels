@@ -38,7 +38,10 @@ function Row({ title, subtitle, items }: { title: string; subtitle: string; item
           See all <ChevronRight className="h-3 w-3" />
         </Link>
       </div>
-      <div className="mt-5 flex gap-4 overflow-x-auto no-scrollbar pb-3 -mx-5 px-5 snap-x snap-mandatory">
+      <div
+        ref={useHorizontalWheel()}
+        className="mt-5 flex gap-4 overflow-x-auto overflow-y-hidden no-scrollbar pb-3 -mx-5 px-5 snap-x snap-mandatory"
+      >
         {items.map((p, i) => (
           <motion.article
             key={p.id}
