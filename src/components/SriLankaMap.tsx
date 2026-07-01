@@ -69,33 +69,33 @@ export function SriLankaMap({ selected, onHover, onSelect, counts, hovered, clas
   const allPins: Array<Region | Pin> = [...REGIONS, ...extraPins, ...adminPins];
   const hoveredPin = hovered ? allPins.find((p) => p.id === hovered) : null;
 
+  // Subtle expansion — transform-origin at the hovered pin keeps its coordinate fixed
+  const zoom = 1.08;
+  const originX = hoveredPin ? hoveredPin.cx : 50;
+  const originY = hoveredPin ? hoveredPin.cy : 50;
+  const mapAnimate = { scale: hoveredPin ? zoom : 1 };
+
   return (
     <div className={`relative aspect-[9/15] w-full max-w-[480px] mx-auto ${className ?? ""}`}>
-      {/* Satellite map background with hover zoom */}
+      {/* Satellite map background — expands from the hovered pin so the pin's coordinate stays fixed */}
       <div className="absolute inset-0 rounded-3xl overflow-hidden ring-1 ring-primary/20 shadow-[0_30px_80px_-30px_var(--emerald)]">
         <motion.img
           src={satellite}
           alt="Satellite map of Sri Lanka"
-          className="h-full w-full object-cover origin-center"
-          animate={disableHoverZoom ? { scale: 1, x: "0%", y: "0%" } : {
-            scale: hoveredPin ? 1.18 : 1,
-            x: hoveredPin ? `${(50 - hoveredPin.cx) * 0.6}%` : "0%",
-            y: hoveredPin ? `${(50 - hoveredPin.cy) * 0.6}%` : "0%",
-          }}
-          transition={{ type: "spring", stiffness: 120, damping: 20 }}
+          className="h-full w-full object-cover"
+          style={{ transformOrigin: `${originX}% ${originY}%` }}
+          animate={mapAnimate}
+          transition={{ type: "spring", stiffness: 160, damping: 22 }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/30 pointer-events-none" />
       </div>
 
-      {/* Pins layer (also animates with the map) */}
+      {/* Pins layer — same transform + origin so pins move with the map and the hovered pin stays put */}
       <motion.div
         className="absolute inset-0"
-        animate={disableHoverZoom ? { scale: 1, x: "0%", y: "0%" } : {
-          scale: hoveredPin ? 1.18 : 1,
-          x: hoveredPin ? `${(50 - hoveredPin.cx) * 0.6}%` : "0%",
-          y: hoveredPin ? `${(50 - hoveredPin.cy) * 0.6}%` : "0%",
-        }}
-        transition={{ type: "spring", stiffness: 120, damping: 20 }}
+        style={{ transformOrigin: `${originX}% ${originY}%` }}
+        animate={mapAnimate}
+        transition={{ type: "spring", stiffness: 160, damping: 22 }}
       >
         {allPins.map((r) => {
           const isSelected = selected === r.id;
@@ -135,26 +135,25 @@ export function SriLankaMap({ selected, onHover, onSelect, counts, hovered, clas
         })}
       </motion.div>
 
-      {/* Hover popup card (NOT inside the zoomed layer so it stays crisp) */}
+      {/* Hover popup card — anchored right next to the hovered pin */}
       <AnimatePresence>
         {hoveredPin && (() => {
           const r: any = hoveredPin;
           const c = counts?.[r.id];
           const onLeftHalf = r.cx < 50;
-          // Compute popup position based on the *zoomed* visual location:
-          // the pin visually moves to ~50,50 when hovered, so anchor near center.
+          const onTopHalf = r.cy < 50;
           return (
             <motion.div
               key={r.id}
-              initial={{ opacity: 0, scale: 0.9, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
+              initial={{ opacity: 0, scale: 0.92, x: onLeftHalf ? -6 : 6 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.18 }}
-              className="pointer-events-none absolute z-20 w-60 rounded-2xl glass-strong p-3 shadow-2xl"
+              className="pointer-events-none absolute z-20 w-56 rounded-2xl glass-strong p-3 shadow-2xl"
               style={{
-                left: `${onLeftHalf ? 58 : 42}%`,
-                top: `50%`,
-                transform: `translate(${onLeftHalf ? "0" : "-100%"}, -50%)`,
+                left: `${r.cx}%`,
+                top: `${r.cy}%`,
+                transform: `translate(${onLeftHalf ? "14px" : "calc(-100% - 14px)"}, ${onTopHalf ? "0" : "-100%"})`,
               }}
             >
               {(r.image || r.hero) && (
