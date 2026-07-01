@@ -24,6 +24,30 @@ const HIDDEN_GEMS: Card[] = [
   { id: "meemure",   name: "Meemure",     image: PLACES.meemure.hero,   tripRank: 18, bookings: 71,  category: "Hidden village",     slug: "meemure",   city: "Meemure" },
 ];
 
+function useHorizontalWheel() {
+  const ref = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      // Ignore pure horizontal trackpad gestures — let native handle them.
+      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+      // Only hijack when there's actually room to scroll horizontally.
+      const maxScroll = el.scrollWidth - el.clientWidth;
+      if (maxScroll <= 0) return;
+      const atStart = el.scrollLeft <= 0 && e.deltaY < 0;
+      const atEnd = el.scrollLeft >= maxScroll && e.deltaY > 0;
+      if (atStart || atEnd) return; // let page scroll take over at the edges
+      e.preventDefault();
+      e.stopPropagation();
+      el.scrollLeft += e.deltaY;
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, []);
+  return ref;
+}
+
 function Row({ title, subtitle, items }: { title: string; subtitle: string; items: Card[] }) {
   return (
     <div className="mt-12">
