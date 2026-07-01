@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, Calendar as CalendarIcon, Sparkles, ArrowRight, Bed, Car, Plus, Check, Star, Trash2, ShoppingBag, CheckCircle2, LogIn, X } from "lucide-react";
+import { MapPin, Calendar as CalendarIcon, Sparkles, ArrowRight, Bed, Car, Plus, Check, Star, Trash2, ShoppingBag, CheckCircle2, LogIn, X, ArrowUp, ArrowDown, Pencil } from "lucide-react";
 import { format, differenceInCalendarDays } from "date-fns";
 import type { DateRange } from "react-day-picker";
 import { toast } from "sonner";
