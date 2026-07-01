@@ -31,11 +31,9 @@ function VerifyPage() {
   useEffect(() => {
     if (!user) return;
     supabase
-      .from("profiles")
-      .select("verified_tourist, licence_verified, passport_url, idp_url")
-      .eq("id", user.id)
+      .rpc("get_my_verification")
       .maybeSingle()
-      .then(({ data }) => data && setProfile(data));
+      .then(({ data }) => data && setProfile(data as ProfileVerification));
   }, [user]);
 
   async function upload(kind: "passport" | "idp", file: File) {
