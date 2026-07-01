@@ -238,13 +238,98 @@ function PlanPage() {
 
       {/* Map + region picker */}
       <div className="mt-12 grid items-start gap-10 md:grid-cols-[1fr_360px]">
-        <SriLankaMap
-          selected={activeRegion}
-          hovered={hovered}
-          onHover={setHovered}
-          onSelect={(id) => { setActiveRegion(id); togglePicked(id); }}
-          counts={counts}
-        />
+        <div className="space-y-4">
+          <SriLankaMap
+            selected={activeRegion}
+            hovered={hovered}
+            onHover={setHovered}
+            onSelect={(id) => { setActiveRegion(id); togglePicked(id); }}
+            counts={counts}
+            disableHoverZoom
+          />
+
+          {/* My trip stops */}
+          <div className="rounded-3xl glass p-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-semibold flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-primary" /> My trip stops
+              </h3>
+              <span className="text-[11px] text-muted-foreground">{picked.length} stop{picked.length === 1 ? "" : "s"}</span>
+            </div>
+            {picked.length === 0 ? (
+              <p className="mt-3 text-xs text-muted-foreground">Tap a pin on the map to add a stop to your trip.</p>
+            ) : (
+              <ul className="mt-3 space-y-2">
+                {picked.map((id, i) => {
+                  const r = REGIONS.find(x => x.id === id);
+                  if (!r) return null;
+                  const isEditing = editingStop === id;
+                  return (
+                    <li key={id} className="rounded-2xl bg-secondary/40 p-2.5">
+                      <div className="flex items-center gap-2">
+                        <span className="grid h-6 w-6 place-items-center rounded-full bg-primary/20 text-[11px] font-semibold text-primary">{i + 1}</span>
+                        <button
+                          onClick={() => setEditingStop(isEditing ? null : id)}
+                          className="flex-1 truncate text-left text-sm font-medium hover:text-primary transition inline-flex items-center gap-1.5"
+                          title="Edit notes"
+                        >
+                          {r.name}
+                          <Pencil className="h-3 w-3 opacity-50" />
+                        </button>
+                        {notes[id] && !isEditing && (
+                          <span className="hidden sm:inline text-[11px] text-muted-foreground truncate max-w-[120px]">· {notes[id]}</span>
+                        )}
+                        <button
+                          onClick={() => moveStop(id, -1)}
+                          disabled={i === 0}
+                          className="grid h-7 w-7 place-items-center rounded-full hover:bg-primary/20 disabled:opacity-30"
+                          aria-label="Move up"
+                        >
+                          <ArrowUp className="h-3.5 w-3.5" />
+                        </button>
+                        <button
+                          onClick={() => moveStop(id, 1)}
+                          disabled={i === picked.length - 1}
+                          className="grid h-7 w-7 place-items-center rounded-full hover:bg-primary/20 disabled:opacity-30"
+                          aria-label="Move down"
+                        >
+                          <ArrowDown className="h-3.5 w-3.5" />
+                        </button>
+                        <button
+                          onClick={() => removeStop(id)}
+                          className="grid h-7 w-7 place-items-center rounded-full hover:bg-destructive/20 text-muted-foreground hover:text-destructive"
+                          aria-label={`Remove ${r.name}`}
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                      <AnimatePresence>
+                        {isEditing && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="overflow-hidden"
+                          >
+                            <input
+                              autoFocus
+                              value={notes[id] ?? ""}
+                              onChange={(e) => setNotes(n => ({ ...n, [id]: e.target.value }))}
+                              onKeyDown={(e) => { if (e.key === "Enter" || e.key === "Escape") setEditingStop(null); }}
+                              placeholder='e.g. "2 nights here"'
+                              className="mt-2 w-full rounded-lg bg-background/60 px-3 py-1.5 text-xs outline-none ring-1 ring-border focus:ring-primary"
+                            />
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+        </div>
+
         <div className="space-y-4">
           <div>
             <h2 className="text-xl font-semibold">1. Where are you going?</h2>
