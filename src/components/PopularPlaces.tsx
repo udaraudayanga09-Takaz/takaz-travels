@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useRef, useEffect } from "react";
 import { Star, TrendingUp, ChevronRight } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { PLACES } from "@/data/places";
