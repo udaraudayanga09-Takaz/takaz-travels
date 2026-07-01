@@ -45,9 +45,11 @@ type Props = {
   extraPins?: Pin[];
   /** disable supabase fetch */
   disableAdminPins?: boolean;
+  /** disable the whole-map zoom on hover; scale only the pin icon */
+  disableHoverZoom?: boolean;
 };
 
-export function SriLankaMap({ selected, onHover, onSelect, counts, hovered, className, extraPins = [], disableAdminPins }: Props) {
+export function SriLankaMap({ selected, onHover, onSelect, counts, hovered, className, extraPins = [], disableAdminPins, disableHoverZoom }: Props) {
   const [adminPins, setAdminPins] = useState<Pin[]>([]);
 
   useEffect(() => {
