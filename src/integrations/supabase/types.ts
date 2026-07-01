@@ -574,6 +574,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_my_verification: {
+        Args: never
+        Returns: {
+          idp_url: string
+          licence_verified: boolean
+          passport_url: string
+          verified_tourist: boolean
+        }[]
+      }
       get_unavailable_dates: {
         Args: { _listing_id: string }
         Returns: string[]
