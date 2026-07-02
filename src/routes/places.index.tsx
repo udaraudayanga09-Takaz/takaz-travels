@@ -20,8 +20,19 @@ export const Route = createFileRoute("/places/")({
 type AdditionalPlace = { id: string; name: string; slug: string; tagline: string | null; description: string | null; image_url: string | null };
 
 function AllPlaces() {
+  const [extras, setExtras] = useState<AdditionalPlace[]>([]);
+  useEffect(() => {
+    supabase
+      .from("additional_places")
+      .select("id, name, slug, tagline, description, image_url")
+      .eq("published", true)
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: false })
+      .then(({ data }) => setExtras((data ?? []) as AdditionalPlace[]));
+  }, []);
   return (
     <div className="mx-auto max-w-7xl px-5 py-16 md:py-24">
+
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
