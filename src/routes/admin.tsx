@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Shield, CheckCircle2, XCircle, MapPin, Mail, Phone, FileText, Calendar, User, Briefcase, Image as ImageIcon, Pin, Plus, Trash2, Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { SriLankaMap } from "@/components/SriLankaMap";
+import { PlacesManagement } from "@/components/admin/PlacesManagement";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin — Takaz" }] }),
