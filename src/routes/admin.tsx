@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Shield, CheckCircle2, XCircle, MapPin, Mail, Phone, FileText, Calendar, User, Briefcase, Image as ImageIcon, Pin, Plus, Trash2, Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { SriLankaMap } from "@/components/SriLankaMap";
+import { PlacesManagement } from "@/components/admin/PlacesManagement";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin — Takaz" }] }),
@@ -33,7 +34,7 @@ type Pin = { id: string; name: string; slug: string; blurb: string | null; image
 type UserPlace = { id: string; slug: string; name: string; region: string | null; summary: string | null; body: string | null; cover_url: string | null; status: string; likes_count: number; created_at: string };
 
 function AdminPage() {
-  const [tab, setTab] = useState<"apps" | "pins" | "places">("apps");
+  const [tab, setTab] = useState<"apps" | "pins" | "places" | "destinations">("apps");
   return (
     <div className="mx-auto max-w-7xl px-5 py-10">
       <div className="flex items-center gap-3">
@@ -44,14 +45,15 @@ function AdminPage() {
         </div>
       </div>
 
-      <div className="mt-6 flex gap-2">
-        {([["apps", "Applications"], ["pins", "Map pins"], ["places", "Community places"]] as const).map(([v, l]) => (
+      <div className="mt-6 flex flex-wrap gap-2">
+        {([["apps", "Applications"], ["destinations", "Places management"], ["pins", "Map pins"], ["places", "Community places"]] as const).map(([v, l]) => (
           <button key={v} onClick={() => setTab(v)} className={`rounded-full px-4 py-1.5 text-xs font-medium transition ${tab === v ? "bg-primary text-primary-foreground" : "glass text-muted-foreground hover:text-foreground"}`}>{l}</button>
         ))}
       </div>
 
       <div className="mt-6">
         {tab === "apps" && <ApplicationsTab />}
+        {tab === "destinations" && <PlacesManagement />}
         {tab === "pins" && <MapPinsTab />}
         {tab === "places" && <CommunityTab />}
       </div>
