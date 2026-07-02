@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { MapPin, ArrowRight, Sparkles, Calendar } from "lucide-react";
+import { useEffect, useState } from "react";
 import { PLACE_LIST } from "@/data/places";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/places/")({
   head: () => ({
@@ -14,6 +16,8 @@ export const Route = createFileRoute("/places/")({
   }),
   component: AllPlaces,
 });
+
+type AdditionalPlace = { id: string; name: string; slug: string; tagline: string | null; description: string | null; image_url: string | null };
 
 function AllPlaces() {
   return (
