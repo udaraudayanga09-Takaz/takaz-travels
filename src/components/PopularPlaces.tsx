@@ -1,11 +1,13 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Star, TrendingUp, ChevronRight } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { PLACES } from "@/data/places";
+import { supabase } from "@/integrations/supabase/client";
 
 type Card = { id: string; name: string; image: string; tripRank: number; bookings: number; category: string; slug: string; city: string };
 
-const TOP_STAYS: Card[] = [
+const DEFAULT_TOP: Card[] = [
   { id: "ella",     name: "Ella",         image: PLACES.ella.hero,     tripRank: 1, bookings: 482, category: "Cloud-forest hills",   slug: "ella",     city: "Ella" },
   { id: "galle",    name: "Galle Fort",   image: PLACES.galle.hero,    tripRank: 2, bookings: 418, category: "Heritage coast",       slug: "galle",    city: "Galle" },
   { id: "sigiriya", name: "Sigiriya",     image: PLACES.sigiriya.hero, tripRank: 3, bookings: 376, category: "UNESCO wonder",        slug: "sigiriya", city: "Sigiriya" },
@@ -14,7 +16,7 @@ const TOP_STAYS: Card[] = [
   { id: "nuwara",   name: "Nuwara Eliya", image: PLACES.nuwara.hero,   tripRank: 6, bookings: 244, category: "Little England",       slug: "nuwara",   city: "Nuwara Eliya" },
 ];
 
-const HIDDEN_GEMS: Card[] = [
+const DEFAULT_GEMS: Card[] = [
   { id: "arugam",    name: "Arugam Bay",  image: PLACES.arugam.hero,    tripRank: 7,  bookings: 198, category: "Surf paradise",      slug: "arugam",    city: "Arugam Bay" },
   { id: "jaffna",    name: "Jaffna",      image: PLACES.jaffna.hero,    tripRank: 9,  bookings: 142, category: "Tamil heartland",    slug: "jaffna",    city: "Jaffna" },
   { id: "trinco",    name: "Trincomalee", image: PLACES.trinco.hero,    tripRank: 10, bookings: 187, category: "East-coast beaches", slug: "trinco",    city: "Trincomalee" },
@@ -24,6 +26,7 @@ const HIDDEN_GEMS: Card[] = [
 ];
 
 function Row({ title, subtitle, items }: { title: string; subtitle: string; items: Card[] }) {
+  if (items.length === 0) return null;
   return (
     <div className="mt-12">
       <div className="flex items-end justify-between gap-3 flex-wrap">
@@ -82,10 +85,40 @@ function Row({ title, subtitle, items }: { title: string; subtitle: string; item
 }
 
 export function PopularPlaces() {
+  const [top, setTop] = useState<Card[]>(DEFAULT_TOP);
+  const [gems, setGems] = useState<Card[]>(DEFAULT_GEMS);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      const { data } = await supabase
+        .from("top_destinations")
+        .select("id, name, slug, category, tagline, image_url, trip_rank, bookings_count, sort_order")
+        .order("sort_order", { ascending: true })
+        .order("trip_rank", { ascending: true, nullsFirst: false });
+      if (!mounted || !data) return;
+      const mapRow = (r: any): Card => ({
+        id: r.id,
+        name: r.name,
+        image: r.image_url || "",
+        tripRank: r.trip_rank ?? 0,
+        bookings: r.bookings_count ?? 0,
+        category: r.tagline ?? "",
+        slug: r.slug,
+        city: r.name,
+      });
+      const t = data.filter((r: any) => r.category === "top_ranked").map(mapRow);
+      const g = data.filter((r: any) => r.category === "hidden_gem").map(mapRow);
+      if (t.length) setTop(t);
+      if (g.length) setGems(g);
+    })();
+    return () => { mounted = false; };
+  }, []);
+
   return (
     <section className="mx-auto max-w-7xl px-5 pb-10">
-      <Row title="Top-ranked stays in Sri Lanka" subtitle="Most-booked this month" items={TOP_STAYS} />
-      <Row title="Hidden gems trending now" subtitle="Locals' favourites" items={HIDDEN_GEMS} />
+      <Row title="Top-ranked stays in Sri Lanka" subtitle="Most-booked this month" items={top} />
+      <Row title="Hidden gems trending now" subtitle="Locals' favourites" items={gems} />
     </section>
   );
 }
