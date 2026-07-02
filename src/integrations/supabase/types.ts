@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      additional_places: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          name: string
+          published: boolean
+          slug: string
+          sort_order: number
+          tagline: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          published?: boolean
+          slug: string
+          sort_order?: number
+          tagline?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          published?: boolean
+          slug?: string
+          sort_order?: number
+          tagline?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       bookings: {
         Row: {
           created_at: string
@@ -407,6 +446,51 @@ export type Database = {
           published?: boolean
           rating?: number
           text?: string
+        }
+        Relationships: []
+      }
+      top_destinations: {
+        Row: {
+          bookings_count: number
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          name: string
+          slug: string
+          sort_order: number
+          tagline: string | null
+          trip_rank: number | null
+          updated_at: string
+        }
+        Insert: {
+          bookings_count?: number
+          category: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          slug: string
+          sort_order?: number
+          tagline?: string | null
+          trip_rank?: number | null
+          updated_at?: string
+        }
+        Update: {
+          bookings_count?: number
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          slug?: string
+          sort_order?: number
+          tagline?: string | null
+          trip_rank?: number | null
+          updated_at?: string
         }
         Relationships: []
       }
