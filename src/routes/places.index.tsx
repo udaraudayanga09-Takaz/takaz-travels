@@ -105,6 +105,37 @@ function AllPlaces() {
           </motion.article>
         ))}
       </div>
+
+      {extras.length > 0 && (
+        <section className="mt-20">
+          <div className="max-w-2xl">
+            <span className="inline-flex items-center gap-2 rounded-full glass px-3 py-1.5 text-xs">
+              <Sparkles className="h-3.5 w-3.5 text-accent" /> More to explore
+            </span>
+            <h2 className="mt-3 text-3xl md:text-4xl font-semibold tracking-tight">Additional destinations</h2>
+            <p className="mt-2 text-muted-foreground">Curated spots our team is adding to the guide.</p>
+          </div>
+          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {extras.map((p) => (
+              <article key={p.id} className="rounded-3xl glass overflow-hidden group hover:border-primary/40 transition">
+                <div className="aspect-[4/3] overflow-hidden bg-secondary/40">
+                  {p.image_url ? (
+                    <img src={p.image_url} alt={p.name} loading="lazy" className="h-full w-full object-cover transition duration-700 group-hover:scale-110" />
+                  ) : (
+                    <div className="grid h-full place-items-center text-muted-foreground"><MapPin className="h-8 w-8" /></div>
+                  )}
+                </div>
+                <div className="p-4">
+                  <h3 className="text-lg font-semibold">{p.name}</h3>
+                  {p.tagline && <div className="text-xs text-accent mt-0.5">{p.tagline}</div>}
+                  {p.description && <p className="mt-2 text-sm text-muted-foreground line-clamp-3">{p.description}</p>}
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }
+
