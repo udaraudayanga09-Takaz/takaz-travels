@@ -6,7 +6,7 @@ import { format, differenceInCalendarDays } from "date-fns";
 import type { DateRange } from "react-day-picker";
 import { toast } from "sonner";
 
-import { SriLankaMap, REGIONS } from "@/components/SriLankaMap";
+import { SriLankaMap } from "@/components/SriLankaMap";
 import { useStore } from "@/lib/store";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -55,20 +55,28 @@ function isDb(l: AnyListing): l is DbListing {
   return (l as DbListing).source === "db";
 }
 
+type Pin = { id: string; name: string; slug: string; cx: number; cy: number; blurb?: string; image?: string };
+
 function PlanPage() {
   const { user } = useAuth();
   const { listings: mockListings } = useStore();
   const { regions: regionsParam } = Route.useSearch();
   const [hovered, setHovered] = useState<string | null>(null);
   const [activeRegion, setActiveRegion] = useState<string | null>(null);
+  const [pins, setPins] = useState<Pin[]>([]);
+  const [pendingRegionsParam] = useState<string | undefined>(regionsParam);
 
-  // selection — initialize from ?regions=ella,galle
-  const [picked, setPicked] = useState<string[]>(() => {
-    if (!regionsParam) return [];
-    const ids = regionsParam.split(",").map((s: string) => s.trim()).filter(Boolean);
-    const valid = new Set(REGIONS.map(r => r.id));
-    return ids.filter((id: string) => valid.has(id));
-  });
+  // selection — pin ids (uuids)
+  const [picked, setPicked] = useState<string[]>([]);
+
+  // Once pins load, resolve ?regions=ella,galle (slugs) to pin ids
+  useEffect(() => {
+    if (!pendingRegionsParam || pins.length === 0 || picked.length > 0) return;
+    const slugs = pendingRegionsParam.split(",").map((s) => s.trim()).filter(Boolean);
+    const ids = slugs.map((s) => pins.find((p) => p.slug === s)?.id).filter(Boolean) as string[];
+    if (ids.length) setPicked(ids);
+  }, [pins, pendingRegionsParam, picked.length]);
+
 
 
   const [range, setRange] = useState<DateRange | undefined>(() => {
@@ -97,23 +105,25 @@ function PlanPage() {
   const total = Math.round((subtotal + fee) * 100) / 100;
 
   const pickedRegionNames = useMemo(
-    () => picked.map(id => REGIONS.find(r => r.id === id)?.name).filter(Boolean) as string[],
-    [picked]
+    () => picked.map(id => pins.find(p => p.id === id)?.name).filter(Boolean) as string[],
+    [picked, pins]
   );
 
   const counts = useMemo(() => {
     const map: Record<string, { vehicles: number; stays: number; from: number }> = {};
-    REGIONS.forEach(r => {
-      const matches = mockListings.filter(l => l.city.toLowerCase() === r.id);
+    pins.forEach(p => {
+      const key = p.name.toLowerCase();
+      const matches = mockListings.filter(l => l.city.toLowerCase() === key || l.city.toLowerCase() === p.slug);
       const prices = matches.map(l => l.pricePerDay);
-      map[r.id] = {
+      map[p.id] = {
         vehicles: matches.filter(l => l.type === "vehicle").length,
         stays: matches.filter(l => l.type === "stay").length,
         from: prices.length ? Math.min(...prices) : 0,
       };
     });
     return map;
-  }, [mockListings]);
+  }, [mockListings, pins]);
+
 
   const togglePicked = (id: string) =>
     setPicked(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]);
@@ -134,6 +144,41 @@ function PlanPage() {
       return next;
     });
   };
+
+  // Fetch map pins from Supabase + subscribe to realtime changes so admin edits appear immediately
+
+  useEffect(() => {
+    let active = true;
+    const load = async () => {
+      const { data } = await supabase
+        .from("map_pins")
+        .select("id, name, slug, cx, cy, blurb, image_url")
+        .order("name");
+      if (!active || !data) return;
+      setPins(
+        data.map((d: any) => ({
+          id: d.id,
+          name: d.name,
+          slug: d.slug,
+          cx: Number(d.cx),
+          cy: Number(d.cy),
+          blurb: d.blurb ?? undefined,
+          image: d.image_url ?? undefined,
+        }))
+      );
+    };
+    load();
+    const channel = supabase
+      .channel("map_pins-plan")
+      .on("postgres_changes", { event: "*", schema: "public", table: "map_pins" }, load)
+      .subscribe();
+    return () => {
+      active = false;
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+
 
 
   async function findAvailability() {
@@ -245,8 +290,10 @@ function PlanPage() {
             onHover={setHovered}
             onSelect={(id) => { setActiveRegion(id); togglePicked(id); }}
             counts={counts}
+            pins={pins}
             disableHoverZoom
           />
+
 
           {/* My trip stops */}
           <div className="rounded-3xl glass p-4">
@@ -261,7 +308,7 @@ function PlanPage() {
             ) : (
               <ul className="mt-3 space-y-2">
                 {picked.map((id, i) => {
-                  const r = REGIONS.find(x => x.id === id);
+                  const r = pins.find(x => x.id === id);
                   if (!r) return null;
                   const isEditing = editingStop === id;
                   return (
@@ -336,7 +383,7 @@ function PlanPage() {
             <p className="text-sm text-muted-foreground mt-1">Tap regions on the map or chips below.</p>
           </div>
           <div className="grid grid-cols-2 gap-2 max-h-[280px] overflow-y-auto pr-1">
-            {REGIONS.map(r => {
+            {pins.map(r => {
               const on = picked.includes(r.id);
               return (
                 <button
