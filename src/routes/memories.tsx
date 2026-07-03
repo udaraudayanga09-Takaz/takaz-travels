@@ -20,6 +20,7 @@ type Blog = {
   twitter_url: string | null;
   youtube_url: string | null;
   website_url: string | null;
+  published: boolean;
   created_at: string;
 };
 
