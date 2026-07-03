@@ -340,7 +340,7 @@ function BlogComposer({ onPosted }: { onPosted: () => void }) {
         className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition hover:scale-[1.02] disabled:opacity-60 disabled:hover:scale-100"
       >
         {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <PenLine className="h-4 w-4" />}
-        {submitting ? "Publishing…" : "Publish blog"}
+        {submitting ? "Submitting…" : "Submit for review"}
       </button>
     </motion.form>
   );
