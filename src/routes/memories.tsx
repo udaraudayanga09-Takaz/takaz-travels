@@ -248,6 +248,7 @@ function BlogComposer({ onPosted }: { onPosted: () => void }) {
     }
     setSubmitting(true);
     setError(null);
+    setSuccess(null);
     try {
       let cover_url: string | null = null;
       if (coverFile) {
