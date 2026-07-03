@@ -503,6 +503,7 @@ export type Database = {
           id: string
           instagram_url: string | null
           place_slug: string | null
+          published: boolean
           title: string
           twitter_url: string | null
           updated_at: string
@@ -518,6 +519,7 @@ export type Database = {
           id?: string
           instagram_url?: string | null
           place_slug?: string | null
+          published?: boolean
           title: string
           twitter_url?: string | null
           updated_at?: string
@@ -533,6 +535,7 @@ export type Database = {
           id?: string
           instagram_url?: string | null
           place_slug?: string | null
+          published?: boolean
           title?: string
           twitter_url?: string | null
           updated_at?: string
