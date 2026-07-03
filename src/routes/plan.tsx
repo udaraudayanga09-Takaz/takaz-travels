@@ -346,7 +346,7 @@ function PlanPage() {
             <p className="text-sm text-muted-foreground mt-1">Tap regions on the map or chips below.</p>
           </div>
           <div className="grid grid-cols-2 gap-2 max-h-[280px] overflow-y-auto pr-1">
-            {REGIONS.map(r => {
+            {pins.map(r => {
               const on = picked.includes(r.id);
               return (
                 <button
