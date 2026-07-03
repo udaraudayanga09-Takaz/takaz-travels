@@ -358,6 +358,7 @@ function SocialInput({ icon, value, onChange, placeholder }: { icon: React.React
 
 function BlogCard({ blog, index, isOwner, onDeleted }: { blog: Blog; index: number; isOwner: boolean; onDeleted: () => void }) {
   const [busy, setBusy] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const place = PLACE_LIST.find(p => p.slug === blog.place_slug);
 
   async function del() {
@@ -373,6 +374,10 @@ function BlogCard({ blog, index, isOwner, onDeleted }: { blog: Blog; index: numb
     { url: blog.youtube_url, icon: <Youtube className="h-3.5 w-3.5" />, label: "YouTube" },
     { url: blog.website_url, icon: <Globe className="h-3.5 w-3.5" />, label: "Website" },
   ].filter(s => s.url);
+
+  const monthYear = new Date(blog.created_at).toLocaleDateString(undefined, { month: "long", year: "numeric" });
+  const preview = blog.body.length > 120 ? blog.body.slice(0, 120).trimEnd() + "…" : blog.body;
+  const hasMore = blog.body.length > 120;
 
   return (
     <motion.article
@@ -395,11 +400,21 @@ function BlogCard({ blog, index, isOwner, onDeleted }: { blog: Blog; index: numb
           </Link>
         )}
         <h3 className="mt-2 text-lg font-semibold text-foreground line-clamp-2">{blog.title}</h3>
-        <p className="mt-2 text-sm text-muted-foreground line-clamp-4 whitespace-pre-wrap">{blog.body}</p>
+        <p className="mt-2 text-sm text-muted-foreground whitespace-pre-wrap">
+          {expanded ? blog.body : preview}
+        </p>
+        {hasMore && (
+          <button
+            onClick={() => setExpanded(v => !v)}
+            className="mt-2 self-start text-xs font-medium text-primary hover:underline"
+          >
+            {expanded ? "Show less" : "Read more →"}
+          </button>
+        )}
 
         <div className="mt-auto pt-4 flex items-center justify-between gap-2">
           <div className="text-xs text-muted-foreground">
-            <span className="text-foreground font-medium">{blog.author_name}</span> · {new Date(blog.created_at).toLocaleDateString()}
+            <span className="text-foreground font-medium">{blog.author_name}</span> · {monthYear}
           </div>
           {isOwner && (
             <button onClick={del} disabled={busy} className="text-muted-foreground hover:text-destructive transition" aria-label="Delete blog">
@@ -407,6 +422,7 @@ function BlogCard({ blog, index, isOwner, onDeleted }: { blog: Blog; index: numb
             </button>
           )}
         </div>
+
 
         {socials.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-1.5 border-t border-border/60 pt-3">
