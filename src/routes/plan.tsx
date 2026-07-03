@@ -143,7 +143,40 @@ function PlanPage() {
       [next[i], next[j]] = [next[j], next[i]];
       return next;
     });
-  };
+
+  // Fetch map pins from Supabase + subscribe to realtime changes so admin edits appear immediately
+  useEffect(() => {
+    let active = true;
+    const load = async () => {
+      const { data } = await supabase
+        .from("map_pins")
+        .select("id, name, slug, cx, cy, blurb, image_url")
+        .order("name");
+      if (!active || !data) return;
+      setPins(
+        data.map((d: any) => ({
+          id: d.id,
+          name: d.name,
+          slug: d.slug,
+          cx: Number(d.cx),
+          cy: Number(d.cy),
+          blurb: d.blurb ?? undefined,
+          image: d.image_url ?? undefined,
+        }))
+      );
+    };
+    load();
+    const channel = supabase
+      .channel("map_pins-plan")
+      .on("postgres_changes", { event: "*", schema: "public", table: "map_pins" }, load)
+      .subscribe();
+    return () => {
+      active = false;
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+
 
 
   async function findAvailability() {
