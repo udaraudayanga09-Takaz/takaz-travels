@@ -290,8 +290,10 @@ function PlanPage() {
             onHover={setHovered}
             onSelect={(id) => { setActiveRegion(id); togglePicked(id); }}
             counts={counts}
+            pins={pins}
             disableHoverZoom
           />
+
 
           {/* My trip stops */}
           <div className="rounded-3xl glass p-4">
