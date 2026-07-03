@@ -271,7 +271,7 @@ function PlanPage() {
             ) : (
               <ul className="mt-3 space-y-2">
                 {picked.map((id, i) => {
-                  const r = REGIONS.find(x => x.id === id);
+                  const r = pins.find(x => x.id === id);
                   if (!r) return null;
                   const isEditing = editingStop === id;
                   return (
