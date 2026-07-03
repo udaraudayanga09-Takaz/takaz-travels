@@ -55,20 +55,28 @@ function isDb(l: AnyListing): l is DbListing {
   return (l as DbListing).source === "db";
 }
 
+type Pin = { id: string; name: string; slug: string; cx: number; cy: number; blurb?: string; image?: string };
+
 function PlanPage() {
   const { user } = useAuth();
   const { listings: mockListings } = useStore();
   const { regions: regionsParam } = Route.useSearch();
   const [hovered, setHovered] = useState<string | null>(null);
   const [activeRegion, setActiveRegion] = useState<string | null>(null);
+  const [pins, setPins] = useState<Pin[]>([]);
+  const [pendingRegionsParam] = useState<string | undefined>(regionsParam);
 
-  // selection — initialize from ?regions=ella,galle
-  const [picked, setPicked] = useState<string[]>(() => {
-    if (!regionsParam) return [];
-    const ids = regionsParam.split(",").map((s: string) => s.trim()).filter(Boolean);
-    const valid = new Set(REGIONS.map(r => r.id));
-    return ids.filter((id: string) => valid.has(id));
-  });
+  // selection — pin ids (uuids)
+  const [picked, setPicked] = useState<string[]>([]);
+
+  // Once pins load, resolve ?regions=ella,galle (slugs) to pin ids
+  useEffect(() => {
+    if (!pendingRegionsParam || pins.length === 0 || picked.length > 0) return;
+    const slugs = pendingRegionsParam.split(",").map((s) => s.trim()).filter(Boolean);
+    const ids = slugs.map((s) => pins.find((p) => p.slug === s)?.id).filter(Boolean) as string[];
+    if (ids.length) setPicked(ids);
+  }, [pins, pendingRegionsParam, picked.length]);
+
 
 
   const [range, setRange] = useState<DateRange | undefined>(() => {
