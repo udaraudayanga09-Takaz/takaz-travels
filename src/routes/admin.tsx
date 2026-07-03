@@ -34,7 +34,7 @@ type Pin = { id: string; name: string; slug: string; blurb: string | null; image
 type UserPlace = { id: string; slug: string; name: string; region: string | null; summary: string | null; body: string | null; cover_url: string | null; status: string; likes_count: number; created_at: string };
 
 function AdminPage() {
-  const [tab, setTab] = useState<"apps" | "pins" | "places" | "destinations">("apps");
+  const [tab, setTab] = useState<"apps" | "pins" | "places" | "destinations" | "blogs">("apps");
   return (
     <div className="mx-auto max-w-7xl px-5 py-10">
       <div className="flex items-center gap-3">
@@ -46,7 +46,7 @@ function AdminPage() {
       </div>
 
       <div className="mt-6 flex flex-wrap gap-2">
-        {([["apps", "Applications"], ["destinations", "Places management"], ["pins", "Map pins"], ["places", "Community places"]] as const).map(([v, l]) => (
+        {([["apps", "Applications"], ["destinations", "Places management"], ["pins", "Map pins"], ["places", "Community places"], ["blogs", "Blog moderation"]] as const).map(([v, l]) => (
           <button key={v} onClick={() => setTab(v)} className={`rounded-full px-4 py-1.5 text-xs font-medium transition ${tab === v ? "bg-primary text-primary-foreground" : "glass text-muted-foreground hover:text-foreground"}`}>{l}</button>
         ))}
       </div>
@@ -56,6 +56,7 @@ function AdminPage() {
         {tab === "destinations" && <PlacesManagement />}
         {tab === "pins" && <MapPinsTab />}
         {tab === "places" && <CommunityTab />}
+        {tab === "blogs" && <BlogsTab />}
       </div>
     </div>
   );
