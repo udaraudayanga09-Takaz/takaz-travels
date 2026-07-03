@@ -6,7 +6,7 @@ import { format, differenceInCalendarDays } from "date-fns";
 import type { DateRange } from "react-day-picker";
 import { toast } from "sonner";
 
-import { SriLankaMap, REGIONS } from "@/components/SriLankaMap";
+import { SriLankaMap } from "@/components/SriLankaMap";
 import { useStore } from "@/lib/store";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
