@@ -228,6 +228,7 @@ function BlogComposer({ onPosted }: { onPosted: () => void }) {
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   function onPickCover(e: ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0] ?? null;
