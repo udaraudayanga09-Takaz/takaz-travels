@@ -269,11 +269,13 @@ function BlogComposer({ onPosted }: { onPosted: () => void }) {
         twitter_url: twitter.trim() || null,
         youtube_url: youtube.trim() || null,
         website_url: website.trim() || null,
+        published: false,
       });
       if (insErr) throw insErr;
 
       setTitle(""); setBody(""); setCoverFile(null); setCoverPreview(null); setPlaceSlug("");
       setInstagram(""); setTwitter(""); setYoutube(""); setWebsite("");
+      setSuccess("Thanks! Your blog is in the moderation queue — an admin will approve it shortly.");
       onPosted();
     } catch (err: any) {
       setError(err?.message ?? "Could not publish your blog");
