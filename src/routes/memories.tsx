@@ -56,7 +56,12 @@ function MemoriesPage() {
   }, []);
 
   async function loadBlogs() {
-    const { data } = await supabase.from("travel_blogs").select("*").order("created_at", { ascending: false }).limit(50);
+    const { data } = await supabase
+      .from("travel_blogs")
+      .select("*")
+      .eq("published", true)
+      .order("created_at", { ascending: false })
+      .limit(50);
     setBlogs((data ?? []) as Blog[]);
   }
 
