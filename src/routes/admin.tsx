@@ -411,3 +411,95 @@ function Row({ icon: Icon, label, value }: { icon: typeof User; label: string; v
     </div>
   );
 }
+
+/* -------------------- BLOG MODERATION -------------------- */
+
+type BlogRow = {
+  id: string;
+  title: string;
+  body: string;
+  author_name: string;
+  cover_url: string | null;
+  place_slug: string | null;
+  published: boolean;
+  created_at: string;
+};
+
+function BlogsTab() {
+  const [rows, setRows] = useState<BlogRow[]>([]);
+  const [filter, setFilter] = useState<"pending" | "published" | "all">("pending");
+  const [busy, setBusy] = useState<string | null>(null);
+
+  async function load() {
+    let q = supabase.from("travel_blogs").select("id, title, body, author_name, cover_url, place_slug, published, created_at").order("created_at", { ascending: false });
+    if (filter === "pending") q = q.eq("published", false);
+    if (filter === "published") q = q.eq("published", true);
+    const { data } = await q;
+    setRows((data ?? []) as BlogRow[]);
+  }
+  useEffect(() => { load(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [filter]);
+
+  async function setPublished(id: string, published: boolean) {
+    setBusy(id);
+    await supabase.from("travel_blogs").update({ published }).eq("id", id);
+    setBusy(null);
+    load();
+  }
+  async function del(id: string) {
+    if (!confirm("Delete this blog permanently?")) return;
+    setBusy(id);
+    await supabase.from("travel_blogs").delete().eq("id", id);
+    setBusy(null);
+    load();
+  }
+
+  return (
+    <div>
+      <div className="flex flex-wrap gap-2 mb-5">
+        {(["pending", "published", "all"] as const).map(f => (
+          <button key={f} onClick={() => setFilter(f)} className={`rounded-full px-3 py-1 text-xs font-medium capitalize transition ${filter === f ? "bg-primary text-primary-foreground" : "glass text-muted-foreground hover:text-foreground"}`}>
+            {f}
+          </button>
+        ))}
+      </div>
+
+      {rows.length === 0 ? (
+        <div className="rounded-2xl glass p-12 text-center text-sm text-muted-foreground">No blogs in this queue.</div>
+      ) : (
+        <ul className="space-y-3">
+          {rows.map(b => (
+            <li key={b.id} className="flex gap-4 rounded-2xl glass p-4">
+              {b.cover_url ? (
+                <img src={b.cover_url} alt="" className="h-20 w-28 shrink-0 rounded-lg object-cover" />
+              ) : (
+                <div className="h-20 w-28 shrink-0 rounded-lg bg-secondary grid place-items-center text-muted-foreground"><ImageIcon className="h-5 w-5" /></div>
+              )}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-semibold truncate">{b.title}</h3>
+                  <span className={`text-[10px] uppercase tracking-widest px-2 py-0.5 rounded-full ${b.published ? "bg-primary/20 text-primary" : "bg-accent/20 text-accent"}`}>
+                    {b.published ? "Published" : "Pending"}
+                  </span>
+                </div>
+                <div className="text-xs text-muted-foreground mt-0.5">{b.author_name} · {new Date(b.created_at).toLocaleDateString()}{b.place_slug ? ` · ${b.place_slug}` : ""}</div>
+                <p className="mt-2 text-sm text-muted-foreground line-clamp-3 whitespace-pre-wrap">{b.body}</p>
+              </div>
+              <div className="flex flex-col gap-2 shrink-0">
+                {b.published ? (
+                  <button disabled={busy === b.id} onClick={() => setPublished(b.id, false)} className="rounded-full glass px-3 py-1.5 text-xs">Unpublish</button>
+                ) : (
+                  <button disabled={busy === b.id} onClick={() => setPublished(b.id, true)} className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground">
+                    <CheckCircle2 className="h-3.5 w-3.5" /> Approve
+                  </button>
+                )}
+                <button disabled={busy === b.id} onClick={() => del(b.id)} className="inline-flex items-center gap-1 rounded-full glass px-3 py-1.5 text-xs text-destructive hover:bg-destructive/10">
+                  <Trash2 className="h-3.5 w-3.5" /> Delete
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
