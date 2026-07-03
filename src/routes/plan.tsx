@@ -105,23 +105,25 @@ function PlanPage() {
   const total = Math.round((subtotal + fee) * 100) / 100;
 
   const pickedRegionNames = useMemo(
-    () => picked.map(id => REGIONS.find(r => r.id === id)?.name).filter(Boolean) as string[],
-    [picked]
+    () => picked.map(id => pins.find(p => p.id === id)?.name).filter(Boolean) as string[],
+    [picked, pins]
   );
 
   const counts = useMemo(() => {
     const map: Record<string, { vehicles: number; stays: number; from: number }> = {};
-    REGIONS.forEach(r => {
-      const matches = mockListings.filter(l => l.city.toLowerCase() === r.id);
+    pins.forEach(p => {
+      const key = p.name.toLowerCase();
+      const matches = mockListings.filter(l => l.city.toLowerCase() === key || l.city.toLowerCase() === p.slug);
       const prices = matches.map(l => l.pricePerDay);
-      map[r.id] = {
+      map[p.id] = {
         vehicles: matches.filter(l => l.type === "vehicle").length,
         stays: matches.filter(l => l.type === "stay").length,
         from: prices.length ? Math.min(...prices) : 0,
       };
     });
     return map;
-  }, [mockListings]);
+  }, [mockListings, pins]);
+
 
   const togglePicked = (id: string) =>
     setPicked(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]);
