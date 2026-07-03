@@ -330,6 +330,8 @@ function BlogComposer({ onPosted }: { onPosted: () => void }) {
       </div>
 
       {error && <p className="text-sm text-destructive">{error}</p>}
+      {success && <p className="text-sm text-primary">{success}</p>}
+      <p className="text-xs text-muted-foreground">New submissions are reviewed by an admin before appearing publicly.</p>
 
       <button
         type="submit"
