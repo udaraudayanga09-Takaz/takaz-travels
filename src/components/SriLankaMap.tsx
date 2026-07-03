@@ -47,13 +47,15 @@ type Props = {
   disableAdminPins?: boolean;
   /** disable the whole-map zoom on hover; scale only the pin icon */
   disableHoverZoom?: boolean;
+  /** when provided, REPLACES the default REGIONS + admin pins with this list */
+  pins?: Pin[];
 };
 
-export function SriLankaMap({ selected, onHover, onSelect, counts, hovered, className, extraPins = [], disableAdminPins, disableHoverZoom }: Props) {
+export function SriLankaMap({ selected, onHover, onSelect, counts, hovered, className, extraPins = [], disableAdminPins, disableHoverZoom, pins }: Props) {
   const [adminPins, setAdminPins] = useState<Pin[]>([]);
 
   useEffect(() => {
-    if (disableAdminPins) return;
+    if (disableAdminPins || pins) return;
     let active = true;
     (async () => {
       const { data } = await supabase.from("map_pins").select("id, name, slug, blurb, image_url, cx, cy");
@@ -64,9 +66,10 @@ export function SriLankaMap({ selected, onHover, onSelect, counts, hovered, clas
       }
     })();
     return () => { active = false; };
-  }, [disableAdminPins]);
+  }, [disableAdminPins, pins]);
 
-  const allPins: Array<Region | Pin> = [...REGIONS, ...extraPins, ...adminPins];
+  const allPins: Array<Region | Pin> = pins ?? [...REGIONS, ...extraPins, ...adminPins];
+
   const hoveredPin = hovered ? allPins.find((p) => p.id === hovered) : null;
 
   // Subtle expansion — transform-origin at the hovered pin keeps its coordinate fixed
