@@ -143,8 +143,10 @@ function PlanPage() {
       [next[i], next[j]] = [next[j], next[i]];
       return next;
     });
+  };
 
   // Fetch map pins from Supabase + subscribe to realtime changes so admin edits appear immediately
+
   useEffect(() => {
     let active = true;
     const load = async () => {
