@@ -93,18 +93,19 @@ function MemoriesPage() {
           {user ? <BlogComposer onPosted={loadBlogs} /> : <SignInCta />}
         </div>
 
-        <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <AnimatePresence>
-            {blogs.length === 0 && (
-              <div className="col-span-full rounded-2xl glass p-12 text-center text-muted-foreground text-sm">
-                No blogs yet — be the first to share your story.
-              </div>
-            )}
-            {blogs.map((b, i) => (
-              <BlogCard key={b.id} blog={b} index={i} isOwner={user?.id === b.user_id} onDeleted={loadBlogs} />
-            ))}
-          </AnimatePresence>
-        </div>
+        {blogs.length === 0 ? (
+          <div className="mt-10 rounded-2xl glass p-12 text-center text-muted-foreground text-sm">
+            No published blogs yet — {user ? "share your story above and it will appear here once approved." : "sign in above and share the first story."}
+          </div>
+        ) : (
+          <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <AnimatePresence>
+              {blogs.map((b, i) => (
+                <BlogCard key={b.id} blog={b} index={i} isOwner={user?.id === b.user_id} onDeleted={loadBlogs} />
+              ))}
+            </AnimatePresence>
+          </div>
+        )}
       </section>
 
       {/* Testimonials */}
