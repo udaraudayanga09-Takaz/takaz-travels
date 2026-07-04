@@ -64,6 +64,7 @@ export type Database = {
           listing_id: string
           listing_title: string
           listing_type: string
+          payment_intent_id: string | null
           start_date: string
           status: string
           total: number
@@ -79,6 +80,7 @@ export type Database = {
           listing_id: string
           listing_title: string
           listing_type: string
+          payment_intent_id?: string | null
           start_date: string
           status?: string
           total: number
@@ -94,6 +96,7 @@ export type Database = {
           listing_id?: string
           listing_title?: string
           listing_type?: string
+          payment_intent_id?: string | null
           start_date?: string
           status?: string
           total?: number
@@ -290,6 +293,30 @@ export type Database = {
           id?: string
           place_slug?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      platform_settings: {
+        Row: {
+          key: string
+          kind: string
+          label: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          key: string
+          kind?: string
+          label: string
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          key?: string
+          kind?: string
+          label?: string
+          updated_at?: string
+          value?: string
         }
         Relationships: []
       }
@@ -569,6 +596,7 @@ export type Database = {
           contact_name: string | null
           created_at: string
           end_date: string | null
+          handled: boolean
           id: string
           notes: string | null
           party_size: number | null
@@ -581,6 +609,7 @@ export type Database = {
           contact_name?: string | null
           created_at?: string
           end_date?: string | null
+          handled?: boolean
           id?: string
           notes?: string | null
           party_size?: number | null
@@ -593,6 +622,7 @@ export type Database = {
           contact_name?: string | null
           created_at?: string
           end_date?: string | null
+          handled?: boolean
           id?: string
           notes?: string | null
           party_size?: number | null
