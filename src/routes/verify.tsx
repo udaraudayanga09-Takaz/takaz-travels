@@ -48,7 +48,9 @@ function VerifyPage() {
       const patch: Partial<ProfileVerification> = kind === "passport"
         ? { passport_url: path, verified_tourist: true }
         : { idp_url: path, licence_verified: true };
-      const { error: upErr } = await supabase.from("profiles").update(patch).eq("id", user.id);
+      const { error: upErr } = await supabase
+        .from("profile_identity_docs")
+        .upsert({ user_id: user.id, ...patch }, { onConflict: "user_id" });
       if (upErr) throw upErr;
       setProfile((p) => ({ ...(p ?? { verified_tourist: false, licence_verified: false, passport_url: null, idp_url: null }), ...patch }) as ProfileVerification);
       toast.success(kind === "passport" ? "Passport uploaded — identity verified" : "IDP uploaded — licence verified");
