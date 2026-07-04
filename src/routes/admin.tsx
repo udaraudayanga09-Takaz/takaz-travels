@@ -325,8 +325,8 @@ function BookingsTab() {
           <tbody className="divide-y divide-slate-100">
             {filtered.length === 0 && <tr><td colSpan={10} className="text-center px-4 py-8 text-slate-500">No bookings.</td></tr>}
             {filtered.map(b => (
-              <>
-                <tr key={b.id} className="hover:bg-slate-50 cursor-pointer" onClick={() => setExpanded(expanded === b.id ? null : b.id)}>
+              <Fragment key={b.id}>
+                <tr className="hover:bg-slate-50 cursor-pointer" onClick={() => setExpanded(expanded === b.id ? null : b.id)}>
                   <td className="px-4 py-2 text-slate-400">{expanded === b.id ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}</td>
                   <td className="px-4 py-2 font-medium">{b.guest_name}</td>
                   <td className="px-4 py-2 text-slate-600">{b.guest_email}</td>
@@ -353,7 +353,7 @@ function BookingsTab() {
                     </td>
                   </tr>
                 )}
-              </>
+              </Fragment>
             ))}
           </tbody>
         </table>
