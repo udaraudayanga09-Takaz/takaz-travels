@@ -490,8 +490,8 @@ function ApplicationsTab() {
           <tbody className="divide-y divide-slate-100">
             {filtered.length === 0 && <tr><td colSpan={8} className="text-center py-8 text-slate-500">No applications.</td></tr>}
             {filtered.map(a => (
-              <>
-                <tr key={a.id}>
+              <Fragment key={a.id}>
+                <tr>
                   <td className="px-4 py-2 font-medium">{a.full_name}</td>
                   <td className="px-4 py-2 text-slate-600">{a.email}</td>
                   <td className="px-4 py-2 text-xs">{a.phone ?? "—"}</td>
@@ -518,7 +518,7 @@ function ApplicationsTab() {
                     </td>
                   </tr>
                 )}
-              </>
+              </Fragment>
             ))}
           </tbody>
         </table>
