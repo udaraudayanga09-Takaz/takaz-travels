@@ -44,7 +44,7 @@ export function BookingModal({ listing, onClose }: { listing: Listing | null; on
     setSuccess(false);
     fetchUnavailableDates(listing.id).then(setUnavailable).catch(() => setUnavailable([]));
     if (user && isSelfDriveVehicle) {
-      supabase.from("profiles").select("licence_verified").eq("id", user.id).maybeSingle()
+      supabase.from("profile_identity_docs").select("licence_verified").eq("user_id", user.id).maybeSingle()
         .then(({ data }) => setLicenceVerified(Boolean(data?.licence_verified)));
     } else {
       setLicenceVerified(null);
