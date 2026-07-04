@@ -293,39 +293,57 @@ export type Database = {
         }
         Relationships: []
       }
+      profile_identity_docs: {
+        Row: {
+          created_at: string
+          idp_url: string | null
+          licence_verified: boolean
+          passport_url: string | null
+          updated_at: string
+          user_id: string
+          verified_tourist: boolean
+        }
+        Insert: {
+          created_at?: string
+          idp_url?: string | null
+          licence_verified?: boolean
+          passport_url?: string | null
+          updated_at?: string
+          user_id: string
+          verified_tourist?: boolean
+        }
+        Update: {
+          created_at?: string
+          idp_url?: string | null
+          licence_verified?: boolean
+          passport_url?: string | null
+          updated_at?: string
+          user_id?: string
+          verified_tourist?: boolean
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
           created_at: string
           full_name: string | null
           id: string
-          idp_url: string | null
-          licence_verified: boolean
-          passport_url: string | null
           updated_at: string
-          verified_tourist: boolean
         }
         Insert: {
           avatar_url?: string | null
           created_at?: string
           full_name?: string | null
           id: string
-          idp_url?: string | null
-          licence_verified?: boolean
-          passport_url?: string | null
           updated_at?: string
-          verified_tourist?: boolean
         }
         Update: {
           avatar_url?: string | null
           created_at?: string
           full_name?: string | null
           id?: string
-          idp_url?: string | null
-          licence_verified?: boolean
-          passport_url?: string | null
           updated_at?: string
-          verified_tourist?: boolean
         }
         Relationships: []
       }
