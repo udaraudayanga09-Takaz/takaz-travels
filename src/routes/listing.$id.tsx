@@ -202,7 +202,7 @@ function ListingDetail() {
           ))}
         </div>
         <button
-          onClick={() => openGallery(0)}
+          onClick={() => openGallery(0, "grid")}
           className="absolute bottom-4 right-6 rounded-full bg-background/90 px-3 py-1.5 text-xs font-medium shadow-md backdrop-blur"
         >
           Show all {photos.length} photos
