@@ -117,6 +117,7 @@ function ListingDetail() {
 
 
   const [galleryOpen, setGalleryOpen] = useState(false);
+  const [galleryMode, setGalleryMode] = useState<"grid" | "single">("grid");
   const [galleryIndex, setGalleryIndex] = useState(0);
   const [range, setRange] = useState<DateRange | undefined>(() => {
     const start = new Date();
