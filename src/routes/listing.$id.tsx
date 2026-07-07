@@ -235,7 +235,6 @@ function ListingDetail() {
         >
           Show all {photos.length} photos
         </button>
-        </button>
       </div>
 
 
