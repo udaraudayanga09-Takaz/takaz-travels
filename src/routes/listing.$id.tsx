@@ -139,7 +139,7 @@ function ListingDetail() {
   const similar = LISTINGS.filter((l) => l.city === listing.city && l.id !== listing.id).slice(0, 8);
   const mapSrc = `https://www.google.com/maps?q=${listing.geoLat},${listing.geoLng}&z=13&output=embed`;
 
-  const openGallery = (i: number) => { setGalleryIndex(i); setGalleryOpen(true); };
+  const openGallery = (i: number, mode: "grid" | "single" = "single") => { setGalleryIndex(i); setGalleryMode(mode); setGalleryOpen(true); };
   const prev = () => setGalleryIndex((i) => (i - 1 + photos.length) % photos.length);
   const next = () => setGalleryIndex((i) => (i + 1) % photos.length);
 
