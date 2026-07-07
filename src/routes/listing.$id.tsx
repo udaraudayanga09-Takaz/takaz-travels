@@ -152,7 +152,7 @@ function ListingDetail() {
     }
   }
 
-  const hostInitials = listing.host.split(" ").map((p) => p[0]).slice(0, 2).join("");
+  const hostInitials = listing.host.split(" ").map((p: string) => p[0]).slice(0, 2).join("");
 
   return (
     <div className="mx-auto max-w-7xl px-4 pb-16 pt-6 sm:px-6 lg:px-8">
