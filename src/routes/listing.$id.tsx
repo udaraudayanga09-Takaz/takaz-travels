@@ -186,30 +186,56 @@ function ListingDetail() {
         </div>
       </div>
 
-      {/* Photo grid */}
-      <div className="relative grid h-[420px] grid-cols-1 gap-2 overflow-hidden rounded-3xl sm:grid-cols-4 sm:grid-rows-2">
+      {/* Photo gallery */}
+      {/* Mobile: swipeable carousel */}
+      <div className="relative -mx-4 sm:hidden">
+        <div className="flex snap-x snap-mandatory gap-2 overflow-x-auto px-4 pb-2 no-scrollbar">
+          {photos.map((p, i) => (
+            <button
+              key={i}
+              onClick={() => openGallery(i)}
+              className="relative aspect-[4/3] w-[85%] shrink-0 snap-center overflow-hidden rounded-2xl"
+            >
+              <img src={p} alt={`${listing.title} photo ${i + 1}`} className="h-full w-full object-cover" />
+            </button>
+          ))}
+        </div>
         <button
           onClick={() => openGallery(0)}
-          className="relative col-span-1 row-span-2 overflow-hidden sm:col-span-2"
+          className="absolute bottom-4 right-6 rounded-full bg-background/90 px-3 py-1.5 text-xs font-medium shadow-md backdrop-blur"
+        >
+          Show all {photos.length} photos
+        </button>
+      </div>
+
+      {/* Desktop: 60% main + 2×2 thumbnails */}
+      <div className="relative hidden h-[460px] gap-2 overflow-hidden rounded-3xl sm:grid sm:grid-cols-5 sm:grid-rows-2">
+        <button
+          onClick={() => openGallery(0)}
+          className="relative col-span-3 row-span-2 overflow-hidden"
         >
           <img src={photos[0]} alt={listing.title} className="h-full w-full object-cover transition-transform duration-500 hover:scale-105" />
         </button>
-        {photos.slice(1, 5).map((p: string, i: number) => (
-          <button
-            key={i}
-            onClick={() => openGallery(i + 1)}
-            className="relative hidden overflow-hidden sm:block"
-          >
-            <img src={p} alt={`${listing.title} photo ${i + 2}`} className="h-full w-full object-cover transition-transform duration-500 hover:scale-105" />
-          </button>
-        ))}
+        {[1, 2, 3, 4].map((i) => {
+          const src = photos[i] ?? photos[photos.length - 1];
+          return (
+            <button
+              key={i}
+              onClick={() => openGallery(i)}
+              className="relative col-span-1 row-span-1 overflow-hidden"
+            >
+              <img src={src} alt={`${listing.title} photo ${i + 1}`} className="h-full w-full object-cover transition-transform duration-500 hover:scale-105" />
+            </button>
+          );
+        })}
         <button
           onClick={() => openGallery(0)}
           className="absolute bottom-4 right-4 rounded-full bg-background/90 px-4 py-2 text-sm font-medium shadow-md backdrop-blur hover:bg-background"
         >
-          Show all photos
+          Show all {photos.length} photos
         </button>
       </div>
+
 
       {/* Body */}
       <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_380px]">
