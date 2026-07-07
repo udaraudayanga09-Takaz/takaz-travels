@@ -83,10 +83,11 @@ export const Route = createFileRoute("/listing/$id")({
 });
 
 function buildGallery(l: Listing): string[] {
-  // Deterministic 5-image gallery reusing all site photos so each listing has variety.
-  const pool = LISTINGS.filter((x) => x.type === l.type).map((x) => x.image);
-  const uniquePool = Array.from(new Set([l.image, ...pool, ...LISTINGS.map((x) => x.image)]));
-  return uniquePool.slice(0, 5);
+  const all: string[] = [l.image, ...LISTINGS.map((x) => x.image)];
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const src of all) { if (!seen.has(src)) { seen.add(src); out.push(src); } }
+  return out.slice(0, 5);
 }
 
 function ListingDetail() {
