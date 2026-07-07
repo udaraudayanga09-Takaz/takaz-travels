@@ -175,7 +175,7 @@ function ListingDetail() {
         >
           <img src={photos[0]} alt={listing.title} className="h-full w-full object-cover transition-transform duration-500 hover:scale-105" />
         </button>
-        {photos.slice(1, 5).map((p, i) => (
+        {photos.slice(1, 5).map((p: string, i: number) => (
           <button
             key={i}
             onClick={() => openGallery(i + 1)}

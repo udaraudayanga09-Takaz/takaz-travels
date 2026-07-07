@@ -25,6 +25,7 @@ import { Route as ProviderNewRouteImport } from './routes/provider.new'
 import { Route as PlacesSubmitRouteImport } from './routes/places.submit'
 import { Route as PlacesCommunityRouteImport } from './routes/places.community'
 import { Route as PlacesSlugRouteImport } from './routes/places.$slug'
+import { Route as ListingIdRouteImport } from './routes/listing.$id'
 
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
   id: '/verify-email',
@@ -106,6 +107,11 @@ const PlacesSlugRoute = PlacesSlugRouteImport.update({
   path: '/places/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ListingIdRoute = ListingIdRouteImport.update({
+  id: '/listing/$id',
+  path: '/listing/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -119,6 +125,7 @@ export interface FileRoutesByFullPath {
   '/provider': typeof ProviderRouteWithChildren
   '/verify': typeof VerifyRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/listing/$id': typeof ListingIdRoute
   '/places/$slug': typeof PlacesSlugRoute
   '/places/community': typeof PlacesCommunityRoute
   '/places/submit': typeof PlacesSubmitRoute
@@ -137,6 +144,7 @@ export interface FileRoutesByTo {
   '/provider': typeof ProviderRouteWithChildren
   '/verify': typeof VerifyRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/listing/$id': typeof ListingIdRoute
   '/places/$slug': typeof PlacesSlugRoute
   '/places/community': typeof PlacesCommunityRoute
   '/places/submit': typeof PlacesSubmitRoute
@@ -156,6 +164,7 @@ export interface FileRoutesById {
   '/provider': typeof ProviderRouteWithChildren
   '/verify': typeof VerifyRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/listing/$id': typeof ListingIdRoute
   '/places/$slug': typeof PlacesSlugRoute
   '/places/community': typeof PlacesCommunityRoute
   '/places/submit': typeof PlacesSubmitRoute
@@ -176,6 +185,7 @@ export interface FileRouteTypes {
     | '/provider'
     | '/verify'
     | '/verify-email'
+    | '/listing/$id'
     | '/places/$slug'
     | '/places/community'
     | '/places/submit'
@@ -194,6 +204,7 @@ export interface FileRouteTypes {
     | '/provider'
     | '/verify'
     | '/verify-email'
+    | '/listing/$id'
     | '/places/$slug'
     | '/places/community'
     | '/places/submit'
@@ -212,6 +223,7 @@ export interface FileRouteTypes {
     | '/provider'
     | '/verify'
     | '/verify-email'
+    | '/listing/$id'
     | '/places/$slug'
     | '/places/community'
     | '/places/submit'
@@ -231,6 +243,7 @@ export interface RootRouteChildren {
   ProviderRoute: typeof ProviderRouteWithChildren
   VerifyRoute: typeof VerifyRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
+  ListingIdRoute: typeof ListingIdRoute
   PlacesSlugRoute: typeof PlacesSlugRoute
   PlacesCommunityRoute: typeof PlacesCommunityRoute
   PlacesSubmitRoute: typeof PlacesSubmitRoute
@@ -351,6 +364,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlacesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/listing/$id': {
+      id: '/listing/$id'
+      path: '/listing/$id'
+      fullPath: '/listing/$id'
+      preLoaderRoute: typeof ListingIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -378,6 +398,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProviderRoute: ProviderRouteWithChildren,
   VerifyRoute: VerifyRoute,
   VerifyEmailRoute: VerifyEmailRoute,
+  ListingIdRoute: ListingIdRoute,
   PlacesSlugRoute: PlacesSlugRoute,
   PlacesCommunityRoute: PlacesCommunityRoute,
   PlacesSubmitRoute: PlacesSubmitRoute,
