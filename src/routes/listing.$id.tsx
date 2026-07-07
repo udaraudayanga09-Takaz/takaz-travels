@@ -405,27 +405,58 @@ function ListingDetail() {
             className="fixed inset-0 z-[100] flex flex-col bg-background/95 backdrop-blur-md"
           >
             <div className="flex items-center justify-between p-4">
-              <span className="text-sm text-muted-foreground">{galleryIndex + 1} / {photos.length}</span>
+              <div className="flex items-center gap-2 text-sm">
+                <button
+                  onClick={() => setGalleryMode("grid")}
+                  className={cn("rounded-full px-3 py-1.5 transition", galleryMode === "grid" ? "bg-primary text-primary-foreground" : "glass text-muted-foreground")}
+                >Grid</button>
+                <button
+                  onClick={() => setGalleryMode("single")}
+                  className={cn("rounded-full px-3 py-1.5 transition", galleryMode === "single" ? "bg-primary text-primary-foreground" : "glass text-muted-foreground")}
+                >Single</button>
+                {galleryMode === "single" && (
+                  <span className="ml-2 text-muted-foreground">{galleryIndex + 1} / {photos.length}</span>
+                )}
+              </div>
               <button onClick={() => setGalleryOpen(false)} className="grid h-10 w-10 place-items-center rounded-full glass"><X className="h-5 w-5" /></button>
             </div>
-            <div className="relative flex flex-1 items-center justify-center px-4">
-              <button onClick={prev} className="absolute left-4 z-10 grid h-11 w-11 place-items-center rounded-full glass hover:scale-105"><ChevronLeft className="h-5 w-5" /></button>
-              <motion.img
-                key={galleryIndex}
-                src={photos[galleryIndex]}
-                alt=""
-                initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}
-                className="max-h-full max-w-full rounded-2xl object-contain"
-              />
-              <button onClick={next} className="absolute right-4 z-10 grid h-11 w-11 place-items-center rounded-full glass hover:scale-105"><ChevronRight className="h-5 w-5" /></button>
-            </div>
-            <div className="flex gap-2 overflow-x-auto p-4 no-scrollbar">
-              {photos.map((p, i) => (
-                <button key={i} onClick={() => setGalleryIndex(i)} className={cn("h-16 w-24 shrink-0 overflow-hidden rounded-lg border-2 transition", i === galleryIndex ? "border-primary" : "border-transparent opacity-60 hover:opacity-100")}>
-                  <img src={p} alt="" className="h-full w-full object-cover" />
-                </button>
-              ))}
-            </div>
+
+            {galleryMode === "grid" ? (
+              <div className="flex-1 overflow-y-auto px-4 pb-8">
+                <div className="mx-auto grid max-w-5xl grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {photos.map((p, i) => (
+                    <button
+                      key={i}
+                      onClick={() => { setGalleryIndex(i); setGalleryMode("single"); }}
+                      className="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-secondary"
+                    >
+                      <img src={p} alt={`${listing.title} photo ${i + 1}`} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="relative flex flex-1 items-center justify-center px-4">
+                  <button onClick={prev} className="absolute left-4 z-10 grid h-11 w-11 place-items-center rounded-full glass hover:scale-105"><ChevronLeft className="h-5 w-5" /></button>
+                  <motion.img
+                    key={galleryIndex}
+                    src={photos[galleryIndex]}
+                    alt=""
+                    initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}
+                    className="max-h-full max-w-full rounded-2xl object-contain"
+                  />
+                  <button onClick={next} className="absolute right-4 z-10 grid h-11 w-11 place-items-center rounded-full glass hover:scale-105"><ChevronRight className="h-5 w-5" /></button>
+                </div>
+                <div className="flex gap-2 overflow-x-auto p-4 no-scrollbar">
+                  {photos.map((p, i) => (
+                    <button key={i} onClick={() => setGalleryIndex(i)} className={cn("h-16 w-24 shrink-0 overflow-hidden rounded-lg border-2 transition", i === galleryIndex ? "border-primary" : "border-transparent opacity-60 hover:opacity-100")}>
+                      <img src={p} alt="" className="h-full w-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
