@@ -96,7 +96,25 @@ function ListingDetail() {
   const { user } = useAuth();
   const stats = useListingStats();
   const s = statFor(stats, listing.id, listing.rating, listing.reviews);
-  const photos = useMemo(() => buildGallery(listing), [listing]);
+  const [remotePhotos, setRemotePhotos] = useState<string[] | null>(null);
+  const photos = useMemo(() => {
+    if (remotePhotos && remotePhotos.length > 0) return remotePhotos;
+    return buildGallery(listing);
+  }, [listing, remotePhotos]);
+
+  useEffect(() => {
+    let alive = true;
+    // Only try Supabase for real UUIDs (skip demo ids like "s1", "v2")
+    if (!/^[0-9a-f]{8}-/i.test(listing.id)) return;
+    supabase.from("provider_listings").select("photos").eq("id", listing.id).maybeSingle()
+      .then(({ data }) => {
+        if (!alive) return;
+        const arr = (data?.photos ?? []).filter((p): p is string => typeof p === "string" && p.length > 0);
+        if (arr.length > 0) setRemotePhotos(arr);
+      });
+    return () => { alive = false; };
+  }, [listing.id]);
+
 
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [galleryIndex, setGalleryIndex] = useState(0);
