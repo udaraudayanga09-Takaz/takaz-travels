@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { format, differenceInCalendarDays } from "date-fns";
@@ -96,9 +96,28 @@ function ListingDetail() {
   const { user } = useAuth();
   const stats = useListingStats();
   const s = statFor(stats, listing.id, listing.rating, listing.reviews);
-  const photos = useMemo(() => buildGallery(listing), [listing]);
+  const [remotePhotos, setRemotePhotos] = useState<string[] | null>(null);
+  const photos = useMemo(() => {
+    if (remotePhotos && remotePhotos.length > 0) return remotePhotos;
+    return buildGallery(listing);
+  }, [listing, remotePhotos]);
+
+  useEffect(() => {
+    let alive = true;
+    // Only try Supabase for real UUIDs (skip demo ids like "s1", "v2")
+    if (!/^[0-9a-f]{8}-/i.test(listing.id)) return;
+    supabase.from("provider_listings").select("photos").eq("id", listing.id).maybeSingle()
+      .then(({ data }) => {
+        if (!alive) return;
+        const arr = (data?.photos ?? []).filter((p): p is string => typeof p === "string" && p.length > 0);
+        if (arr.length > 0) setRemotePhotos(arr);
+      });
+    return () => { alive = false; };
+  }, [listing.id]);
+
 
   const [galleryOpen, setGalleryOpen] = useState(false);
+  const [galleryMode, setGalleryMode] = useState<"grid" | "single">("grid");
   const [galleryIndex, setGalleryIndex] = useState(0);
   const [range, setRange] = useState<DateRange | undefined>(() => {
     const start = new Date();
@@ -120,7 +139,7 @@ function ListingDetail() {
   const similar = LISTINGS.filter((l) => l.city === listing.city && l.id !== listing.id).slice(0, 8);
   const mapSrc = `https://www.google.com/maps?q=${listing.geoLat},${listing.geoLng}&z=13&output=embed`;
 
-  const openGallery = (i: number) => { setGalleryIndex(i); setGalleryOpen(true); };
+  const openGallery = (i: number, mode: "grid" | "single" = "single") => { setGalleryIndex(i); setGalleryMode(mode); setGalleryOpen(true); };
   const prev = () => setGalleryIndex((i) => (i - 1 + photos.length) % photos.length);
   const next = () => setGalleryIndex((i) => (i + 1) % photos.length);
 
@@ -168,30 +187,56 @@ function ListingDetail() {
         </div>
       </div>
 
-      {/* Photo grid */}
-      <div className="relative grid h-[420px] grid-cols-1 gap-2 overflow-hidden rounded-3xl sm:grid-cols-4 sm:grid-rows-2">
+      {/* Photo gallery */}
+      {/* Mobile: swipeable carousel */}
+      <div className="relative -mx-4 sm:hidden">
+        <div className="flex snap-x snap-mandatory gap-2 overflow-x-auto px-4 pb-2 no-scrollbar">
+          {photos.map((p, i) => (
+            <button
+              key={i}
+              onClick={() => openGallery(i)}
+              className="relative aspect-[4/3] w-[85%] shrink-0 snap-center overflow-hidden rounded-2xl"
+            >
+              <img src={p} alt={`${listing.title} photo ${i + 1}`} className="h-full w-full object-cover" />
+            </button>
+          ))}
+        </div>
+        <button
+          onClick={() => openGallery(0, "grid")}
+          className="absolute bottom-4 right-6 rounded-full bg-background/90 px-3 py-1.5 text-xs font-medium shadow-md backdrop-blur"
+        >
+          Show all {photos.length} photos
+        </button>
+      </div>
+
+      {/* Desktop: 60% main + 2×2 thumbnails */}
+      <div className="relative hidden h-[460px] gap-2 overflow-hidden rounded-3xl sm:grid sm:grid-cols-5 sm:grid-rows-2">
         <button
           onClick={() => openGallery(0)}
-          className="relative col-span-1 row-span-2 overflow-hidden sm:col-span-2"
+          className="relative col-span-3 row-span-2 overflow-hidden"
         >
           <img src={photos[0]} alt={listing.title} className="h-full w-full object-cover transition-transform duration-500 hover:scale-105" />
         </button>
-        {photos.slice(1, 5).map((p: string, i: number) => (
-          <button
-            key={i}
-            onClick={() => openGallery(i + 1)}
-            className="relative hidden overflow-hidden sm:block"
-          >
-            <img src={p} alt={`${listing.title} photo ${i + 2}`} className="h-full w-full object-cover transition-transform duration-500 hover:scale-105" />
-          </button>
-        ))}
+        {[1, 2, 3, 4].map((i) => {
+          const src = photos[i] ?? photos[photos.length - 1];
+          return (
+            <button
+              key={i}
+              onClick={() => openGallery(i)}
+              className="relative col-span-1 row-span-1 overflow-hidden"
+            >
+              <img src={src} alt={`${listing.title} photo ${i + 1}`} className="h-full w-full object-cover transition-transform duration-500 hover:scale-105" />
+            </button>
+          );
+        })}
         <button
-          onClick={() => openGallery(0)}
+          onClick={() => openGallery(0, "grid")}
           className="absolute bottom-4 right-4 rounded-full bg-background/90 px-4 py-2 text-sm font-medium shadow-md backdrop-blur hover:bg-background"
         >
-          Show all photos
+          Show all {photos.length} photos
         </button>
       </div>
+
 
       {/* Body */}
       <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_380px]">
@@ -360,27 +405,58 @@ function ListingDetail() {
             className="fixed inset-0 z-[100] flex flex-col bg-background/95 backdrop-blur-md"
           >
             <div className="flex items-center justify-between p-4">
-              <span className="text-sm text-muted-foreground">{galleryIndex + 1} / {photos.length}</span>
+              <div className="flex items-center gap-2 text-sm">
+                <button
+                  onClick={() => setGalleryMode("grid")}
+                  className={cn("rounded-full px-3 py-1.5 transition", galleryMode === "grid" ? "bg-primary text-primary-foreground" : "glass text-muted-foreground")}
+                >Grid</button>
+                <button
+                  onClick={() => setGalleryMode("single")}
+                  className={cn("rounded-full px-3 py-1.5 transition", galleryMode === "single" ? "bg-primary text-primary-foreground" : "glass text-muted-foreground")}
+                >Single</button>
+                {galleryMode === "single" && (
+                  <span className="ml-2 text-muted-foreground">{galleryIndex + 1} / {photos.length}</span>
+                )}
+              </div>
               <button onClick={() => setGalleryOpen(false)} className="grid h-10 w-10 place-items-center rounded-full glass"><X className="h-5 w-5" /></button>
             </div>
-            <div className="relative flex flex-1 items-center justify-center px-4">
-              <button onClick={prev} className="absolute left-4 z-10 grid h-11 w-11 place-items-center rounded-full glass hover:scale-105"><ChevronLeft className="h-5 w-5" /></button>
-              <motion.img
-                key={galleryIndex}
-                src={photos[galleryIndex]}
-                alt=""
-                initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}
-                className="max-h-full max-w-full rounded-2xl object-contain"
-              />
-              <button onClick={next} className="absolute right-4 z-10 grid h-11 w-11 place-items-center rounded-full glass hover:scale-105"><ChevronRight className="h-5 w-5" /></button>
-            </div>
-            <div className="flex gap-2 overflow-x-auto p-4 no-scrollbar">
-              {photos.map((p, i) => (
-                <button key={i} onClick={() => setGalleryIndex(i)} className={cn("h-16 w-24 shrink-0 overflow-hidden rounded-lg border-2 transition", i === galleryIndex ? "border-primary" : "border-transparent opacity-60 hover:opacity-100")}>
-                  <img src={p} alt="" className="h-full w-full object-cover" />
-                </button>
-              ))}
-            </div>
+
+            {galleryMode === "grid" ? (
+              <div className="flex-1 overflow-y-auto px-4 pb-8">
+                <div className="mx-auto grid max-w-5xl grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {photos.map((p, i) => (
+                    <button
+                      key={i}
+                      onClick={() => { setGalleryIndex(i); setGalleryMode("single"); }}
+                      className="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-secondary"
+                    >
+                      <img src={p} alt={`${listing.title} photo ${i + 1}`} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="relative flex flex-1 items-center justify-center px-4">
+                  <button onClick={prev} className="absolute left-4 z-10 grid h-11 w-11 place-items-center rounded-full glass hover:scale-105"><ChevronLeft className="h-5 w-5" /></button>
+                  <motion.img
+                    key={galleryIndex}
+                    src={photos[galleryIndex]}
+                    alt=""
+                    initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}
+                    className="max-h-full max-w-full rounded-2xl object-contain"
+                  />
+                  <button onClick={next} className="absolute right-4 z-10 grid h-11 w-11 place-items-center rounded-full glass hover:scale-105"><ChevronRight className="h-5 w-5" /></button>
+                </div>
+                <div className="flex gap-2 overflow-x-auto p-4 no-scrollbar">
+                  {photos.map((p, i) => (
+                    <button key={i} onClick={() => setGalleryIndex(i)} className={cn("h-16 w-24 shrink-0 overflow-hidden rounded-lg border-2 transition", i === galleryIndex ? "border-primary" : "border-transparent opacity-60 hover:opacity-100")}>
+                      <img src={p} alt="" className="h-full w-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
