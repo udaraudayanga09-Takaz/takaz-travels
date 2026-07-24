@@ -844,17 +844,24 @@ function MapPinsTab() {
         </div>
 
         <div>
-          <div className="text-xs uppercase tracking-widest text-slate-500 mb-2">Live preview</div>
-          <div className="relative rounded-lg border border-slate-200 bg-slate-50 aspect-[3/4] overflow-hidden">
-            <svg viewBox="0 0 100 133" className="absolute inset-0 h-full w-full">
-              <path d="M50 5 C70 15, 80 40, 78 70 C76 100, 60 128, 50 128 C40 128, 24 100, 22 70 C20 40, 30 15, 50 5 Z" fill="#e2e8f0" stroke="#94a3b8" strokeWidth="0.5" />
-            </svg>
-            {pins.map(p => (
-              <div key={p.id} title={p.name} className="absolute -translate-x-1/2 -translate-y-1/2 h-2 w-2 rounded-full bg-teal-500 ring-2 ring-white" style={{ left: `${p.cx}%`, top: `${p.cy * 100 / 133}%` }} />
-            ))}
-            {form.name && (
-              <div className="absolute -translate-x-1/2 -translate-y-1/2 h-3 w-3 rounded-full bg-red-500 ring-2 ring-white animate-pulse" style={{ left: `${form.cx}%`, top: `${form.cy * 100 / 133}%` }} />
-            )}
+          <div className="text-xs uppercase tracking-widest text-slate-500 mb-2">Live preview · click to set position</div>
+          <div
+            className="relative cursor-crosshair"
+            onClick={(e) => {
+              const r = e.currentTarget.getBoundingClientRect();
+              const cx = ((e.clientX - r.left) / r.width) * 100;
+              const cy = ((e.clientY - r.top) / r.height) * 100;
+              setForm({ ...form, cx: Math.round(cx * 10) / 10, cy: Math.round(cy * 10) / 10 });
+            }}
+          >
+            <SriLankaMap
+              pins={[
+                ...pins.map((p: any) => ({ id: `pin-${p.id}`, name: p.name, cx: Number(p.cx), cy: Number(p.cy), image: p.image_url, blurb: p.blurb, slug: p.slug })),
+                ...(form.name ? [{ id: "__draft", name: form.name, cx: Number(form.cx), cy: Number(form.cy), image: form.image_url, blurb: form.blurb }] : []),
+              ]}
+              disableAdminPins
+              disableHoverZoom
+            />
           </div>
         </div>
       </div>
