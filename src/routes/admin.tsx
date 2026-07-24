@@ -45,22 +45,18 @@ const NAV: { section: string; items: { key: TabKey; label: string; icon: any }[]
 
 function AdminShell() {
   const { user, isAdmin, loading, signOut } = useAuth();
-  const navigate = useNavigate();
   const [tab, setTab] = useState<TabKey>("dashboard");
   const [checking, setChecking] = useState(true);
   const [allowed, setAllowed] = useState(false);
 
   useEffect(() => {
     if (loading) return;
-    if (!user) { navigate({ to: "/login" }); return; }
-    // Double check via RPC in case roles context is stale
+    if (!user) { setAllowed(false); setChecking(false); return; }
     supabase.rpc("has_role", { _user_id: user.id, _role: "admin" }).then(({ data }) => {
-      const ok = !!data || isAdmin;
-      setAllowed(ok);
+      setAllowed(!!data || isAdmin);
       setChecking(false);
-      if (!ok) navigate({ to: "/" });
     });
-  }, [user, isAdmin, loading, navigate]);
+  }, [user, isAdmin, loading]);
 
   if (loading || checking) {
     return (
@@ -69,7 +65,8 @@ function AdminShell() {
       </div>
     );
   }
-  if (!allowed) return null;
+  if (!allowed) return <AdminLogin hasUser={!!user} userEmail={user?.email ?? null} onSignOut={signOut} onSuccess={() => { setChecking(true); }} />;
+
 
   return (
     <div className="fixed inset-0 z-[60] flex bg-slate-50 text-slate-900">
