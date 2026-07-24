@@ -116,7 +116,7 @@ function AdminShell() {
               <div className="text-[10px] text-slate-400">Administrator</div>
             </div>
           </div>
-          <button onClick={() => signOut().then(() => navigate({ to: "/" }))} className="mt-3 w-full inline-flex items-center justify-center gap-2 rounded-md bg-white/5 hover:bg-white/10 px-3 py-1.5 text-xs">
+          <button onClick={() => signOut()} className="mt-3 w-full inline-flex items-center justify-center gap-2 rounded-md bg-white/5 hover:bg-white/10 px-3 py-1.5 text-xs">
             <LogOut className="h-3.5 w-3.5" /> Sign out
           </button>
         </div>
