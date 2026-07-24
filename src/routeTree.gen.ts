@@ -9,67 +9,27 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as VerifyEmailRouteImport } from './routes/verify-email'
-import { Route as VerifyRouteImport } from './routes/verify'
-import { Route as ProviderRouteImport } from './routes/provider'
-import { Route as PlanRouteImport } from './routes/plan'
-import { Route as MessagesRouteImport } from './routes/messages'
-import { Route as MemoriesRouteImport } from './routes/memories'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as JoinUsRouteImport } from './routes/join-us'
-import { Route as BookingsRouteImport } from './routes/bookings'
-import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as PlacesIndexRouteImport } from './routes/places.index'
-import { Route as ProviderNewRouteImport } from './routes/provider.new'
-import { Route as PlacesSubmitRouteImport } from './routes/places.submit'
-import { Route as PlacesCommunityRouteImport } from './routes/places.community'
-import { Route as PlacesSlugRouteImport } from './routes/places.$slug'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as BookingsRouteImport } from './routes/bookings'
+import { Route as JoinUsRouteImport } from './routes/join-us'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as MemoriesRouteImport } from './routes/memories'
+import { Route as MessagesRouteImport } from './routes/messages'
+import { Route as PlanRouteImport } from './routes/plan'
+import { Route as ProviderRouteImport } from './routes/provider'
+import { Route as VerifyRouteImport } from './routes/verify'
+import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as ListingIdRouteImport } from './routes/listing.$id'
+import { Route as PlacesIndexRouteImport } from './routes/places.index'
+import { Route as PlacesSlugRouteImport } from './routes/places.$slug'
+import { Route as PlacesCommunityRouteImport } from './routes/places.community'
+import { Route as PlacesSubmitRouteImport } from './routes/places.submit'
+import { Route as ProviderNewRouteImport } from './routes/provider.new'
 
-const VerifyEmailRoute = VerifyEmailRouteImport.update({
-  id: '/verify-email',
-  path: '/verify-email',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const VerifyRoute = VerifyRouteImport.update({
-  id: '/verify',
-  path: '/verify',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProviderRoute = ProviderRouteImport.update({
-  id: '/provider',
-  path: '/provider',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PlanRoute = PlanRouteImport.update({
-  id: '/plan',
-  path: '/plan',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MessagesRoute = MessagesRouteImport.update({
-  id: '/messages',
-  path: '/messages',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MemoriesRoute = MemoriesRouteImport.update({
-  id: '/memories',
-  path: '/memories',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const JoinUsRoute = JoinUsRouteImport.update({
-  id: '/join-us',
-  path: '/join-us',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BookingsRoute = BookingsRouteImport.update({
-  id: '/bookings',
-  path: '/bookings',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -77,9 +37,54 @@ const AdminRoute = AdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const BookingsRoute = BookingsRouteImport.update({
+  id: '/bookings',
+  path: '/bookings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JoinUsRoute = JoinUsRouteImport.update({
+  id: '/join-us',
+  path: '/join-us',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MemoriesRoute = MemoriesRouteImport.update({
+  id: '/memories',
+  path: '/memories',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MessagesRoute = MessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlanRoute = PlanRouteImport.update({
+  id: '/plan',
+  path: '/plan',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProviderRoute = ProviderRouteImport.update({
+  id: '/provider',
+  path: '/provider',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerifyRoute = VerifyRouteImport.update({
+  id: '/verify',
+  path: '/verify',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerifyEmailRoute = VerifyEmailRouteImport.update({
+  id: '/verify-email',
+  path: '/verify-email',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ListingIdRoute = ListingIdRouteImport.update({
+  id: '/listing/$id',
+  path: '/listing/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PlacesIndexRoute = PlacesIndexRouteImport.update({
@@ -87,14 +92,9 @@ const PlacesIndexRoute = PlacesIndexRouteImport.update({
   path: '/places/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProviderNewRoute = ProviderNewRouteImport.update({
-  id: '/new',
-  path: '/new',
-  getParentRoute: () => ProviderRoute,
-} as any)
-const PlacesSubmitRoute = PlacesSubmitRouteImport.update({
-  id: '/places/submit',
-  path: '/places/submit',
+const PlacesSlugRoute = PlacesSlugRouteImport.update({
+  id: '/places/$slug',
+  path: '/places/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PlacesCommunityRoute = PlacesCommunityRouteImport.update({
@@ -102,15 +102,15 @@ const PlacesCommunityRoute = PlacesCommunityRouteImport.update({
   path: '/places/community',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PlacesSlugRoute = PlacesSlugRouteImport.update({
-  id: '/places/$slug',
-  path: '/places/$slug',
+const PlacesSubmitRoute = PlacesSubmitRouteImport.update({
+  id: '/places/submit',
+  path: '/places/submit',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ListingIdRoute = ListingIdRouteImport.update({
-  id: '/listing/$id',
-  path: '/listing/$id',
-  getParentRoute: () => rootRouteImport,
+const ProviderNewRoute = ProviderNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => ProviderRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -252,67 +252,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/verify-email': {
-      id: '/verify-email'
-      path: '/verify-email'
-      fullPath: '/verify-email'
-      preLoaderRoute: typeof VerifyEmailRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/verify': {
-      id: '/verify'
-      path: '/verify'
-      fullPath: '/verify'
-      preLoaderRoute: typeof VerifyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/provider': {
-      id: '/provider'
-      path: '/provider'
-      fullPath: '/provider'
-      preLoaderRoute: typeof ProviderRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/plan': {
-      id: '/plan'
-      path: '/plan'
-      fullPath: '/plan'
-      preLoaderRoute: typeof PlanRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/messages': {
-      id: '/messages'
-      path: '/messages'
-      fullPath: '/messages'
-      preLoaderRoute: typeof MessagesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/memories': {
-      id: '/memories'
-      path: '/memories'
-      fullPath: '/memories'
-      preLoaderRoute: typeof MemoriesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/join-us': {
-      id: '/join-us'
-      path: '/join-us'
-      fullPath: '/join-us'
-      preLoaderRoute: typeof JoinUsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/bookings': {
-      id: '/bookings'
-      path: '/bookings'
-      fullPath: '/bookings'
-      preLoaderRoute: typeof BookingsRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -322,11 +266,74 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/bookings': {
+      id: '/bookings'
+      path: '/bookings'
+      fullPath: '/bookings'
+      preLoaderRoute: typeof BookingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/join-us': {
+      id: '/join-us'
+      path: '/join-us'
+      fullPath: '/join-us'
+      preLoaderRoute: typeof JoinUsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/memories': {
+      id: '/memories'
+      path: '/memories'
+      fullPath: '/memories'
+      preLoaderRoute: typeof MemoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/messages': {
+      id: '/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof MessagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/plan': {
+      id: '/plan'
+      path: '/plan'
+      fullPath: '/plan'
+      preLoaderRoute: typeof PlanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/provider': {
+      id: '/provider'
+      path: '/provider'
+      fullPath: '/provider'
+      preLoaderRoute: typeof ProviderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verify': {
+      id: '/verify'
+      path: '/verify'
+      fullPath: '/verify'
+      preLoaderRoute: typeof VerifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verify-email': {
+      id: '/verify-email'
+      path: '/verify-email'
+      fullPath: '/verify-email'
+      preLoaderRoute: typeof VerifyEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/listing/$id': {
+      id: '/listing/$id'
+      path: '/listing/$id'
+      fullPath: '/listing/$id'
+      preLoaderRoute: typeof ListingIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/places/': {
@@ -336,18 +343,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlacesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/provider/new': {
-      id: '/provider/new'
-      path: '/new'
-      fullPath: '/provider/new'
-      preLoaderRoute: typeof ProviderNewRouteImport
-      parentRoute: typeof ProviderRoute
-    }
-    '/places/submit': {
-      id: '/places/submit'
-      path: '/places/submit'
-      fullPath: '/places/submit'
-      preLoaderRoute: typeof PlacesSubmitRouteImport
+    '/places/$slug': {
+      id: '/places/$slug'
+      path: '/places/$slug'
+      fullPath: '/places/$slug'
+      preLoaderRoute: typeof PlacesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/places/community': {
@@ -357,19 +357,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlacesCommunityRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/places/$slug': {
-      id: '/places/$slug'
-      path: '/places/$slug'
-      fullPath: '/places/$slug'
-      preLoaderRoute: typeof PlacesSlugRouteImport
+    '/places/submit': {
+      id: '/places/submit'
+      path: '/places/submit'
+      fullPath: '/places/submit'
+      preLoaderRoute: typeof PlacesSubmitRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/listing/$id': {
-      id: '/listing/$id'
-      path: '/listing/$id'
-      fullPath: '/listing/$id'
-      preLoaderRoute: typeof ListingIdRouteImport
-      parentRoute: typeof rootRouteImport
+    '/provider/new': {
+      id: '/provider/new'
+      path: '/new'
+      fullPath: '/provider/new'
+      preLoaderRoute: typeof ProviderNewRouteImport
+      parentRoute: typeof ProviderRoute
     }
   }
 }
