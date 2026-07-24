@@ -53,13 +53,14 @@ export function useUnreadCount() {
     load();
 
     const ch = supabase
-      .channel(`messages-unread-${user.id}`)
+      .channel(`messages-unread-${user.id}-${Math.random().toString(36).slice(2)}`)
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "messages", filter: `receiver_id=eq.${user.id}` },
         load,
       )
       .subscribe();
+
 
     return () => { cancelled = true; supabase.removeChannel(ch); };
   }, [user]);
