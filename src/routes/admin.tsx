@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Fragment, useEffect, useState } from "react";
 import {
   Shield, LayoutDashboard, CalendarCheck, Map as MapIcon, Users, BadgeCheck,
@@ -15,6 +15,76 @@ export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin — Takaz" }] }),
   component: AdminShell,
 });
+
+function AdminLogin({ hasUser, userEmail, onSignOut, onSuccess }: { hasUser: boolean; userEmail: string | null; onSignOut: () => Promise<void>; onSuccess: () => void }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null); setBusy(true);
+    const { data: sign, error: signErr } = await supabase.auth.signInWithPassword({ email, password });
+    if (signErr || !sign.user) { setBusy(false); setError(signErr?.message ?? "Sign in failed"); return; }
+    const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: sign.user.id, _role: "admin" });
+    if (!isAdmin) {
+      await supabase.auth.signOut();
+      setBusy(false);
+      setError("This account does not have admin access.");
+      return;
+    }
+    setBusy(false);
+    onSuccess();
+  }
+
+  return (
+    <div className="fixed inset-0 z-[60] grid place-items-center bg-[#0f172a] text-slate-100 px-5">
+      <div className="w-full max-w-md rounded-2xl bg-slate-900/80 border border-white/10 p-8 shadow-2xl">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="grid h-10 w-10 place-items-center rounded-lg bg-teal-500/20 text-teal-300">
+            <Shield className="h-5 w-5" />
+          </div>
+          <div>
+            <div className="text-lg font-semibold">Admin access</div>
+            <div className="text-xs text-slate-400">Restricted area — administrators only</div>
+          </div>
+        </div>
+
+        {hasUser ? (
+          <div className="mb-4 rounded-lg bg-amber-500/10 border border-amber-500/30 px-3 py-2.5 text-xs text-amber-200">
+            Signed in as <span className="font-medium">{userEmail}</span> — this account is not an admin.
+            <button onClick={() => onSignOut()} className="ml-1 underline">Sign out</button> and use an admin account.
+          </div>
+        ) : null}
+
+        <form onSubmit={onSubmit} className="space-y-3">
+          <label className="block">
+            <span className="text-xs text-slate-400">Admin email</span>
+            <input required type="email" value={email} onChange={e => setEmail(e.target.value)}
+              className="mt-1 w-full rounded-lg bg-slate-800/70 border border-white/10 px-3 py-2.5 text-sm outline-none focus:border-teal-400"
+              placeholder="admin@takaz.app" autoComplete="email" />
+          </label>
+          <label className="block">
+            <span className="text-xs text-slate-400">Password</span>
+            <input required type="password" value={password} onChange={e => setPassword(e.target.value)}
+              className="mt-1 w-full rounded-lg bg-slate-800/70 border border-white/10 px-3 py-2.5 text-sm outline-none focus:border-teal-400"
+              autoComplete="current-password" />
+          </label>
+          {error && <div className="rounded-lg bg-red-500/15 border border-red-500/30 px-3 py-2 text-xs text-red-200">{error}</div>}
+          <button disabled={busy} className="w-full rounded-lg bg-teal-500 hover:bg-teal-400 disabled:opacity-60 text-slate-950 font-medium px-4 py-2.5 text-sm inline-flex items-center justify-center gap-2">
+            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Shield className="h-4 w-4" />} Sign in to admin
+          </button>
+        </form>
+
+        <div className="mt-6 text-center text-[11px] text-slate-500">
+          Not an admin? <a href="/" className="text-teal-400 hover:underline">Return to site</a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 
 type TabKey =
   | "dashboard" | "bookings" | "trip_plans" | "applications" | "verifications"
@@ -45,22 +115,18 @@ const NAV: { section: string; items: { key: TabKey; label: string; icon: any }[]
 
 function AdminShell() {
   const { user, isAdmin, loading, signOut } = useAuth();
-  const navigate = useNavigate();
   const [tab, setTab] = useState<TabKey>("dashboard");
   const [checking, setChecking] = useState(true);
   const [allowed, setAllowed] = useState(false);
 
   useEffect(() => {
     if (loading) return;
-    if (!user) { navigate({ to: "/login" }); return; }
-    // Double check via RPC in case roles context is stale
+    if (!user) { setAllowed(false); setChecking(false); return; }
     supabase.rpc("has_role", { _user_id: user.id, _role: "admin" }).then(({ data }) => {
-      const ok = !!data || isAdmin;
-      setAllowed(ok);
+      setAllowed(!!data || isAdmin);
       setChecking(false);
-      if (!ok) navigate({ to: "/" });
     });
-  }, [user, isAdmin, loading, navigate]);
+  }, [user, isAdmin, loading]);
 
   if (loading || checking) {
     return (
@@ -69,7 +135,8 @@ function AdminShell() {
       </div>
     );
   }
-  if (!allowed) return null;
+  if (!allowed) return <AdminLogin hasUser={!!user} userEmail={user?.email ?? null} onSignOut={signOut} onSuccess={() => { setChecking(true); }} />;
+
 
   return (
     <div className="fixed inset-0 z-[60] flex bg-slate-50 text-slate-900">
@@ -119,7 +186,7 @@ function AdminShell() {
               <div className="text-[10px] text-slate-400">Administrator</div>
             </div>
           </div>
-          <button onClick={() => signOut().then(() => navigate({ to: "/" }))} className="mt-3 w-full inline-flex items-center justify-center gap-2 rounded-md bg-white/5 hover:bg-white/10 px-3 py-1.5 text-xs">
+          <button onClick={() => signOut()} className="mt-3 w-full inline-flex items-center justify-center gap-2 rounded-md bg-white/5 hover:bg-white/10 px-3 py-1.5 text-xs">
             <LogOut className="h-3.5 w-3.5" /> Sign out
           </button>
         </div>
