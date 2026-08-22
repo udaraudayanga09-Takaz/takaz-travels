@@ -237,7 +237,7 @@ function ExplorePage() {
             <span className="inline-flex items-center gap-2 rounded-full glass px-3 py-1.5 text-xs"><Compass className="h-3.5 w-3.5 text-accent" /> Best places to visit</span>
             <h2 className="mt-3 text-3xl md:text-5xl font-semibold tracking-tight">Sri Lanka's <span className="text-gradient">unmissable</span> destinations</h2>
           </div>
-          <Link to="/plan" className="group flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-[var(--shadow-glow)] transition hover:scale-[1.02]">
+          <Link to="/plan" search={{ regions: undefined }} className="group flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-[var(--shadow-glow)] transition hover:scale-[1.02]">
             Plan your next trip <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
           </Link>
         </div>
@@ -285,7 +285,7 @@ function ExplorePage() {
           <h2 className="mt-4 text-3xl md:text-5xl font-semibold tracking-tight">Ready to make memories?</h2>
           <p className="mt-3 text-muted-foreground max-w-xl mx-auto">Tell our local trip designers where you want to go — they'll come back with a free, fully-priced itinerary in 24 hours.</p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <Link to="/plan" className="group flex items-center gap-2 rounded-full bg-primary px-6 py-3.5 text-sm font-medium text-primary-foreground shadow-[var(--shadow-glow)] transition hover:scale-[1.02]">
+            <Link to="/plan" search={{ regions: undefined }} className="group flex items-center gap-2 rounded-full bg-primary px-6 py-3.5 text-sm font-medium text-primary-foreground shadow-[var(--shadow-glow)] transition hover:scale-[1.02]">
               Plan my trip <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
             </Link>
             <Link to="/memories" className="rounded-full glass px-6 py-3.5 text-sm font-medium">Read traveller stories</Link>

@@ -26,6 +26,8 @@ import { Route as PlacesSlugRouteImport } from './routes/places.$slug'
 import { Route as PlacesCommunityRouteImport } from './routes/places.community'
 import { Route as PlacesSubmitRouteImport } from './routes/places.submit'
 import { Route as ProviderNewRouteImport } from './routes/provider.new'
+import { Route as PlacesExtraSlugRouteImport } from './routes/places.extra.$slug'
+import { Route as PlacesSpotSubRouteImport } from './routes/places.spot.$sub'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -112,6 +114,16 @@ const ProviderNewRoute = ProviderNewRouteImport.update({
   path: '/new',
   getParentRoute: () => ProviderRoute,
 } as any)
+const PlacesExtraSlugRoute = PlacesExtraSlugRouteImport.update({
+  id: '/places/extra/$slug',
+  path: '/places/extra/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlacesSpotSubRoute = PlacesSpotSubRouteImport.update({
+  id: '/places/spot/$sub',
+  path: '/places/spot/$sub',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -131,6 +143,8 @@ export interface FileRoutesByFullPath {
   '/places/submit': typeof PlacesSubmitRoute
   '/provider/new': typeof ProviderNewRoute
   '/places/': typeof PlacesIndexRoute
+  '/places/extra/$slug': typeof PlacesExtraSlugRoute
+  '/places/spot/$sub': typeof PlacesSpotSubRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -150,6 +164,8 @@ export interface FileRoutesByTo {
   '/places/submit': typeof PlacesSubmitRoute
   '/provider/new': typeof ProviderNewRoute
   '/places': typeof PlacesIndexRoute
+  '/places/extra/$slug': typeof PlacesExtraSlugRoute
+  '/places/spot/$sub': typeof PlacesSpotSubRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -170,6 +186,8 @@ export interface FileRoutesById {
   '/places/submit': typeof PlacesSubmitRoute
   '/provider/new': typeof ProviderNewRoute
   '/places/': typeof PlacesIndexRoute
+  '/places/extra/$slug': typeof PlacesExtraSlugRoute
+  '/places/spot/$sub': typeof PlacesSpotSubRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -191,6 +209,8 @@ export interface FileRouteTypes {
     | '/places/submit'
     | '/provider/new'
     | '/places/'
+    | '/places/extra/$slug'
+    | '/places/spot/$sub'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -210,6 +230,8 @@ export interface FileRouteTypes {
     | '/places/submit'
     | '/provider/new'
     | '/places'
+    | '/places/extra/$slug'
+    | '/places/spot/$sub'
   id:
     | '__root__'
     | '/'
@@ -229,6 +251,8 @@ export interface FileRouteTypes {
     | '/places/submit'
     | '/provider/new'
     | '/places/'
+    | '/places/extra/$slug'
+    | '/places/spot/$sub'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -248,6 +272,8 @@ export interface RootRouteChildren {
   PlacesCommunityRoute: typeof PlacesCommunityRoute
   PlacesSubmitRoute: typeof PlacesSubmitRoute
   PlacesIndexRoute: typeof PlacesIndexRoute
+  PlacesExtraSlugRoute: typeof PlacesExtraSlugRoute
+  PlacesSpotSubRoute: typeof PlacesSpotSubRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -371,6 +397,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProviderNewRouteImport
       parentRoute: typeof ProviderRoute
     }
+    '/places/extra/$slug': {
+      id: '/places/extra/$slug'
+      path: '/places/extra/$slug'
+      fullPath: '/places/extra/$slug'
+      preLoaderRoute: typeof PlacesExtraSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/places/spot/$sub': {
+      id: '/places/spot/$sub'
+      path: '/places/spot/$sub'
+      fullPath: '/places/spot/$sub'
+      preLoaderRoute: typeof PlacesSpotSubRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -403,7 +443,19 @@ const rootRouteChildren: RootRouteChildren = {
   PlacesCommunityRoute: PlacesCommunityRoute,
   PlacesSubmitRoute: PlacesSubmitRoute,
   PlacesIndexRoute: PlacesIndexRoute,
+  PlacesExtraSlugRoute: PlacesExtraSlugRoute,
+  PlacesSpotSubRoute: PlacesSpotSubRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

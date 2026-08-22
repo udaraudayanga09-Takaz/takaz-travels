@@ -20,6 +20,7 @@ export type Database = {
           description: string | null
           id: string
           image_url: string | null
+          media_urls: string[]
           name: string
           published: boolean
           slug: string
@@ -32,6 +33,7 @@ export type Database = {
           description?: string | null
           id?: string
           image_url?: string | null
+          media_urls?: string[]
           name: string
           published?: boolean
           slug: string
@@ -44,6 +46,7 @@ export type Database = {
           description?: string | null
           id?: string
           image_url?: string | null
+          media_urls?: string[]
           name?: string
           published?: boolean
           slug?: string
@@ -457,6 +460,51 @@ export type Database = {
           review_count?: number
           status?: string
           title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      sub_places: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          media_urls: string[]
+          name: string
+          parent_slug: string
+          published: boolean
+          slug: string
+          sort_order: number
+          tagline: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          media_urls?: string[]
+          name: string
+          parent_slug: string
+          published?: boolean
+          slug: string
+          sort_order?: number
+          tagline?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          media_urls?: string[]
+          name?: string
+          parent_slug?: string
+          published?: boolean
+          slug?: string
+          sort_order?: number
+          tagline?: string | null
           updated_at?: string
         }
         Relationships: []

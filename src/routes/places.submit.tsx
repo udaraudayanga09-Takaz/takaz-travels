@@ -95,7 +95,7 @@ function SubmitPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-5 py-12 md:py-16">
-      <Link to="/places/" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground">
+      <Link to="/places" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground">
         <ArrowLeft className="h-3.5 w-3.5" /> All destinations
       </Link>
       <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="mt-3 text-4xl md:text-5xl font-semibold tracking-tight">
