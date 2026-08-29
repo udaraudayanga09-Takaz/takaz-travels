@@ -400,6 +400,8 @@ function AdditionalFormModal({ initial, onClose, onSaved }: { initial: Additiona
   const [imageUrl, setImageUrl] = useState<string | null>(initial?.image_url ?? null);
   const [published, setPublished] = useState<boolean>(initial?.published ?? true);
   const [file, setFile] = useState<File | null>(null);
+  const [media, setMedia] = useState<string[]>(initial?.media_urls ?? []);
+  const [newMedia, setNewMedia] = useState<File[]>([]);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
@@ -410,12 +412,14 @@ function AdditionalFormModal({ initial, onClose, onSaved }: { initial: Additiona
     try {
       let img = imageUrl;
       if (file) img = await uploadImage(file);
+      const uploaded = await Promise.all(newMedia.map(uploadMedia));
       const payload = {
         name: name.trim(),
         slug: (slug.trim() || slugify(name)),
         tagline: tagline || null,
         description: description || null,
         image_url: img,
+        media_urls: [...media, ...uploaded],
         published,
       };
       if (!payload.name || !payload.slug) throw new Error("Name and slug are required.");
