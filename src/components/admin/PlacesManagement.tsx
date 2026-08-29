@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Plus, Pencil, Trash2, X, Upload, Image as ImageIcon, Eye, EyeOff } from "lucide-react";
+import { Search, Plus, Pencil, Trash2, X, Upload, Image as ImageIcon, Eye, EyeOff, Film } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { PLACE_LIST } from "@/data/places";
+import { isVideo } from "@/lib/subplaces";
 
 type TopRow = {
   id: string;
@@ -23,16 +25,30 @@ type AdditionalRow = {
   tagline: string | null;
   description: string | null;
   image_url: string | null;
+  media_urls: string[] | null;
+  published: boolean;
+  sort_order: number;
+};
+
+type SubRow = {
+  id: string;
+  parent_slug: string;
+  name: string;
+  slug: string;
+  tagline: string | null;
+  description: string | null;
+  image_url: string | null;
+  media_urls: string[] | null;
   published: boolean;
   sort_order: number;
 };
 
 export function PlacesManagement() {
-  const [sub, setSub] = useState<"top" | "additional">("top");
+  const [sub, setSub] = useState<"top" | "additional" | "sub">("top");
   return (
     <div>
       <div className="flex gap-2 mb-6">
-        {([["top", "Top destinations"], ["additional", "Additional destinations"]] as const).map(([v, l]) => (
+        {([["top", "Top destinations"], ["additional", "Additional destinations"], ["sub", "Sub-locations"]] as const).map(([v, l]) => (
           <button
             key={v}
             onClick={() => setSub(v)}
