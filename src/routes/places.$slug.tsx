@@ -182,6 +182,20 @@ function PlacePage() {
 
   const otherPlaces = useMemo(() => Object.values(PLACES).filter(p => p.slug !== place.slug), [place.slug]);
 
+  // Admin-managed sub-locations near this destination
+  const [subPlaces, setSubPlaces] = useState<SubPlace[]>([]);
+  useEffect(() => {
+    let active = true;
+    supabase
+      .from("sub_places")
+      .select("*")
+      .eq("parent_slug", place.slug)
+      .eq("published", true)
+      .order("sort_order", { ascending: true })
+      .then(({ data }) => { if (active) setSubPlaces((data ?? []) as SubPlace[]); });
+    return () => { active = false; };
+  }, [place.slug]);
+
   return (
     <div>
       {/* HERO */}
