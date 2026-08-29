@@ -72,6 +72,13 @@ async function uploadImage(file: File): Promise<string> {
   return supabase.storage.from("blog-covers").getPublicUrl(path).data.publicUrl;
 }
 
+async function uploadMedia(file: File): Promise<string> {
+  const path = `places/media/${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_")}`;
+  const up = await supabase.storage.from("blog-covers").upload(path, file, { upsert: false });
+  if (up.error) throw up.error;
+  return supabase.storage.from("blog-covers").getPublicUrl(path).data.publicUrl;
+}
+
 function slugify(v: string) {
   return v.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60);
 }
