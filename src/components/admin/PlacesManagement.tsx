@@ -527,3 +527,261 @@ function ImageUpload({ current, file, onFile }: { current: string | null; file: 
     </div>
   );
 }
+
+/* -------------------- SUB LOCATIONS -------------------- */
+
+function useParentOptions() {
+  const [extras, setExtras] = useState<{ slug: string; name: string }[]>([]);
+  useEffect(() => {
+    supabase.from("additional_places").select("slug, name").order("name")
+      .then(({ data }) => setExtras((data ?? []) as { slug: string; name: string }[]));
+  }, []);
+  return [
+    ...PLACE_LIST.map(p => ({ slug: p.slug, name: p.name })),
+    ...extras.filter(e => !PLACE_LIST.some(p => p.slug === e.slug)),
+  ];
+}
+
+function SubPlacesTable() {
+  const [rows, setRows] = useState<SubRow[]>([]);
+  const [q, setQ] = useState("");
+  const [parentFilter, setParentFilter] = useState("");
+  const [editing, setEditing] = useState<SubRow | "new" | null>(null);
+  const parents = useParentOptions();
+  const parentName = (slug: string) => parents.find(p => p.slug === slug)?.name ?? slug;
+
+  async function load() {
+    const { data } = await supabase
+      .from("sub_places")
+      .select("*")
+      .order("parent_slug")
+      .order("sort_order");
+    setRows((data ?? []) as SubRow[]);
+  }
+  useEffect(() => { load(); }, []);
+
+  async function remove(r: SubRow) {
+    if (!confirm(`Delete "${r.name}"? This cannot be undone.`)) return;
+    await supabase.from("sub_places").delete().eq("id", r.id);
+    load();
+  }
+  async function togglePublished(r: SubRow) {
+    await supabase.from("sub_places").update({ published: !r.published }).eq("id", r.id);
+    load();
+  }
+
+  const filtered = rows.filter(r =>
+    (r.name.toLowerCase().includes(q.toLowerCase()) || parentName(r.parent_slug).toLowerCase().includes(q.toLowerCase())) &&
+    (!parentFilter || r.parent_slug === parentFilter)
+  );
+
+  return (
+    <div>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <div className="relative flex-1 min-w-[220px] max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <input
+            value={q}
+            onChange={e => setQ(e.target.value)}
+            placeholder="Search sub-locations or parent…"
+            className="w-full rounded-full glass pl-10 pr-4 py-2.5 text-sm outline-none focus:ring-1 focus:ring-primary"
+          />
+        </div>
+        <select
+          value={parentFilter}
+          onChange={e => setParentFilter(e.target.value)}
+          className="rounded-full glass px-4 py-2.5 text-xs outline-none focus:ring-1 focus:ring-primary"
+        >
+          <option value="">All parent locations</option>
+          {parents.map(p => <option key={p.slug} value={p.slug}>{p.name}</option>)}
+        </select>
+        <button
+          onClick={() => setEditing("new")}
+          className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-xs font-medium text-primary-foreground shadow-[var(--shadow-glow)] hover:scale-[1.02] transition"
+        >
+          <Plus className="h-3.5 w-3.5" /> Add sub-location
+        </button>
+      </div>
+
+      <div className="rounded-3xl glass overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-secondary/30 text-[10px] uppercase tracking-widest text-muted-foreground">
+              <tr>
+                <th className="text-left px-3 py-3">Cover</th>
+                <th className="text-left px-3 py-3">Name</th>
+                <th className="text-left px-3 py-3">Parent location</th>
+                <th className="text-left px-3 py-3">Media</th>
+                <th className="text-left px-3 py-3">Published</th>
+                <th className="text-right px-3 py-3">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.length === 0 && (
+                <tr><td colSpan={6} className="text-center text-muted-foreground py-10">No sub-locations yet.</td></tr>
+              )}
+              {filtered.map(r => (
+                <tr key={r.id} className="border-t border-border/40 hover:bg-secondary/20">
+                  <td className="px-3 py-2.5">
+                    {r.image_url ? (
+                      <img src={r.image_url} alt={r.name} className="h-12 w-16 rounded-md object-cover" />
+                    ) : (
+                      <div className="h-12 w-16 rounded-md bg-secondary/50 grid place-items-center"><ImageIcon className="h-4 w-4 text-muted-foreground" /></div>
+                    )}
+                  </td>
+                  <td className="px-3 py-2.5">
+                    <div className="font-medium">{r.name}</div>
+                    <div className="text-[10px] text-muted-foreground">/places/spot/{r.slug}</div>
+                  </td>
+                  <td className="px-3 py-2.5 text-muted-foreground">{parentName(r.parent_slug)}</td>
+                  <td className="px-3 py-2.5 text-muted-foreground">
+                    <span className="inline-flex items-center gap-1 text-xs"><Film className="h-3 w-3" /> {(r.media_urls ?? []).length}</span>
+                  </td>
+                  <td className="px-3 py-2.5">
+                    <button
+                      onClick={() => togglePublished(r)}
+                      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] transition ${r.published ? "bg-primary/20 text-primary" : "bg-secondary text-muted-foreground"}`}
+                    >
+                      {r.published ? <><Eye className="h-3 w-3" /> Published</> : <><EyeOff className="h-3 w-3" /> Draft</>}
+                    </button>
+                  </td>
+                  <td className="px-3 py-2.5">
+                    <div className="flex items-center gap-1 justify-end">
+                      <button onClick={() => setEditing(r)} className="p-1.5 rounded-md hover:bg-secondary/60"><Pencil className="h-3.5 w-3.5" /></button>
+                      <button onClick={() => remove(r)} className="p-1.5 rounded-md hover:bg-destructive/20 text-destructive"><Trash2 className="h-3.5 w-3.5" /></button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <AnimatePresence>
+        {editing && (
+          <SubFormModal
+            initial={editing === "new" ? null : editing}
+            parents={parents}
+            onClose={() => setEditing(null)}
+            onSaved={() => { setEditing(null); load(); }}
+          />
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function SubFormModal({ initial, parents, onClose, onSaved }: { initial: SubRow | null; parents: { slug: string; name: string }[]; onClose: () => void; onSaved: () => void }) {
+  const [parentSlug, setParentSlug] = useState(initial?.parent_slug ?? (parents[0]?.slug ?? ""));
+  const [name, setName] = useState(initial?.name ?? "");
+  const [slug, setSlug] = useState(initial?.slug ?? "");
+  const [tagline, setTagline] = useState(initial?.tagline ?? "");
+  const [description, setDescription] = useState(initial?.description ?? "");
+  const [imageUrl, setImageUrl] = useState<string | null>(initial?.image_url ?? null);
+  const [file, setFile] = useState<File | null>(null);
+  const [media, setMedia] = useState<string[]>(initial?.media_urls ?? []);
+  const [newMedia, setNewMedia] = useState<File[]>([]);
+  const [sortOrder, setSortOrder] = useState(String(initial?.sort_order ?? 0));
+  const [published, setPublished] = useState<boolean>(initial?.published ?? true);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  async function save(e: React.FormEvent) {
+    e.preventDefault();
+    setErr(null);
+    setBusy(true);
+    try {
+      let img = imageUrl;
+      if (file) img = await uploadImage(file);
+      const uploaded = await Promise.all(newMedia.map(uploadMedia));
+      const payload = {
+        parent_slug: parentSlug,
+        name: name.trim(),
+        slug: (slug.trim() || slugify(name)),
+        tagline: tagline || null,
+        description: description || null,
+        image_url: img,
+        media_urls: [...media, ...uploaded],
+        sort_order: parseInt(sortOrder, 10) || 0,
+        published,
+      };
+      if (!payload.parent_slug) throw new Error("Pick a parent location.");
+      if (!payload.name || !payload.slug) throw new Error("Name and slug are required.");
+      const q = initial
+        ? supabase.from("sub_places").update(payload).eq("id", initial.id)
+        : supabase.from("sub_places").insert(payload);
+      const { error } = await q;
+      if (error) throw error;
+      onSaved();
+    } catch (e: any) {
+      setErr(e.message ?? "Could not save.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <FormShell title={initial ? `Edit ${initial.name}` : "Add sub-location"} onClose={onClose} onSubmit={save} busy={busy} err={err}>
+      <div>
+        <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">Parent location *</div>
+        <select value={parentSlug} onChange={e => setParentSlug(e.target.value)} className="w-full rounded-xl bg-secondary/40 px-4 py-2.5 text-sm outline-none focus:ring-1 focus:ring-primary">
+          {parents.map(p => <option key={p.slug} value={p.slug}>{p.name}</option>)}
+        </select>
+      </div>
+      <TextField label="Sub-location name *" value={name} onChange={v => { setName(v); if (!initial && !slug) setSlug(slugify(v)); }} />
+      <TextField label="Slug (URL path)" value={slug} onChange={setSlug} />
+      <TextField label="Short tagline" value={tagline} onChange={setTagline} />
+      <TextArea label="Description (shown on the public page)" value={description} onChange={setDescription} />
+      <ImageUpload current={imageUrl} file={file} onFile={setFile} />
+      <MediaGallery urls={media} files={newMedia} onUrls={setMedia} onFiles={setNewMedia} />
+      <TextField label="Sort order" value={sortOrder} onChange={setSortOrder} type="number" />
+      <label className="flex items-center gap-2 text-sm">
+        <input type="checkbox" checked={published} onChange={e => setPublished(e.target.checked)} className="h-4 w-4 accent-primary" />
+        Published (visible on the public site)
+      </label>
+    </FormShell>
+  );
+}
+
+/* -------------------- media gallery field -------------------- */
+
+function MediaGallery({ urls, files, onUrls, onFiles }: { urls: string[]; files: File[]; onUrls: (v: string[]) => void; onFiles: (v: File[]) => void }) {
+  return (
+    <div>
+      <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">Photo & video gallery</div>
+      {(urls.length > 0 || files.length > 0) && (
+        <div className="mb-2 flex flex-wrap gap-2">
+          {urls.map(u => (
+            <div key={u} className="relative">
+              {isVideo(u)
+                ? <video src={u} className="h-16 w-20 rounded-lg object-cover bg-black" />
+                : <img src={u} alt="" className="h-16 w-20 rounded-lg object-cover" />}
+              <button type="button" onClick={() => onUrls(urls.filter(x => x !== u))} className="absolute -right-1.5 -top-1.5 rounded-full bg-destructive p-0.5 text-destructive-foreground">
+                <X className="h-3 w-3" />
+              </button>
+            </div>
+          ))}
+          {files.map((f, i) => (
+            <div key={f.name + i} className="relative">
+              <div className="h-16 w-20 rounded-lg bg-secondary/60 grid place-items-center text-[9px] px-1 text-center text-muted-foreground">{f.name.slice(0, 22)}</div>
+              <button type="button" onClick={() => onFiles(files.filter((_, x) => x !== i))} className="absolute -right-1.5 -top-1.5 rounded-full bg-destructive p-0.5 text-destructive-foreground">
+                <X className="h-3 w-3" />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+      <label className="inline-flex cursor-pointer items-center gap-2 rounded-full glass px-4 py-2 text-xs">
+        <Upload className="h-3.5 w-3.5" /> Add photos or videos
+        <input
+          type="file"
+          accept="image/*,video/*"
+          multiple
+          hidden
+          onChange={e => { onFiles([...files, ...Array.from(e.target.files ?? [])]); e.target.value = ""; }}
+        />
+      </label>
+    </div>
+  );
+}
