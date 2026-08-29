@@ -6,6 +6,7 @@ import { PLACES, type Place } from "@/data/places";
 import { REGIONS } from "@/components/SriLankaMap";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
+import type { SubPlace } from "@/lib/subplaces";
 
 
 type Blog = { id: string; author: string; title: string; body: string; created_at: number };

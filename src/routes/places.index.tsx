@@ -117,7 +117,12 @@ function AllPlaces() {
           </div>
           <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {extras.map((p) => (
-              <article key={p.id} className="rounded-3xl glass overflow-hidden group hover:border-primary/40 transition">
+              <Link
+                key={p.id}
+                to="/places/extra/$slug"
+                params={{ slug: p.slug }}
+                className="rounded-3xl glass overflow-hidden group hover:border-primary/40 transition block"
+              >
                 <div className="aspect-[4/3] overflow-hidden bg-secondary/40">
                   {p.image_url ? (
                     <img src={p.image_url} alt={p.name} loading="lazy" className="h-full w-full object-cover transition duration-700 group-hover:scale-110" />
@@ -129,8 +134,11 @@ function AllPlaces() {
                   <h3 className="text-lg font-semibold">{p.name}</h3>
                   {p.tagline && <div className="text-xs text-accent mt-0.5">{p.tagline}</div>}
                   {p.description && <p className="mt-2 text-sm text-muted-foreground line-clamp-3">{p.description}</p>}
+                  <span className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-primary">
+                    Explore <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
+                  </span>
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
         </section>
