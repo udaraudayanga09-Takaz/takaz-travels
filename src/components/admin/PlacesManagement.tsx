@@ -58,7 +58,7 @@ export function PlacesManagement() {
           </button>
         ))}
       </div>
-      {sub === "top" ? <TopDestinationsTable /> : <AdditionalPlacesTable />}
+      {sub === "top" ? <TopDestinationsTable /> : sub === "additional" ? <AdditionalPlacesTable /> : <SubPlacesTable />}
     </div>
   );
 }
