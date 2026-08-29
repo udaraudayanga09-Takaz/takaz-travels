@@ -94,7 +94,7 @@ function SubPlacePage() {
               <ArrowLeft className="h-3 w-3" /> Destinations
             </Link>
             <span className="opacity-50">/</span>
-            <Link to={pLink.to as any} params={pLink.params} className="hover:text-white transition underline underline-offset-2">
+            <Link to={pLink.to as any} params={pLink.params as any} className="hover:text-white transition underline underline-offset-2">
               {parent.name}
             </Link>
             <span className="opacity-50">/</span>
@@ -118,7 +118,7 @@ function SubPlacePage() {
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
             to={pLink.to as any}
-            params={pLink.params}
+            params={pLink.params as any}
             className="group inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow-[var(--shadow-glow)] transition hover:scale-[1.02]"
           >
             Explore {parent.name} <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
@@ -167,7 +167,7 @@ function SubPlacePage() {
               </span>
               <h2 className="mt-3 text-2xl md:text-3xl font-semibold tracking-tight">More places around {parent.name}</h2>
             </div>
-            <Link to={pLink.to as any} params={pLink.params} className="inline-flex items-center gap-1.5 rounded-full glass px-4 py-2 text-xs font-medium hover:bg-secondary/40 transition">
+            <Link to={pLink.to as any} params={pLink.params as any} className="inline-flex items-center gap-1.5 rounded-full glass px-4 py-2 text-xs font-medium hover:bg-secondary/40 transition">
               Back to {parent.name} <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
