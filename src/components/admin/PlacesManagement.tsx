@@ -443,6 +443,7 @@ function AdditionalFormModal({ initial, onClose, onSaved }: { initial: Additiona
       <TextField label="Short tagline" value={tagline} onChange={setTagline} />
       <TextArea label="Description" value={description} onChange={setDescription} />
       <ImageUpload current={imageUrl} file={file} onFile={setFile} />
+      <MediaGallery urls={media} files={newMedia} onUrls={setMedia} onFiles={setNewMedia} />
       <label className="flex items-center gap-2 text-sm">
         <input type="checkbox" checked={published} onChange={e => setPublished(e.target.checked)} className="h-4 w-4 accent-primary" />
         Published (visible on /places)
