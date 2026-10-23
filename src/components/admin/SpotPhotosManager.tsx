@@ -1,21 +1,50 @@
 import { useEffect, useState } from "react";
-import { Upload, Trash2, Loader2 } from "lucide-react";
+import { Upload, Trash2, Loader2, Save, Check } from "lucide-react";
 import { PLACES } from "@/data/places";
 import { supabase } from "@/integrations/supabase/client";
 
 type Photo = { place_slug: string; spot_name: string; image_url: string };
 
+function NoteField({ slug, spot, initial, placeholder, rows = 2 }: { slug: string; spot: string; initial: string; placeholder: string; rows?: number }) {
+  const [val, setVal] = useState(initial);
+  const [state, setState] = useState<"idle" | "saving" | "saved">("idle");
+  useEffect(() => { setVal(initial); setState("idle"); }, [initial, slug, spot]);
+  const save = async () => {
+    setState("saving");
+    const { error } = await supabase.from("place_notes").upsert(
+      { place_slug: slug, spot_name: spot, description: val.trim(), updated_at: new Date().toISOString() },
+      { onConflict: "place_slug,spot_name" },
+    );
+    setState(error ? "idle" : "saved");
+    if (error) alert(error.message);
+  };
+  return (
+    <div className="mt-2 flex items-start gap-2">
+      <textarea value={val} rows={rows} onChange={(e) => { setVal(e.target.value); setState("idle"); }} placeholder={placeholder}
+        className="flex-1 rounded-lg bg-secondary/40 px-3 py-2 text-xs outline-none ring-1 ring-border focus:ring-primary" />
+      <button onClick={save} disabled={state === "saving"} className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground" aria-label="Save description">
+        {state === "saving" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : state === "saved" ? <Check className="h-3.5 w-3.5" /> : <Save className="h-3.5 w-3.5" />}
+      </button>
+    </div>
+  );
+}
+
 export function SpotPhotosManager() {
   const places = Object.values(PLACES);
   const [slug, setSlug] = useState(places[0]?.slug ?? "");
   const [photos, setPhotos] = useState<Photo[]>([]);
+  const [notes, setNotes] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const place = PLACES[slug as keyof typeof PLACES];
 
   const load = async () => {
-    const { data } = await supabase.from("spot_photos").select("place_slug, spot_name, image_url").eq("place_slug", slug);
+    const [{ data }, { data: n }] = await Promise.all([
+      supabase.from("spot_photos").select("place_slug, spot_name, image_url").eq("place_slug", slug),
+      supabase.from("place_notes").select("spot_name, description").eq("place_slug", slug),
+    ]);
     setPhotos((data ?? []) as Photo[]);
+    setNotes(Object.fromEntries((n ?? []).map((r) => [r.spot_name, r.description])));
   };
   useEffect(() => { load(); }, [slug]);
 
@@ -52,6 +81,11 @@ export function SpotPhotosManager() {
         </select>
         <span className="text-xs text-muted-foreground">Tiles without a photo show the main location's image.</span>
       </div>
+      <div className="mb-5 rounded-2xl glass p-4">
+        <div className="text-sm font-semibold">Extra description for {place.name}</div>
+        <p className="text-[11px] text-muted-foreground">Shown under the introduction on the {place.name} page.</p>
+        <NoteField slug={slug} spot="" initial={notes[""] ?? ""} placeholder={`Add more about ${place.name}…`} rows={3} />
+      </div>
       {err && <div className="mb-3 rounded-lg bg-destructive/15 px-3 py-2 text-xs text-destructive">{err}</div>}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {place.spots.map((s) => {
@@ -76,6 +110,7 @@ export function SpotPhotosManager() {
                     </button>
                   )}
                 </div>
+                <NoteField slug={slug} spot={s.name} initial={notes[s.name] ?? ""} placeholder="Add extra description text…" />
               </div>
             </div>
           );

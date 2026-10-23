@@ -299,6 +299,30 @@ export type Database = {
         }
         Relationships: []
       }
+      place_notes: {
+        Row: {
+          description: string
+          id: string
+          place_slug: string
+          spot_name: string
+          updated_at: string
+        }
+        Insert: {
+          description?: string
+          id?: string
+          place_slug: string
+          spot_name?: string
+          updated_at?: string
+        }
+        Update: {
+          description?: string
+          id?: string
+          place_slug?: string
+          spot_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       platform_settings: {
         Row: {
           key: string
