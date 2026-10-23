@@ -66,7 +66,7 @@ export const Route = createFileRoute("/listing/$id")({
     <div className="min-h-[60vh] grid place-items-center p-6 text-center">
       <div>
         <h1 className="text-2xl font-semibold">Something went wrong</h1>
-        <p className="mt-2 text-sm text-muted-foreground">{error.message}</p>
+        <p className="mt-2 text-sm text-muted-foreground">{(error as Error).message}</p>
         <Link to="/" className="mt-4 inline-flex rounded-full bg-primary px-5 py-2 text-sm text-primary-foreground">Back home</Link>
       </div>
     </div>

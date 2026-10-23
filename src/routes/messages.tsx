@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 export const Route = createFileRoute("/messages")({
   component: MessagesPage,
   errorComponent: ({ error }) => (
-    <div className="mx-auto max-w-2xl p-10 text-center text-sm text-muted-foreground">{error.message}</div>
+    <div className="mx-auto max-w-2xl p-10 text-center text-sm text-muted-foreground">{(error as Error).message}</div>
   ),
   notFoundComponent: () => <div className="p-10 text-center">Not found</div>,
 });
