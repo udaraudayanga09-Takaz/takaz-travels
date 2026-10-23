@@ -197,6 +197,20 @@ function PlacePage() {
     return () => { active = false; };
   }, [place.slug]);
 
+  // Admin-uploaded photos for the "Places to visit" tiles
+  const [spotPhotos, setSpotPhotos] = useState<Record<string, string>>({});
+  useEffect(() => {
+    let active = true;
+    supabase
+      .from("spot_photos")
+      .select("spot_name, image_url")
+      .eq("place_slug", place.slug)
+      .then(({ data }) => {
+        if (active) setSpotPhotos(Object.fromEntries((data ?? []).map((r) => [r.spot_name, r.image_url])));
+      });
+    return () => { active = false; };
+  }, [place.slug]);
+
   return (
     <div>
       {/* HERO */}
@@ -361,11 +375,16 @@ function PlacePage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.05 }}
-              className="rounded-2xl glass p-6 hover:border-primary/40 transition"
+              className="group overflow-hidden rounded-2xl glass hover:border-primary/40 transition"
             >
-              <div className="grid h-9 w-9 place-items-center rounded-lg bg-primary/15 text-primary text-sm font-semibold">{i + 1}</div>
-              <h3 className="mt-4 text-lg font-semibold">{s.name}</h3>
-              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{s.description}</p>
+              <div className="relative aspect-[16/10] overflow-hidden bg-secondary/40">
+                <img src={spotPhotos[s.name] ?? place.hero} alt={s.name} loading="lazy" className="h-full w-full object-cover transition duration-700 group-hover:scale-105" />
+                <div className="absolute left-3 top-3 grid h-8 w-8 place-items-center rounded-lg bg-background/80 text-primary text-sm font-semibold backdrop-blur">{i + 1}</div>
+              </div>
+              <div className="p-6">
+                <h3 className="text-lg font-semibold">{s.name}</h3>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{s.description}</p>
+              </div>
             </motion.article>
           ))}
         </div>

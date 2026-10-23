@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { SpotPhotosManager } from "@/components/admin/SpotPhotosManager";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Plus, Pencil, Trash2, X, Upload, Image as ImageIcon, Eye, EyeOff, Film } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -44,11 +45,11 @@ type SubRow = {
 };
 
 export function PlacesManagement() {
-  const [sub, setSub] = useState<"top" | "additional" | "sub">("top");
+  const [sub, setSub] = useState<"top" | "additional" | "sub" | "spots">("top");
   return (
     <div>
-      <div className="flex gap-2 mb-6">
-        {([["top", "Top destinations"], ["additional", "Additional destinations"], ["sub", "Sub-locations"]] as const).map(([v, l]) => (
+      <div className="flex flex-wrap gap-2 mb-6">
+        {([["top", "Top destinations"], ["additional", "Additional destinations"], ["sub", "Sub-locations"], ["spots", "Spot photos"]] as const).map(([v, l]) => (
           <button
             key={v}
             onClick={() => setSub(v)}
@@ -58,7 +59,7 @@ export function PlacesManagement() {
           </button>
         ))}
       </div>
-      {sub === "top" ? <TopDestinationsTable /> : sub === "additional" ? <AdditionalPlacesTable /> : <SubPlacesTable />}
+      {sub === "top" ? <TopDestinationsTable /> : sub === "additional" ? <AdditionalPlacesTable /> : sub === "sub" ? <SubPlacesTable /> : <SpotPhotosManager />}
     </div>
   );
 }
