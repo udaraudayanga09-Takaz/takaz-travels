@@ -464,6 +464,30 @@ export type Database = {
         }
         Relationships: []
       }
+      spot_photos: {
+        Row: {
+          id: string
+          image_url: string
+          place_slug: string
+          spot_name: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          image_url: string
+          place_slug: string
+          spot_name: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          image_url?: string
+          place_slug?: string
+          spot_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       sub_places: {
         Row: {
           created_at: string
