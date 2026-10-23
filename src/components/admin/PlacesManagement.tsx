@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { SpotPhotosManager } from "@/components/admin/SpotPhotosManager";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Plus, Pencil, Trash2, X, Upload, Image as ImageIcon, Eye, EyeOff, Film } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
