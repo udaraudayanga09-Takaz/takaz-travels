@@ -15,6 +15,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useVisitBasket, removeVisit, type VisitItem } from "@/lib/visitBasket";
 
 export const Route = createFileRoute("/plan")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -77,6 +78,16 @@ function PlanPage() {
     if (ids.length) setPicked(ids);
   }, [pins, pendingRegionsParam, picked.length]);
 
+  // Places saved with "Add to trip" — auto-add their main locations as stops
+  const visits = useVisitBasket();
+  useEffect(() => {
+    if (pins.length === 0 || visits.length === 0) return;
+    const ids = visits.map((v) => pins.find((p) => p.slug === v.parentSlug)?.id).filter(Boolean) as string[];
+    setPicked((cur) => {
+      const add = ids.filter((id, i) => !cur.includes(id) && ids.indexOf(id) === i);
+      return add.length ? [...cur, ...add] : cur;
+    });
+  }, [pins, visits]);
 
 
   const [range, setRange] = useState<DateRange | undefined>(() => {
@@ -280,6 +291,9 @@ function PlanPage() {
         <h1 className="mt-4 text-4xl md:text-6xl font-semibold tracking-tight">Plan your <span className="text-gradient">Sri Lanka</span> trip</h1>
         <p className="mt-3 text-muted-foreground">Pick regions, set your dates, then add a stay and a ride to your basket. Book the whole trip in one go.</p>
       </motion.div>
+
+      <TripDetail visits={visits} order={picked.map((id) => pins.find((p) => p.id === id)?.slug).filter(Boolean) as string[]} nights={nights} range={range} />
+
 
       {/* Map + region picker */}
       <div className="mt-12 grid items-start gap-10 md:grid-cols-[1fr_360px]">
