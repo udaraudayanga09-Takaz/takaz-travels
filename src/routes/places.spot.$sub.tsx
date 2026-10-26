@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, MapPin, Sparkles, Images, Compass } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { isVideo, parentLink, resolveParent, type ParentRef, type SubPlace } from "@/lib/subplaces";
+import { VisitButton } from "@/components/VisitButton";
+import { visitKey } from "@/lib/visitBasket";
 
 type LoaderData = {
   sub: SubPlace;
@@ -115,7 +117,8 @@ function SubPlacePage() {
         {sub.description && (
           <p className="text-lg md:text-xl leading-relaxed text-muted-foreground whitespace-pre-wrap">{sub.description}</p>
         )}
-        <div className="mt-8 flex flex-wrap gap-3">
+        <div className="mt-8 flex flex-wrap items-center gap-3">
+          <VisitButton className="px-6 py-3 text-sm" item={{ key: visitKey(parent.slug, sub.name), name: sub.name, parentSlug: parent.slug, parentName: parent.name, image: sub.image_url ?? parent.hero, description: sub.description || sub.tagline }} />
           <Link
             to={pLink.to as any}
             params={pLink.params as any}

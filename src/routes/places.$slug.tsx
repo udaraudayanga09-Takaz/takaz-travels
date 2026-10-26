@@ -575,6 +575,7 @@ function PlacePage() {
           ))}
         </div>
       </section>
+      <SpotDialog spot={openSpot} onClose={() => setOpenSpot(null)} />
     </div>
   );
 }

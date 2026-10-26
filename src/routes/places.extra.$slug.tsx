@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, MapPin, Sparkles, Images } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { isVideo, type SubPlace } from "@/lib/subplaces";
+import { VisitButton } from "@/components/VisitButton";
+import { visitKey } from "@/lib/visitBasket";
 
 type ExtraPlace = {
   id: string;
@@ -103,7 +105,8 @@ function ExtraPlacePage() {
         {place.description && (
           <p className="text-lg md:text-xl leading-relaxed text-muted-foreground whitespace-pre-wrap">{place.description}</p>
         )}
-        <div className="mt-8 flex flex-wrap gap-3">
+        <div className="mt-8 flex flex-wrap items-center gap-3">
+          <VisitButton className="px-6 py-3 text-sm" item={{ key: visitKey(place.slug, place.name), name: place.name, parentSlug: place.slug, parentName: place.name, image: place.image_url, description: place.tagline || place.description }} />
           <Link
             to="/"
             search={{ filter: "stay", city: place.name }}
