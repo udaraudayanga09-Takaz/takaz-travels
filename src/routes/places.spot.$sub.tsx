@@ -3,11 +3,14 @@ import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, MapPin, Sparkles, Images, Compass } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { isVideo, parentLink, resolveParent, type ParentRef, type SubPlace } from "@/lib/subplaces";
+import { VisitButton } from "@/components/VisitButton";
+import { visitKey } from "@/lib/visitBasket";
 
 type LoaderData = {
   sub: SubPlace;
   parent: ParentRef;
   siblings: SubPlace[];
+  note: string;
 };
 
 export const Route = createFileRoute("/places/spot/$sub")({
@@ -21,7 +24,7 @@ export const Route = createFileRoute("/places/spot/$sub")({
       .limit(1)
       .maybeSingle();
     if (!sub) throw notFound();
-    const [parent, sibRes] = await Promise.all([
+    const [parent, sibRes, noteRes] = await Promise.all([
       resolveParent(sub.parent_slug),
       supabase
         .from("sub_places")
@@ -31,8 +34,9 @@ export const Route = createFileRoute("/places/spot/$sub")({
         .neq("id", sub.id)
         .order("sort_order", { ascending: true })
         .limit(8),
+      supabase.from("place_notes").select("description").eq("place_slug", sub.parent_slug).eq("spot_name", sub.name).maybeSingle(),
     ]);
-    return { sub: sub as SubPlace, parent, siblings: (sibRes.data ?? []) as SubPlace[] };
+    return { sub: sub as SubPlace, parent, siblings: (sibRes.data ?? []) as SubPlace[], note: noteRes.data?.description ?? "" };
   },
   head: ({ loaderData }) => {
     const s = loaderData?.sub;
@@ -71,7 +75,7 @@ export const Route = createFileRoute("/places/spot/$sub")({
 });
 
 function SubPlacePage() {
-  const { sub, parent, siblings } = Route.useLoaderData() as LoaderData;
+  const { sub, parent, siblings, note } = Route.useLoaderData() as LoaderData;
   const pLink = parentLink(parent);
   const media = (sub.media_urls ?? []).filter(Boolean);
 
@@ -115,7 +119,9 @@ function SubPlacePage() {
         {sub.description && (
           <p className="text-lg md:text-xl leading-relaxed text-muted-foreground whitespace-pre-wrap">{sub.description}</p>
         )}
-        <div className="mt-8 flex flex-wrap gap-3">
+        {note && <p className="mt-4 text-base md:text-lg leading-relaxed whitespace-pre-wrap">{note}</p>}
+        <div className="mt-8 flex flex-wrap items-center gap-3">
+          <VisitButton className="px-6 py-3 text-sm" item={{ key: visitKey(parent.slug, sub.name), name: sub.name, parentSlug: parent.slug, parentName: parent.name, image: sub.image_url ?? parent.hero, description: sub.description || sub.tagline }} />
           <Link
             to={pLink.to as any}
             params={pLink.params as any}

@@ -15,6 +15,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useVisitBasket, removeVisit, type VisitItem } from "@/lib/visitBasket";
 
 export const Route = createFileRoute("/plan")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -77,6 +78,16 @@ function PlanPage() {
     if (ids.length) setPicked(ids);
   }, [pins, pendingRegionsParam, picked.length]);
 
+  // Places saved with "Add to trip" — auto-add their main locations as stops
+  const visits = useVisitBasket();
+  useEffect(() => {
+    if (pins.length === 0 || visits.length === 0) return;
+    const ids = visits.map((v) => pins.find((p) => p.slug === v.parentSlug)?.id).filter(Boolean) as string[];
+    setPicked((cur) => {
+      const add = ids.filter((id, i) => !cur.includes(id) && ids.indexOf(id) === i);
+      return add.length ? [...cur, ...add] : cur;
+    });
+  }, [pins, visits]);
 
 
   const [range, setRange] = useState<DateRange | undefined>(() => {
@@ -280,6 +291,9 @@ function PlanPage() {
         <h1 className="mt-4 text-4xl md:text-6xl font-semibold tracking-tight">Plan your <span className="text-gradient">Sri Lanka</span> trip</h1>
         <p className="mt-3 text-muted-foreground">Pick regions, set your dates, then add a stay and a ride to your basket. Book the whole trip in one go.</p>
       </motion.div>
+
+      <TripDetail visits={visits} order={picked.map((id) => pins.find((p) => p.id === id)?.slug).filter(Boolean) as string[]} nights={nights} range={range} />
+
 
       {/* Map + region picker */}
       <div className="mt-12 grid items-start gap-10 md:grid-cols-[1fr_360px]">
@@ -591,5 +605,66 @@ function Row({ label, value }: { label: string; value: number }) {
       <span>{label}</span>
       <span>${value.toFixed(2)}</span>
     </div>
+  );
+}
+
+function TripDetail({ visits, order, nights, range }: { visits: VisitItem[]; order: string[]; nights: number; range: DateRange | undefined }) {
+  if (visits.length === 0) return null;
+  const groups = new Map<string, { name: string; items: VisitItem[] }>();
+  visits.forEach((v) => {
+    const g = groups.get(v.parentSlug) ?? { name: v.parentName, items: [] };
+    g.items.push(v);
+    groups.set(v.parentSlug, g);
+  });
+  const slugs = [...groups.keys()].sort((a, b) => {
+    const ia = order.indexOf(a), ib = order.indexOf(b);
+    return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib);
+  });
+  return (
+    <section className="mt-10 rounded-3xl glass-strong p-5 md:p-8">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <span className="inline-flex items-center gap-2 rounded-full bg-primary/15 text-primary px-3 py-1.5 text-xs font-medium">
+            <Sparkles className="h-3.5 w-3.5" /> Your planned trip
+          </span>
+          <h2 className="mt-3 text-2xl md:text-3xl font-semibold tracking-tight">
+            {visits.length} place{visits.length === 1 ? "" : "s"} across {slugs.length} location{slugs.length === 1 ? "" : "s"}
+          </h2>
+          {range?.from && range?.to && (
+            <p className="mt-1 text-sm text-muted-foreground">
+              {format(range.from, "d MMM")} – {format(range.to, "d MMM yyyy")} · {nights} night{nights === 1 ? "" : "s"}
+            </p>
+          )}
+        </div>
+      </div>
+      <ol className="mt-6 space-y-8">
+        {slugs.map((slug, gi) => {
+          const g = groups.get(slug)!;
+          return (
+            <li key={slug}>
+              <div className="flex items-center gap-3">
+                <span className="grid h-8 w-8 place-items-center rounded-full bg-primary text-primary-foreground text-sm font-semibold">{gi + 1}</span>
+                <h3 className="text-lg font-semibold">{g.name}</h3>
+                <span className="text-xs text-muted-foreground">{g.items.length} place{g.items.length === 1 ? "" : "s"}</span>
+              </div>
+              <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 md:pl-11">
+                {g.items.map((v) => (
+                  <div key={v.key} className="overflow-hidden rounded-2xl glass flex flex-col">
+                    {v.image ? <img src={v.image} alt={v.name} loading="lazy" className="aspect-[16/10] w-full object-cover" /> : <div className="aspect-[16/10] grid place-items-center bg-secondary/40 text-muted-foreground"><MapPin className="h-6 w-6" /></div>}
+                    <div className="p-4 flex-1 flex flex-col">
+                      <div className="font-semibold">{v.name}</div>
+                      {v.description && <p className="mt-1 text-xs text-muted-foreground leading-relaxed line-clamp-4">{v.description}</p>}
+                      <button onClick={() => removeVisit(v.key)} className="mt-3 inline-flex w-fit items-center gap-1 text-xs text-destructive hover:underline">
+                        <Trash2 className="h-3.5 w-3.5" /> Remove
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </li>
+          );
+        })}
+      </ol>
+    </section>
   );
 }
