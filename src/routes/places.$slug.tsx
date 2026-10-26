@@ -7,6 +7,9 @@ import { REGIONS } from "@/components/SriLankaMap";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import type { SubPlace } from "@/lib/subplaces";
+import { SpotDialog, type SpotInfo } from "@/components/SpotDialog";
+import { VisitButton } from "@/components/VisitButton";
+import { visitKey } from "@/lib/visitBasket";
 
 
 type Blog = { id: string; author: string; title: string; body: string; created_at: number };
@@ -211,6 +214,22 @@ function PlacePage() {
     return () => { active = false; };
   }, [place.slug]);
 
+  // Admin-written extra descriptions ("" spot_name = main location)
+  const [notesMap, setNotesMap] = useState<Record<string, string>>({});
+  useEffect(() => {
+    let active = true;
+    supabase
+      .from("place_notes")
+      .select("spot_name, description")
+      .eq("place_slug", place.slug)
+      .then(({ data }) => {
+        if (active) setNotesMap(Object.fromEntries((data ?? []).map((r) => [r.spot_name, r.description])));
+      });
+    return () => { active = false; };
+  }, [place.slug]);
+  const [openSpot, setOpenSpot] = useState<SpotInfo | null>(null);
+
+
   return (
     <div>
       {/* HERO */}
@@ -236,6 +255,7 @@ function PlacePage() {
       {/* INTRO + ACTIONS */}
       <section className="mx-auto max-w-5xl px-5 py-16">
         <p className="text-lg md:text-xl leading-relaxed text-muted-foreground">{place.intro}</p>
+        {notesMap[""] && <p className="mt-4 text-base md:text-lg leading-relaxed whitespace-pre-wrap">{notesMap[""]}</p>}
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
             to="/"
@@ -375,7 +395,8 @@ function PlacePage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.05 }}
-              className="group overflow-hidden rounded-2xl glass hover:border-primary/40 transition"
+              onClick={() => setOpenSpot({ name: s.name, parentSlug: place.slug, parentName: place.name, image: spotPhotos[s.name] ?? place.hero, description: s.description, extra: notesMap[s.name] })}
+              className="group cursor-pointer overflow-hidden rounded-2xl glass hover:border-primary/40 transition"
             >
               <div className="relative aspect-[16/10] overflow-hidden bg-secondary/40">
                 <img src={spotPhotos[s.name] ?? place.hero} alt={s.name} loading="lazy" className="h-full w-full object-cover transition duration-700 group-hover:scale-105" />
@@ -383,7 +404,11 @@ function PlacePage() {
               </div>
               <div className="p-6">
                 <h3 className="text-lg font-semibold">{s.name}</h3>
-                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{s.description}</p>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed line-clamp-3">{notesMap[s.name] || s.description}</p>
+                <div className="mt-4 flex items-center gap-2">
+                  <VisitButton item={{ key: visitKey(place.slug, s.name), name: s.name, parentSlug: place.slug, parentName: place.name, image: spotPhotos[s.name] ?? place.hero, description: notesMap[s.name] || s.description }} />
+                  <span className="text-xs text-muted-foreground">Tap to read more</span>
+                </div>
               </div>
             </motion.article>
           ))}
@@ -403,19 +428,15 @@ function PlacePage() {
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {subPlaces.map((s, i) => (
               <motion.div key={s.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: Math.min(i * 0.05, 0.3) }}>
-                <Link to="/places/spot/$sub" params={{ sub: s.slug }} className="group block relative overflow-hidden rounded-2xl glass hover:border-primary/40 transition">
+                <button type="button" onClick={() => setOpenSpot({ name: s.name, parentSlug: place.slug, parentName: place.name, image: s.image_url ?? place.hero, description: s.description || s.tagline, extra: notesMap[s.name], pageSlug: s.slug })} className="group block w-full text-left relative overflow-hidden rounded-2xl glass hover:border-primary/40 transition">
                   <div className="aspect-[4/5] overflow-hidden bg-secondary/40">
-                    {s.image_url ? (
-                      <img src={s.image_url} alt={s.name} loading="lazy" className="h-full w-full object-cover transition duration-700 group-hover:scale-110" />
-                    ) : (
-                      <div className="grid h-full place-items-center text-muted-foreground"><MapPin className="h-6 w-6" /></div>
-                    )}
+                    <img src={s.image_url ?? place.hero} alt={s.name} loading="lazy" className="h-full w-full object-cover transition duration-700 group-hover:scale-110" />
                   </div>
                   <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 to-transparent p-4 text-white">
                     <div className="text-sm font-semibold">{s.name}</div>
                     {s.tagline && <div className="text-[11px] opacity-80 line-clamp-2">{s.tagline}</div>}
                   </div>
-                </Link>
+                </button>
               </motion.div>
             ))}
           </div>
