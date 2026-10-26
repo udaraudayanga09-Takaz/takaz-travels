@@ -19,6 +19,7 @@ type ExtraPlace = {
 type LoaderData = {
   place: ExtraPlace;
   subs: SubPlace[];
+  note: string;
 };
 
 export const Route = createFileRoute("/places/extra/$slug")({
@@ -36,7 +37,8 @@ export const Route = createFileRoute("/places/extra/$slug")({
       .eq("parent_slug", place.slug)
       .eq("published", true)
       .order("sort_order", { ascending: true });
-    return { place: place as ExtraPlace, subs: (subs ?? []) as SubPlace[] };
+    const { data: n } = await supabase.from("place_notes").select("description").eq("place_slug", place.slug).eq("spot_name", "").maybeSingle();
+    return { place: place as ExtraPlace, subs: (subs ?? []) as SubPlace[], note: n?.description ?? "" };
   },
   head: ({ loaderData }) => {
     const p = loaderData?.place;
@@ -73,7 +75,7 @@ export const Route = createFileRoute("/places/extra/$slug")({
 });
 
 function ExtraPlacePage() {
-  const { place, subs } = Route.useLoaderData() as LoaderData;
+  const { place, subs, note } = Route.useLoaderData() as LoaderData;
   const media = (place.media_urls ?? []).filter(Boolean);
 
   return (
@@ -105,6 +107,7 @@ function ExtraPlacePage() {
         {place.description && (
           <p className="text-lg md:text-xl leading-relaxed text-muted-foreground whitespace-pre-wrap">{place.description}</p>
         )}
+        {note && <p className="mt-4 text-base md:text-lg leading-relaxed whitespace-pre-wrap">{note}</p>}
         <div className="mt-8 flex flex-wrap items-center gap-3">
           <VisitButton className="px-6 py-3 text-sm" item={{ key: visitKey(place.slug, place.name), name: place.name, parentSlug: place.slug, parentName: place.name, image: place.image_url, description: place.tagline || place.description }} />
           <Link
